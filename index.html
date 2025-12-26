@@ -3,72 +3,241 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2026 家族旅行 App</title>
+    <title>2026 家族旅行手冊</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { background: linear-gradient(180deg, #FDF2F8 0%, #FFFFFF 100%); font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
-        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 24px; }
-        .active-dot { width: 6px; height: 6px; background: #EC4899; border-radius: 50%; display: inline-block; margin-right: 8px; }
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #FFF5F7; }
+        .glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 20px; }
+        .gradient-header { background: linear-gradient(135deg, #FF9A9E 0%, #FAD0C4 100%); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .nav-item.active { color: #F472B6; transform: scale(1.1); }
+        input, textarea { border-radius: 12px; border: 1px solid #FFD1D9; padding: 10px; width: 100%; margin-bottom: 10px; }
+        .timeline-line::before { content: ""; position: absolute; left: 20px; top: 0; bottom: 0; width: 2px; background: #FFD1D9; }
     </style>
 </head>
 <body class="pb-24">
 
-    <div class="p-8 pb-12 bg-gradient-to-br from-pink-400 to-rose-400 rounded-b-[40px] text-white shadow-lg">
-        <div class="flex justify-between items-center mb-4">
-            <h1 class="text-2xl font-black tracking-tight">2026 BUSAN & FUKUOKA</h1>
-            <i class="fas fa-heart text-pink-200"></i>
-        </div>
-        <div class="flex gap-4 text-sm opacity-90">
-            <span><i class="fas fa-plane-departure mr-1"></i> 2/14 出發</span>
-            <span><i class="fas fa-ship mr-1"></i> 2/16 搭船</span>
-        </div>
-    </div>
-
-    <div class="px-5 -mt-8 space-y-6">
-        
-        <div class="glass p-5 shadow-sm flex justify-between items-center">
+    <div class="gradient-header p-6 text-white rounded-b-[3rem] shadow-lg sticky top-0 z-50">
+        <div class="flex justify-between items-center">
             <div>
-                <p class="text-xs text-gray-400 font-bold uppercase tracking-widest">Current Status</p>
-                <p class="text-lg font-bold text-gray-700">準備行李中...🧳</p>
+                <h1 id="page-title" class="text-2xl font-black">PLAN 行程表</h1>
+                <p class="text-xs opacity-80">2026 釜山福岡・家族旅行</p>
             </div>
-            <div class="text-right">
-                <p class="text-2xl font-black text-pink-500">D-50</p>
-            </div>
+            <div class="text-2xl"><i class="fas fa-heart text-white/50"></i></div>
         </div>
-
-        <div class="space-y-4">
-            <h3 class="text-sm font-black text-gray-400 px-2 tracking-widest">FEB 14 SATURDAY</h3>
-            <div class="glass p-5 space-y-4 shadow-sm border-l-8 border-pink-400">
-                <div class="flex items-start gap-4">
-                    <div class="text-center w-12 pt-1">
-                        <p class="text-xs font-bold text-pink-500">06:10</p>
-                    </div>
-                    <div>
-                        <p class="font-bold text-gray-800">抵達金海機場 🇰🇷</p>
-                        <p class="text-xs text-gray-400 mt-1">領取網卡、換少額韓元</p>
-                    </div>
-                </div>
-                <div class="flex items-start gap-4">
-                    <div class="text-center w-12 pt-1">
-                        <p class="text-xs font-bold text-pink-500">住宿</p>
-                    </div>
-                    <div>
-                        <p class="font-bold text-gray-800">Queens Hotel Seomyeon</p>
-                        <p class="text-xs text-gray-400 mt-1">📍 西面站步行 5 分鐘</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </div>
 
-    <div class="fixed bottom-6 left-5 right-5 h-16 glass shadow-2xl flex justify-around items-center px-4">
-        <div class="flex flex-col items-center text-pink-500"><i class="fas fa-home mb-1 text-xl"></i><span class="text-[10px] font-bold">首頁</span></div>
-        <div class="flex flex-col items-center text-gray-400"><i class="fas fa-map-marker-alt mb-1 text-xl"></i><span class="text-[10px] font-bold">地圖</span></div>
-        <div class="flex flex-col items-center text-gray-400"><i class="fas fa-shopping-bag mb-1 text-xl"></i><span class="text-[10px] font-bold">必買</span></div>
-        <div class="flex flex-col items-center text-gray-400"><i class="fas fa-user mb-1 text-xl"></i><span class="text-[10px] font-bold">我的</span></div>
-    </div>
+    <main class="p-4">
+        <section id="plan" class="tab-content active space-y-4">
+            <div class="glass p-4 border-l-8 border-pink-400 shadow-sm">
+                <h2 class="font-bold text-pink-600 mb-2"><i class="fas fa-plane mr-2"></i>航班資訊</h2>
+                <div class="text-sm space-y-1 text-gray-600 font-medium">
+                    <p>去程：2026/02/14 待定 (預計早班機)</p>
+                    <p>回程：2026/02/21 待定 (預計福岡出發)</p>
+                </div>
+            </div>
 
+            <div class="glass p-4 border-l-8 border-blue-300 shadow-sm">
+                <h2 class="font-bold text-blue-600 mb-2"><i class="fas fa-hotel mr-2"></i>住宿預定</h2>
+                <div class="text-sm text-gray-600">
+                    <p class="font-bold text-gray-800">2/14-2/15: Queens Hotel Seomyeon</p>
+                    <p>📍 釜山西面站附近</p>
+                    <p class="mt-2 font-bold text-gray-800">2/16: New Camellia 新山茶花號</p>
+                    <p>📍 釜山港國際客運碼頭登船</p>
+                </div>
+            </div>
+
+            <div class="relative timeline-line space-y-6 pt-2">
+                <div class="relative pl-12">
+                    <div class="absolute left-2 w-8 h-8 bg-pink-500 rounded-full border-4 border-white flex items-center justify-center text-white text-[10px] font-bold z-10 shadow-md">D1</div>
+                    <div class="glass p-4 shadow-sm">
+                        <h3 class="font-black text-gray-800 text-lg">2/14 (六) 西面逛街日</h3>
+                        <div class="text-sm text-gray-600 space-y-2 mt-2">
+                            <p class="flex items-center"><i class="far fa-clock mr-2 text-pink-400"></i>06:10 抵達金海機場</p>
+                            <p class="flex items-center"><i class="far fa-clock mr-2 text-pink-400"></i>09:00 西面地下街 (Daiso, Olive Young)</p>
+                            <p class="flex items-center font-bold text-rose-500"><i class="fas fa-utensils mr-2"></i>18:00 情人節烤肉大餐</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative pl-12">
+                    <div class="absolute left-2 w-8 h-8 bg-pink-400 rounded-full border-4 border-white flex items-center justify-center text-white text-[10px] font-bold z-10 shadow-md">D2</div>
+                    <div class="glass p-4 shadow-sm">
+                        <h3 class="font-black text-gray-800 text-lg">2/15 (日) 釜山市區深度遊</h3>
+                        <p class="text-xs text-blue-400 mt-1 font-bold">📍 海雲台或南浦洞方向 (待排定)</p>
+                    </div>
+                </div>
+
+                <div class="relative pl-12">
+                    <div class="absolute left-2 w-8 h-8 bg-indigo-500 rounded-full border-4 border-white flex items-center justify-center text-white text-[10px] font-bold z-10 shadow-md">D3</div>
+                    <div class="glass p-4 shadow-sm bg-indigo-50/50">
+                        <h3 class="font-black text-gray-800 text-lg">2/16 (一) 跨越海峽</h3>
+                        <div class="text-sm text-gray-600 space-y-2 mt-2">
+                            <p><i class="fas fa-paint-brush mr-2 text-indigo-400"></i>09:30 甘川洞文化村 (Taxi: ₩9,000)</p>
+                            <p><i class="fas fa-cookie-bite mr-2 text-indigo-400"></i>11:30 富平罐頭市場</p>
+                            <p class="font-bold text-indigo-600"><i class="fas fa-ship mr-2"></i>19:00 釜山港國際碼頭登船</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative pl-12">
+                    <div class="absolute left-2 w-8 h-8 bg-emerald-500 rounded-full border-4 border-white flex items-center justify-center text-white text-[10px] font-bold z-10 shadow-md">D4</div>
+                    <div class="glass p-4 shadow-sm border-2 border-emerald-100">
+                        <h3 class="font-black text-gray-800 text-lg">2/17 (二) 哈囉福岡</h3>
+                        <p class="text-xs text-emerald-500 mt-1 font-bold">🛳️ 07:30 抵達博多港</p>
+                        <p class="text-sm text-gray-500 mt-2 italic">行程待您更新...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="guide" class="tab-content space-y-4">
+            <div class="glass overflow-hidden shadow-sm">
+                <img src="https://images.unsplash.com/photo-1578166592303-4e73d639cc43?auto=format&fit=crop&w=800&q=80" class="w-full h-44 object-cover">
+                <div class="p-5">
+                    <span class="bg-pink-100 text-pink-500 text-[10px] font-black px-2 py-1 rounded-md">MUST GO</span>
+                    <h2 class="text-xl font-black text-gray-800 mt-1">甘川洞文化村</h2>
+                    <p class="mt-2 text-sm text-gray-500 leading-relaxed">被稱為「韓國的聖托里尼」。這裡有著名的小王子雕像，建議搭乘計程車直達最高點再慢慢走下來，省力又好拍！</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="wallet" class="tab-content space-y-4">
+            <div class="glass p-5 shadow-sm bg-white/95">
+                <h2 class="font-bold text-pink-600 mb-4 text-center text-sm tracking-widest">匯率換算 (KRW ➜ TWD)</h2>
+                <input type="text" id="calc-input" placeholder="輸入算式，如 9000+15000" class="bg-pink-50/50 text-center font-bold text-lg">
+                <button onclick="calculateCurrency()" class="w-full bg-pink-500 text-white font-black py-3 rounded-2xl shadow-lg active:scale-95 transition-transform">立即換算</button>
+                <p id="calc-result" class="text-center text-2xl font-black text-rose-500 mt-4">NT$ 0</p>
+            </div>
+            <div class="glass p-5 shadow-sm">
+                <h3 class="font-bold text-gray-700 mb-3 text-sm">消費紀錄</h3>
+                <input type="text" id="exp-name" placeholder="買了什麼？">
+                <input type="number" id="exp-amount" placeholder="金額 (KRW)">
+                <input type="file" id="exp-img" accept="image/*" class="text-xs file:bg-pink-100 file:border-0 file:rounded-full file:px-4 file:py-1 file:text-pink-600 file:font-bold">
+                <button onclick="saveExpense()" class="w-full bg-gray-800 text-white font-bold py-3 rounded-2xl mt-4">儲存紀錄</button>
+            </div>
+            <div id="expense-list" class="space-y-3"></div>
+        </section>
+
+        <section id="lists" class="tab-content space-y-4">
+            <div class="glass p-5 shadow-sm">
+                <h2 class="font-black text-pink-600 mb-4">行前 CheckList</h2>
+                <div id="checklist-items" class="space-y-3"></div>
+            </div>
+            <div class="glass p-5 shadow-sm">
+                <h2 class="font-black text-gray-700 mb-3">個人備忘錄</h2>
+                <textarea id="memo-input" rows="6" class="text-sm bg-gray-50/50" placeholder="寫下想買的清單或注意細節..."></textarea>
+                <button onclick="saveMemo()" class="w-full bg-indigo-400 text-white font-bold py-3 rounded-2xl">存檔</button>
+            </div>
+        </section>
+
+        <section id="info" class="tab-content space-y-4 text-sm">
+            <div class="glass p-5 space-y-4">
+                <div class="flex items-center justify-between p-4 bg-white rounded-2xl shadow-sm border border-pink-50">
+                    <div class="flex items-center"><i class="fas fa-cloud-sun text-2xl text-yellow-400 mr-3"></i><span class="font-bold">韓國/日本天氣預報</span></div>
+                    <i class="fas fa-chevron-right text-gray-300"></i>
+                </div>
+                <div class="bg-red-50 p-5 rounded-3xl border border-red-100">
+                    <h4 class="font-black text-red-500 mb-2 tracking-tighter">緊急聯絡資料</h4>
+                    <p class="text-xs text-red-700/70 mb-3 font-medium">遇到緊急狀況請冷靜撥打：</p>
+                    <div class="space-y-2">
+                        <div class="flex justify-between"><span>韓國警察局</span><span class="font-bold">112</span></div>
+                        <div class="flex justify-between"><span>韓國救護車</span><span class="font-bold">119</span></div>
+                        <div class="flex justify-between"><span>日本警察局</span><span class="font-bold">110</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <nav class="fixed bottom-6 left-6 right-6 h-18 glass shadow-2xl flex justify-around items-center px-2 z-50 border-white/50">
+        <button onclick="showTab('plan', 'PLAN 行程表')" class="nav-item active flex flex-col items-center"><i class="fas fa-map-marked-alt text-xl"></i><span class="text-[9px] font-black mt-1 uppercase">Plan</span></button>
+        <button onclick="showTab('guide', 'GUIDE 導覽')" class="nav-item flex flex-col items-center"><i class="fas fa-compass text-xl"></i><span class="text-[9px] font-black mt-1 uppercase">Guide</span></button>
+        <button onclick="showTab('wallet', 'WALLET 記帳')" class="nav-item flex flex-col items-center"><i class="fas fa-piggy-bank text-xl"></i><span class="text-[9px] font-black mt-1 uppercase">Wallet</span></button>
+        <button onclick="showTab('lists', 'LISTS 清單')" class="nav-item flex flex-col items-center"><i class="fas fa-clipboard-list text-xl"></i><span class="text-[9px] font-black mt-1 uppercase">Lists</span></button>
+        <button onclick="showTab('info', 'INFO 資訊')" class="nav-item flex flex-col items-center"><i class="fas fa-info-circle text-xl"></i><span class="text-[9px] font-black mt-1 uppercase">Info</span></button>
+    </nav>
+
+    <script>
+        const KRW_TO_TWD = 0.024;
+        function showTab(tabId, title) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.getElementById('page-title').innerText = title;
+            event.currentTarget.classList.add('active');
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+        function calculateCurrency() {
+            try {
+                const total = eval(document.getElementById('calc-input').value.replace(/[^-()\d/*+.]/g, ''));
+                document.getElementById('calc-result').innerText = `NT$ ${Math.round(total * KRW_TO_TWD)}`;
+            } catch (e) { alert("請輸入正確算式"); }
+        }
+        async function saveExpense() {
+            const name = document.getElementById('exp-name').value;
+            const amount = document.getElementById('exp-amount').value;
+            const file = document.getElementById('exp-img').files[0];
+            if(!name || !amount) return alert("請填寫品項與金額");
+            let imgBase64 = "";
+            if (file) imgBase64 = await compressImage(file);
+            const expense = { name, amount, img: imgBase64, date: new Date().toLocaleDateString() };
+            let history = JSON.parse(localStorage.getItem('expenses') || '[]');
+            history.unshift(expense);
+            localStorage.setItem('expenses', JSON.stringify(history));
+            renderExpenses();
+            document.getElementById('exp-name').value = '';
+            document.getElementById('exp-amount').value = '';
+        }
+        function compressImage(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        const scale = 120 / img.width;
+                        canvas.width = 120; canvas.height = img.height * scale;
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.6));
+                    };
+                };
+            });
+        }
+        function renderExpenses() {
+            const list = document.getElementById('expense-list');
+            const history = JSON.parse(localStorage.getItem('expenses') || '[]');
+            list.innerHTML = history.map(h => `
+                <div class="glass p-3 flex items-center justify-between shadow-sm border-white/60">
+                    <div class="flex items-center gap-3">
+                        ${h.img ? `<img src="${h.img}" class="w-12 h-12 rounded-xl object-cover">` : `<div class="w-12 h-12 bg-pink-50 rounded-xl flex items-center justify-center text-[10px] text-pink-200">NO IMG</div>`}
+                        <div><p class="font-bold text-sm text-gray-700">${h.name}</p><p class="text-[9px] text-gray-400 font-bold tracking-tighter">${h.date}</p></div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-black text-rose-500">₩${Number(h.amount).toLocaleString()}</p>
+                        <p class="text-[10px] text-gray-400 font-bold">≈ NT$ ${Math.round(h.amount * KRW_TO_TWD)}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+        function saveMemo() { localStorage.setItem('memo', document.getElementById('memo-input').value); alert("備忘錄已儲存"); }
+        window.onload = () => {
+            renderExpenses();
+            document.getElementById('memo-input').value = localStorage.getItem('memo') || '';
+            const items = ['護照/簽證正本', '日幣/韓元現金', 'WOWPASS/交通卡', '網卡/Wi-Fi機', '行動電源+充電頭', '個人藥品/暈船藥'];
+            document.getElementById('checklist-items').innerHTML = items.map(item => `
+                <label class="flex items-center gap-3 p-4 bg-white/50 rounded-2xl border border-pink-50/50 shadow-sm active:bg-pink-100 transition-colors">
+                    <input type="checkbox" class="w-5 h-5 rounded-full accent-pink-500 border-pink-200"> 
+                    <span class="text-sm font-bold text-gray-600">${item}</span>
+                </label>
+            `).join('');
+        };
+    </script>
 </body>
 </html>
