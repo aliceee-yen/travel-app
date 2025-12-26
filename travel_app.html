@@ -2,93 +2,72 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>2026 家族旅行 App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #FDF2F8; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.3); }
-        .tab-active { color: #EC4899; border-bottom: 2px solid #EC4899; }
-        .gradient-bg { background: linear-gradient(135deg, #F9A8D4 0%, #F472B6 100%); }
+        body { background: linear-gradient(180deg, #FDF2F8 0%, #FFFFFF 100%); font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
+        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 24px; }
+        .active-dot { width: 6px; height: 6px; background: #EC4899; border-radius: 50%; display: inline-block; margin-right: 8px; }
     </style>
 </head>
-<body class="pb-20">
+<body class="pb-24">
 
-    <div class="gradient-bg p-6 text-white rounded-b-3xl shadow-lg">
-        <div class="flex justify-between items-center">
+    <div class="p-8 pb-12 bg-gradient-to-br from-pink-400 to-rose-400 rounded-b-[40px] text-white shadow-lg">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-2xl font-black tracking-tight">2026 BUSAN & FUKUOKA</h1>
+            <i class="fas fa-heart text-pink-200"></i>
+        </div>
+        <div class="flex gap-4 text-sm opacity-90">
+            <span><i class="fas fa-plane-departure mr-1"></i> 2/14 出發</span>
+            <span><i class="fas fa-ship mr-1"></i> 2/16 搭船</span>
+        </div>
+    </div>
+
+    <div class="px-5 -mt-8 space-y-6">
+        
+        <div class="glass p-5 shadow-sm flex justify-between items-center">
             <div>
-                <h1 class="text-2xl font-bold">釜山 ⇄ 福岡</h1>
-                <p class="text-sm opacity-90">2026/02/14 - 02/21</p>
+                <p class="text-xs text-gray-400 font-bold uppercase tracking-widest">Current Status</p>
+                <p class="text-lg font-bold text-gray-700">準備行李中...🧳</p>
             </div>
             <div class="text-right">
-                <span class="text-xs bg-white/20 px-2 py-1 rounded-full">情人節出發 🌹</span>
+                <p class="text-2xl font-black text-pink-500">D-50</p>
             </div>
         </div>
-    </div>
 
-    <div class="px-4 -mt-4">
-        <div class="glass-card p-4 shadow-md flex justify-around text-center">
-            <div><p class="text-xs text-gray-500">釜山天氣</p><p class="font-bold text-pink-600">8°C / ☀️</p></div>
-            <div class="border-l border-gray-200"></div>
-            <div><p class="text-xs text-gray-500">今日匯率</p><p class="font-bold text-pink-600">1:41 (KRW)</p></div>
+        <div class="space-y-4">
+            <h3 class="text-sm font-black text-gray-400 px-2 tracking-widest">FEB 14 SATURDAY</h3>
+            <div class="glass p-5 space-y-4 shadow-sm border-l-8 border-pink-400">
+                <div class="flex items-start gap-4">
+                    <div class="text-center w-12 pt-1">
+                        <p class="text-xs font-bold text-pink-500">06:10</p>
+                    </div>
+                    <div>
+                        <p class="font-bold text-gray-800">抵達金海機場 🇰🇷</p>
+                        <p class="text-xs text-gray-400 mt-1">領取網卡、換少額韓元</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="text-center w-12 pt-1">
+                        <p class="text-xs font-bold text-pink-500">住宿</p>
+                    </div>
+                    <div>
+                        <p class="font-bold text-gray-800">Queens Hotel Seomyeon</p>
+                        <p class="text-xs text-gray-400 mt-1">📍 西面站步行 5 分鐘</p>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-
-    <div id="itinerary" class="p-4 space-y-6">
-        
-        <section>
-            <div class="flex items-center mb-4">
-                <div class="bg-pink-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold">14</div>
-                <h2 class="ml-3 font-bold text-gray-700">Feb 14 - 西面輕鬆逛街日</h2>
-            </div>
-            
-            <div class="space-y-3 border-l-2 border-pink-200 ml-5 pl-5">
-                <div class="glass-card p-3 relative">
-                    <span class="text-xs font-bold text-pink-400">06:10</span>
-                    <p class="text-sm font-semibold">抵達金海機場 🛬</p>
-                    <p class="text-xs text-gray-500">建議在機場休息、吃早餐 (Angel-in-us Coffee)</p>
-                </div>
-                <div class="glass-card p-3">
-                    <span class="text-xs font-bold text-pink-400">09:00</span>
-                    <p class="text-sm font-semibold">西面地下街 & 一番街 🛍️</p>
-                    <p class="text-xs text-gray-500">重點：Daiso, Olive Young, Kakao Friends</p>
-                </div>
-                <div class="glass-card p-3 border-l-4 border-pink-400">
-                    <span class="text-xs font-bold text-pink-400">住宿</span>
-                    <p class="text-sm font-semibold">Queens Hotel Seomyeon 🏨</p>
-                    <button onclick="window.open('https://maps.app.goo.gl/xxx')" class="text-xs text-blue-500 mt-1">開啟地圖導航</button>
-                </div>
-            </div>
-        </section>
-
-        <section>
-            <div class="flex items-center mb-4">
-                <div class="bg-gray-400 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold">16</div>
-                <h2 class="ml-3 font-bold text-gray-700">Feb 16 - 釜山轉往福岡</h2>
-            </div>
-            
-            <div class="space-y-3 border-l-2 border-gray-200 ml-5 pl-5">
-                <div class="glass-card p-3">
-                    <span class="text-xs font-bold text-gray-500">09:30</span>
-                    <p class="text-sm font-semibold">甘川洞文化村 🎨</p>
-                    <p class="text-xs text-gray-500">計程車約 ₩9,000 | 推薦拍照：小王子</p>
-                </div>
-                <div class="glass-card p-3">
-                    <span class="text-xs font-bold text-gray-500">19:00</span>
-                    <p class="text-sm font-semibold">釜山港登船 🛳️</p>
-                    <p class="text-xs text-gray-500">新山茶花號 (Camellia) | 22:00 開船</p>
-                </div>
-            </div>
-        </section>
 
     </div>
 
-    <div class="fixed bottom-0 w-full bg-white border-t border-gray-200 flex justify-around py-3 text-gray-400 shadow-2xl">
-        <div class="tab-active flex flex-col items-center"><i class="fas fa-calendar-alt"></i><span class="text-[10px]">行程</span></div>
-        <div class="flex flex-col items-center"><i class="fas fa-map-marked-alt"></i><span class="text-[10px]">地圖</span></div>
-        <div class="flex flex-col items-center"><i class="fas fa-wallet"></i><span class="text-[10px]">記帳</span></div>
-        <div class="flex flex-col items-center"><i class="fas fa-cog"></i><span class="text-[10px]">設定</span></div>
+    <div class="fixed bottom-6 left-5 right-5 h-16 glass shadow-2xl flex justify-around items-center px-4">
+        <div class="flex flex-col items-center text-pink-500"><i class="fas fa-home mb-1 text-xl"></i><span class="text-[10px] font-bold">首頁</span></div>
+        <div class="flex flex-col items-center text-gray-400"><i class="fas fa-map-marker-alt mb-1 text-xl"></i><span class="text-[10px] font-bold">地圖</span></div>
+        <div class="flex flex-col items-center text-gray-400"><i class="fas fa-shopping-bag mb-1 text-xl"></i><span class="text-[10px] font-bold">必買</span></div>
+        <div class="flex flex-col items-center text-gray-400"><i class="fas fa-user mb-1 text-xl"></i><span class="text-[10px] font-bold">我的</span></div>
     </div>
 
 </body>
