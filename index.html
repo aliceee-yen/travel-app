@@ -3,105 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2026 家族旅遊手帳 - 終極修復版</title>
+    <title>2026 家族手帳 - 完整同步版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #f7f1e3; color: #4b3832; font-family: 'ZCOOL KuaiLe', cursive; }
-        .notebook-page { background: #fff; border-radius: 8px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); margin: 25px 15px; padding: 30px 20px; position: relative; border-left: 8px solid #ff8a80; }
-        .tape { width: 120px; height: 35px; background: rgba(255, 235, 59, 0.4); position: absolute; top: -15px; left: 50%; transform: translateX(-50%) rotate(2deg); z-index: 10; border-left: 2px dashed rgba(0,0,0,0.1); border-right: 2px dashed rgba(0,0,0,0.1); }
-        .btn-nav { background: #ff8a80; color: white; padding: 10px 20px; border-radius: 50px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; box-shadow: 3px 3px 0px #e57373; font-size: 1rem; text-decoration: none; }
-        .expense-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-        .expense-input { border: none; border-bottom: 2px solid #eee; background: transparent; padding: 5px; font-size: 1.1rem; outline: none; }
-        .total-banner { background: #fff9c4; border: 3px dashed #fbc02d; border-radius: 12px; padding: 15px; margin-top: 20px; text-align: right; }
-        .sticky-nav { position: sticky; top: 0; z-index: 100; background: #f7f1e3; padding: 12px; display: flex; overflow-x: auto; gap: 12px; border-bottom: 2px solid #dcdde1; }
-        .day-tab { flex-shrink: 0; padding: 6px 18px; background: #fff; border: 2.5px solid #4b3832; border-radius: 20px; font-weight: 900; text-decoration: none; color: inherit; }
+        body { background-color: #fdf6e3; color: #5d4037; font-family: sans-serif; }
+        .timeline-card { background: white; border-radius: 12px; border-left: 5px solid #ff8a80; padding: 20px; margin: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); position: relative; }
+        .time-dot { position: absolute; left: -14px; top: 25px; width: 18px; height: 18px; background: #ff8a80; border: 3px solid white; border-radius: 50%; }
+        .btn-map-link { background: #4285F4; color: white; padding: 8px 12px; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; font-weight: bold; margin-top: 10px; font-size: 0.9rem; }
+        .calc-box { background: #fff9c4; border-radius: 10px; padding: 12px; margin-top: 10px; border: 1px dashed #fbc02d; }
+        .currency-input { border-bottom: 2px solid #ddd; width: 80px; text-align: right; outline: none; background: transparent; font-weight: bold; font-size: 1.1rem; }
+        .sticky-header { position: sticky; top: 0; z-index: 50; background: #fdf6e3; padding: 10px; border-bottom: 1px solid #eee; }
     </style>
 </head>
-<body class="pb-10">
+<body class="pb-20">
 
-    <header class="pt-10 pb-4 text-center">
-        <h1 class="text-4xl font-black text-[#ff6b6b]">2026 家族旅遊紀錄</h1>
-        <p class="mt-2 font-bold text-gray-500 italic">虎尾埒內家 ✈️ 釜山 ➔ 九州</p>
+    <header class="p-6 text-center">
+        <h1 class="text-3xl font-bold">2026 家族旅行計畫</h1>
+        <p class="text-sm text-gray-500">雲林虎尾 ➜ 釜山 ➜ 九州</p>
     </header>
 
-    <div class="sticky-nav">
-        <a href="#d1" class="day-tab">D1 釜山</a>
-        <a href="#d5" class="day-tab">D5 長崎</a>
-        <a href="#d8" class="day-tab">D8 大分</a>
+    <div class="sticky-header flex overflow-x-auto gap-3 no-scrollbar">
+        <button onclick="scrollToDay('d1')" class="px-4 py-2 bg-white border border-orange-200 rounded-full font-bold shrink-0">D1 釜山</button>
+        <button onclick="scrollToDay('d5')" class="px-4 py-2 bg-white border border-orange-200 rounded-full font-bold shrink-0">D5 長崎</button>
+        <button onclick="scrollToDay('d8')" class="px-4 py-2 bg-white border border-orange-200 rounded-full font-bold shrink-0">D8 大分回程</button>
     </div>
 
-    <section id="d1" class="notebook-page">
-        <div class="tape"></div>
-        <h2 class="text-2xl font-black text-pink-500 mb-4">🇰🇷 D1 釜山西面</h2>
-        <div class="space-y-4">
-            <p><a href="https://www.google.com/maps/search/?api=1&query=Queens+Hotel+Seomyeon+Busan" target="_blank" class="btn-nav"><i class="fas fa-map-marker-alt"></i> 皇后酒店導航</a></p>
-            <p><a href="https://www.google.com/maps/search/?api=1&query=Seomyeon+Underground+Shopping+Center" target="_blank" class="btn-nav" style="background:#4cd137;"><i class="fas fa-shopping-cart"></i> 西面地下街導航</a></p>
+    <section id="d1" class="mt-4">
+        <h2 class="px-5 text-xl font-bold text-orange-600 flex items-center gap-2">
+            <i class="fas fa-calendar-day"></i> 2/14 Day 1 釜山 (韓元 0.024)
+        </h2>
+        
+        <div class="timeline-card">
+            <div class="time-dot"></div>
+            <div class="flex justify-between items-start">
+                <h3 class="font-bold text-lg">🏨 釜山西面 Queens Hotel</h3>
+                <span class="text-xs text-gray-400">08:00 AM</span>
+            </div>
+            <p class="text-sm text-gray-500 mt-1">行李先行寄存，飯店位於西面站附近。</p>
+            <a href="https://www.google.com/maps/search/?api=1&query=Queens+Hotel+Seomyeon" target="_blank" class="btn-map-link">
+                <i class="fas fa-directions"></i> 開啟地圖導航
+            </a>
         </div>
 
-        <div class="mt-8 pt-6 border-t-2 border-dashed">
-            <h3 class="font-bold mb-4">💸 隨手記帳 (KRW ➜ TWD)</h3>
-            <div id="list-d1">
-                <div class="expense-row">
-                    <input type="text" placeholder="項目" class="expense-input flex-1">
-                    <input type="number" placeholder="韓元" class="expense-input w-24 cost-input-d1 text-right" oninput="calcTotal('d1', 0.024)">
+        <div class="timeline-card">
+            <div class="time-dot"></div>
+            <h3 class="font-bold text-lg">🛍️ 西面地下街購物</h3>
+            <p class="text-sm text-gray-500 mt-1">2大2小逛街採買，必逛美妝與流行服飾。</p>
+            <a href="https://www.google.com/maps/search/?api=1&query=Seomyeon+Underground+Shopping+Center" target="_blank" class="btn-map-link" style="background: #34A853;">
+                <i class="fas fa-shopping-bag"></i> 前往購物中心
+            </a>
+
+            <div class="calc-box mt-4">
+                <p class="text-xs font-bold text-orange-700 mb-2 underline">💰 此處支出紀錄</p>
+                <div id="items-d1">
+                    <div class="flex items-center gap-2 mb-2">
+                        <input type="text" placeholder="品名" class="text-sm flex-1 bg-transparent border-b border-gray-200">
+                        <input type="number" placeholder="金額" class="currency-input krw-input" oninput="sumTotal('d1', 0.024)">
+                        <span class="text-xs text-gray-400">KRW</span>
+                    </div>
                 </div>
-            </div>
-            <button onclick="addRow('d1', 0.024)" class="w-full py-2 bg-gray-100 rounded-lg mt-2 text-sm">+ 新增項目</button>
-            <div class="total-banner">
-                <p class="text-xl font-black text-red-500">合計: <span id="total-d1">0</span> KRW</p>
-                <p class="text-sm text-gray-500">約 NT$ <span id="nt-d1">0</span></p>
+                <button onclick="addNewItem('d1', 0.024)" class="text-xs text-blue-500 font-bold">+ 新增支出</button>
+                <div class="mt-3 text-right pt-2 border-t border-yellow-200">
+                    <span class="text-sm">合計: <b id="total-d1">0</b> KRW</span>
+                    <span class="text-sm ml-2 text-red-600">≈ NT$ <b id="nt-d1">0</b></span>
+                </div>
             </div>
         </div>
     </section>
 
-    <section id="d5" class="notebook-page">
-        <div class="tape" style="background:rgba(129, 212, 250, 0.4);"></div>
-        <h2 class="text-2xl font-black text-blue-500 mb-4">🇯🇵 D5 長崎行程</h2>
-        <div class="space-y-4">
-            <p><a href="https://www.google.com/maps/search/?api=1&query=Nagasaki+Penguin+Aquarium" target="_blank" class="btn-nav" style="background:#70a1ff;"><i class="fas fa-fish"></i> 企鵝水族館導航</a></p>
-            <p><a href="https://www.google.com/maps/search/?api=1&query=Nagasakiminato+Dejima" target="_blank" class="btn-nav" style="background:#ffa502;"><i class="fas fa-utensils"></i> 海鮮市場長崎港</a></p>
-        </div>
+    <section id="d5" class="mt-10">
+        <h2 class="px-5 text-xl font-bold text-blue-600 flex items-center gap-2">
+            <i class="fas fa-calendar-day"></i> 2/18 Day 5 長崎 (日圓 0.22)
+        </h2>
+        
+        <div class="timeline-card">
+            <div class="time-dot" style="background: #4285F4;"></div>
+            <h3 class="font-bold text-lg">🐧 長崎企鵝水族館</h3>
+            <p class="text-sm text-gray-500 mt-1">小孩最期待的景點，看企鵝遊行。</p>
+            <a href="https://www.google.com/maps/search/?api=1&query=Nagasaki+Penguin+Aquarium" target="_blank" class="btn-map-link">
+                <i class="fas fa-location-arrow"></i> 開啟地圖導航
+            </a>
 
-        <div class="mt-8 pt-6 border-t-2 border-dashed">
-            <h3 class="font-bold mb-4">💸 隨手記帳 (JPY ➜ TWD)</h3>
-            <div id="list-d5">
-                <div class="expense-row">
-                    <input type="text" placeholder="項目" class="expense-input flex-1">
-                    <input type="number" placeholder="日圓" class="expense-input w-24 cost-input-d5 text-right" oninput="calcTotal('d5', 0.22)">
+            <div class="calc-box mt-4" style="background: #e3f2fd; border-color: #90caf9;">
+                <p class="text-xs font-bold text-blue-700 mb-2 underline">💰 水族館門票/餐飲</p>
+                <div id="items-d5">
+                    <div class="flex items-center gap-2 mb-2">
+                        <input type="text" placeholder="項目" class="text-sm flex-1 bg-transparent border-b border-gray-200">
+                        <input type="number" placeholder="金額" class="currency-input jpy-input" oninput="sumTotal('d5', 0.22)">
+                        <span class="text-xs text-gray-400">JPY</span>
+                    </div>
                 </div>
-            </div>
-            <button onclick="addRow('d5', 0.22)" class="w-full py-2 bg-gray-100 rounded-lg mt-2 text-sm">+ 新增項目</button>
-            <div class="total-banner" style="background:#e3f2fd; border-color:#90caf9;">
-                <p class="text-xl font-black text-blue-600">合計: <span id="total-d5">0</span> JPY</p>
-                <p class="text-sm text-gray-500">約 NT$ <span id="nt-d5">0</span></p>
+                <button onclick="addNewItem('d5', 0.22)" class="text-xs text-blue-500 font-bold">+ 新增支出</button>
+                <div class="mt-3 text-right pt-2 border-t border-blue-200">
+                    <span class="text-sm">合計: <b id="total-d5">0</b> JPY</span>
+                    <span class="text-sm ml-2 text-blue-600">≈ NT$ <b id="nt-d5">0</b></span>
+                </div>
             </div>
         </div>
     </section>
 
     <script>
-        function addRow(dayId, rate) {
-            const list = document.getElementById(`list-${dayId}`);
-            const div = document.createElement('div');
-            div.className = 'expense-row';
-            div.innerHTML = `
-                <input type="text" placeholder="項目" class="expense-input flex-1">
-                <input type="number" placeholder="金額" class="expense-input w-24 cost-input-${dayId} text-right" oninput="calcTotal('${dayId}', ${rate})">
-                <button onclick="this.parentElement.remove(); calcTotal('${dayId}', ${rate});" class="text-red-300 ml-2">✕</button>
-            `;
-            list.appendChild(div);
+        function scrollToDay(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
         }
 
-        function calcTotal(dayId, rate) {
-            const inputs = document.querySelectorAll(`.cost-input-${dayId}`);
-            let total = 0;
-            inputs.forEach(input => {
-                total += Number(input.value) || 0;
-            });
-            document.getElementById(`total-${dayId}`).innerText = total.toLocaleString();
-            document.getElementById(`nt-${dayId}`).innerText = Math.round(total * rate).toLocaleString();
-        }
-    </script>
-</body>
-</html>
+        function addNewItem(dayId, rate) {
+            const container = document.getElementById(`items-${dayId}`);
+            const div = document.createElement('div');
+            div.className = 'flex items-center gap-2 mb-2';
+            const unit = rate === 0.024 ? 'KRW' : 'JPY';
+            const inputClass = rate === 0.024 ? 'krw-input' : 'jpy-input';
+            
+            div.innerHTML = `
+                <input type="text" placeholder="項目" class="text-sm flex-1 bg-transparent border-b border-gray-200">
+                <input type
