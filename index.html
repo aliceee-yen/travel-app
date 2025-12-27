@@ -3,122 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2026 家族手帳 App</title>
+    <title>2026 家族旅遊手帳 - 終極修復版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
     <style>
         body { background-color: #f7f1e3; color: #4b3832; font-family: 'ZCOOL KuaiLe', cursive; }
         .notebook-page { background: #fff; border-radius: 8px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); margin: 25px 15px; padding: 30px 20px; position: relative; border-left: 8px solid #ff8a80; }
-        .notebook-page::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 30px; background-image: radial-gradient(#ddd 20%, transparent 20%); background-size: 30px 30px; opacity: 0.3; }
         .tape { width: 120px; height: 35px; background: rgba(255, 235, 59, 0.4); position: absolute; top: -15px; left: 50%; transform: translateX(-50%) rotate(2deg); z-index: 10; border-left: 2px dashed rgba(0,0,0,0.1); border-right: 2px dashed rgba(0,0,0,0.1); }
-        .btn-nav { background: #ff8a80; color: white; padding: 10px 20px; border-radius: 50px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; box-shadow: 3px 3px 0px #e57373; font-size: 1rem; }
-        .expense-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .btn-nav { background: #ff8a80; color: white; padding: 10px 20px; border-radius: 50px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; box-shadow: 3px 3px 0px #e57373; font-size: 1rem; text-decoration: none; }
+        .expense-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
         .expense-input { border: none; border-bottom: 2px solid #eee; background: transparent; padding: 5px; font-size: 1.1rem; outline: none; }
         .total-banner { background: #fff9c4; border: 3px dashed #fbc02d; border-radius: 12px; padding: 15px; margin-top: 20px; text-align: right; }
         .sticky-nav { position: sticky; top: 0; z-index: 100; background: #f7f1e3; padding: 12px; display: flex; overflow-x: auto; gap: 12px; border-bottom: 2px solid #dcdde1; }
-        .day-tab { flex-shrink: 0; padding: 6px 18px; background: #fff; border: 2.5px solid #4b3832; border-radius: 20px; font-weight: 900; }
-        .weather-info { background: #f1f2f6; border-radius: 10px; padding: 5px 12px; font-size: 0.9rem; display: inline-flex; align-items: center; }
+        .day-tab { flex-shrink: 0; padding: 6px 18px; background: #fff; border: 2.5px solid #4b3832; border-radius: 20px; font-weight: 900; text-decoration: none; color: inherit; }
     </style>
 </head>
 <body class="pb-10">
 
     <header class="pt-10 pb-4 text-center">
         <h1 class="text-4xl font-black text-[#ff6b6b]">2026 家族旅遊紀錄</h1>
-        <p class="mt-2 font-bold text-gray-500 italic">2大2小 • 虎尾 ✈️ 釜山 ➔ 九州</p>
+        <p class="mt-2 font-bold text-gray-500 italic">虎尾埒內家 ✈️ 釜山 ➔ 九州</p>
     </header>
 
-    <div class="sticky-nav no-scrollbar">
-        <a href="#d0" class="day-tab">D0 雲林出發</a>
-        <a href="#d1" class="day-tab">D1 抵達釜山</a>
-        <a href="#d5" class="day-tab">D5 長崎企鵝</a>
-        <a href="#d8" class="day-tab">D8 大分回程</a>
+    <div class="sticky-nav">
+        <a href="#d1" class="day-tab">D1 釜山</a>
+        <a href="#d5" class="day-tab">D5 長崎</a>
+        <a href="#d8" class="day-tab">D8 大分</a>
     </div>
-
-    <section id="d0" class="notebook-page">
-        <div class="tape" style="background: rgba(129, 212, 250, 0.4);"></div>
-        <h2 class="text-2xl font-black mb-6 border-b-4 border-blue-100 pb-2">🏠 2/13 跨夜出發</h2>
-        <div class="space-y-6 text-xl">
-            <p>🚗 <span class="text-red-500 font-black">21:30</span> 虎尾埒內家 ➜ 出發</p>
-            <p>🚅 <span class="text-red-500 font-black">22:16</span> 雲林高鐵北上末班車</p>
-            <p>🚇 <span class="text-red-500 font-black">23:20</span> 桃園高鐵站 ➔ 轉機場捷運</p>
-            <div class="mt-8 p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
-                <p class="font-bold text-blue-600">📍 第一站：桃園機場 第一航廈 (T1)</p>
-            </div>
-        </div>
-    </section>
 
     <section id="d1" class="notebook-page">
         <div class="tape"></div>
-        <div class="flex justify-between items-start mb-6">
-            <h2 class="text-2xl font-black text-pink-500">🇰🇷 D1 釜山行程</h2>
-            <div class="weather-info"><i class="fas fa-sun mr-2 text-orange-400"></i>2°C / 10°C</div>
-        </div>
-        <div class="space-y-6 text-xl">
-            <p>✈️ 06:10 抵達金海機場</p>
-            <p><a href="https://nmap.l.hopp.top/QueensHotel" class="btn-nav"><i class="fas fa-map-marked-alt"></i> Queens Hotel 導航</a></p>
-            <p>🛍️ <a href="https://nmap.l.hopp.top/Seomyeon" class="btn-nav" style="background:#4cd137; box-shadow: 3px 3px 0px #44bd32;"><i class="fas fa-shopping-bag"></i> 西面地下街逛街</a></p>
+        <h2 class="text-2xl font-black text-pink-500 mb-4">🇰🇷 D1 釜山西面</h2>
+        <div class="space-y-4">
+            <p><a href="https://www.google.com/maps/search/?api=1&query=Queens+Hotel+Seomyeon+Busan" target="_blank" class="btn-nav"><i class="fas fa-map-marker-alt"></i> 皇后酒店導航</a></p>
+            <p><a href="https://www.google.com/maps/search/?api=1&query=Seomyeon+Underground+Shopping+Center" target="_blank" class="btn-nav" style="background:#4cd137;"><i class="fas fa-shopping-cart"></i> 西面地下街導航</a></p>
         </div>
 
-        <div class="mt-12 border-t-4 border-dotted border-gray-100 pt-6">
-            <h3 class="font-black text-xl mb-4 text-[#ff793f]"><i class="fas fa-edit mr-2"></i>隨手記帳 (韓元 KRW)</h3>
+        <div class="mt-8 pt-6 border-t-2 border-dashed">
+            <h3 class="font-bold mb-4">💸 隨手記帳 (KRW ➜ TWD)</h3>
             <div id="list-d1">
                 <div class="expense-row">
-                    <input type="text" placeholder="買了什麼？" class="expense-input flex-1">
-                    <input type="number" placeholder="金額" class="expense-input w-24 cost-input-d1 text-right" oninput="calcTotal('d1', 0.024)">
-                    <button class="text-red-300" onclick="this.parentElement.remove(); calcTotal('d1', 0.024);"><i class="fas fa-times-circle text-xl"></i></button>
+                    <input type="text" placeholder="項目" class="expense-input flex-1">
+                    <input type="number" placeholder="韓元" class="expense-input w-24 cost-input-d1 text-right" oninput="calcTotal('d1', 0.024)">
                 </div>
             </div>
-            <button onclick="addRow('d1', 0.024)" class="w-full py-3 bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl mt-4 font-black text-gray-400 text-base">+ 新增記帳項目</button>
+            <button onclick="addRow('d1', 0.024)" class="w-full py-2 bg-gray-100 rounded-lg mt-2 text-sm">+ 新增項目</button>
             <div class="total-banner">
-                <p class="text-gray-500 text-sm font-bold">小計金額</p>
-                <p class="text-2xl font-black text-[#ff6b6b]"><span id="total-d1">0</span> KRW</p>
-                <p class="text-lg font-black text-gray-400">≈ NT$ <span id="nt-d1">0</span></p>
+                <p class="text-xl font-black text-red-500">合計: <span id="total-d1">0</span> KRW</p>
+                <p class="text-sm text-gray-500">約 NT$ <span id="nt-d1">0</span></p>
             </div>
         </div>
     </section>
 
     <section id="d5" class="notebook-page">
-        <div class="tape" style="background: rgba(182, 255, 193, 0.4);"></div>
-        <div class="flex justify-between items-start mb-6">
-            <h2 class="text-2xl font-black text-blue-500">🇯🇵 D5 長崎企鵝</h2>
-            <div class="weather-info"><i class="fas fa-cloud-sun mr-2 text-blue-300"></i>4°C / 11°C</div>
-        </div>
-        <div class="space-y-6 text-xl leading-relaxed">
-            <p>🚌 從長崎站搭巴士 (約30min)</p>
-            <p><a href="https://www.google.com/maps/search/?api=1&query=Meganebashi+Bridge0" class="btn-nav" style="background:#70a1ff; box-shadow: 3px 3px 0px #1e90ff;"><i class="fas fa-map-marker-alt"></i> 企鵝水族館門口</a></p>
-            <p class="text-sm font-bold text-gray-400 ml-4">(2大2小推薦停留 3 小時)</p>
-            <p><a href="https://www.google.com/maps/search/?api=1&query=Meganebashi+Bridge1" class="btn-nav" style="background:#ffa502; box-shadow: 3px 3px 0px #ff7f50;"><i class="fas fa-utensils"></i> 長崎港海膽飯</a></p>
+        <div class="tape" style="background:rgba(129, 212, 250, 0.4);"></div>
+        <h2 class="text-2xl font-black text-blue-500 mb-4">🇯🇵 D5 長崎行程</h2>
+        <div class="space-y-4">
+            <p><a href="https://www.google.com/maps/search/?api=1&query=Nagasaki+Penguin+Aquarium" target="_blank" class="btn-nav" style="background:#70a1ff;"><i class="fas fa-fish"></i> 企鵝水族館導航</a></p>
+            <p><a href="https://www.google.com/maps/search/?api=1&query=Nagasakiminato+Dejima" target="_blank" class="btn-nav" style="background:#ffa502;"><i class="fas fa-utensils"></i> 海鮮市場長崎港</a></p>
         </div>
 
-        <div class="mt-12 border-t-4 border-dotted border-gray-100 pt-6">
-            <h3 class="font-black text-xl mb-4 text-[#2f3542]"><i class="fas fa-edit mr-2"></i>隨手記帳 (日圓 JPY)</h3>
+        <div class="mt-8 pt-6 border-t-2 border-dashed">
+            <h3 class="font-bold mb-4">💸 隨手記帳 (JPY ➜ TWD)</h3>
             <div id="list-d5">
                 <div class="expense-row">
-                    <input type="text" placeholder="買了什麼？" class="expense-input flex-1">
-                    <input type="number" placeholder="金額" class="expense-input w-24 cost-input-d5 text-right" oninput="calcTotal('d5', 0.22)">
-                    <button class="text-red-300" onclick="this.parentElement.remove(); calcTotal('d5', 0.22);"><i class="fas fa-times-circle text-xl"></i></button>
+                    <input type="text" placeholder="項目" class="expense-input flex-1">
+                    <input type="number" placeholder="日圓" class="expense-input w-24 cost-input-d5 text-right" oninput="calcTotal('d5', 0.22)">
                 </div>
             </div>
-            <button onclick="addRow('d5', 0.22)" class="w-full py-3 bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl mt-4 font-black text-gray-400 text-base">+ 新增記帳項目</button>
-            <div class="total-banner" style="background: #e1f5fe; border-color: #81d4fa;">
-                <p class="text-gray-500 text-sm font-bold">小計金額</p>
-                <p class="text-2xl font-black text-blue-600"><span id="total-d5">0</span> JPY</p>
-                <p class="text-lg font-black text-gray-400">≈ NT$ <span id="nt-d5">0</span></p>
-            </div>
-        </div>
-    </section>
-
-    <section id="d8" class="notebook-page">
-        <div class="tape"></div>
-        <h2 class="text-2xl font-black mb-6 text-gray-700">✈️ 2/21 大分回家</h2>
-        <div class="space-y-6 text-xl">
-            <p>🛍️ 10:00 大分 AMU PLAZA 採買</p>
-            <div class="p-6 bg-pink-50 border-4 border-double border-pink-200 rounded-2xl">
-                <p class="font-black text-pink-600 text-2xl">虎航 IT751 (T1)</p>
-                <p class="mt-2">14:30 抵達大分機場報到</p>
-                <p class="mt-1">16:30 起飛 ➜ 18:10 桃園 T1</p>
+            <button onclick="addRow('d5', 0.22)" class="w-full py-2 bg-gray-100 rounded-lg mt-2 text-sm">+ 新增項目</button>
+            <div class="total-banner" style="background:#e3f2fd; border-color:#90caf9;">
+                <p class="text-xl font-black text-blue-600">合計: <span id="total-d5">0</span> JPY</p>
+                <p class="text-sm text-gray-500">約 NT$ <span id="nt-d5">0</span></p>
             </div>
         </div>
     </section>
@@ -126,20 +83,22 @@
     <script>
         function addRow(dayId, rate) {
             const list = document.getElementById(`list-${dayId}`);
-            const row = document.createElement('div');
-            row.className = 'expense-row';
-            row.innerHTML = `
+            const div = document.createElement('div');
+            div.className = 'expense-row';
+            div.innerHTML = `
                 <input type="text" placeholder="項目" class="expense-input flex-1">
                 <input type="number" placeholder="金額" class="expense-input w-24 cost-input-${dayId} text-right" oninput="calcTotal('${dayId}', ${rate})">
-                <button class="text-red-300" onclick="this.parentElement.remove(); calcTotal('${dayId}', ${rate});"><i class="fas fa-times-circle text-xl"></i></button>
+                <button onclick="this.parentElement.remove(); calcTotal('${dayId}', ${rate});" class="text-red-300 ml-2">✕</button>
             `;
-            list.appendChild(row);
+            list.appendChild(div);
         }
 
         function calcTotal(dayId, rate) {
             const inputs = document.querySelectorAll(`.cost-input-${dayId}`);
             let total = 0;
-            inputs.forEach(input => { total += Number(input.value) || 0; });
+            inputs.forEach(input => {
+                total += Number(input.value) || 0;
+            });
             document.getElementById(`total-${dayId}`).innerText = total.toLocaleString();
             document.getElementById(`nt-${dayId}`).innerText = Math.round(total * rate).toLocaleString();
         }
