@@ -3,86 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>2026 跨國親子大冒險</title>
+    <title>2026 跨國冒險 App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --korea-blue: #0047a0; --japan-red: #bc002d; --hand-tan: #fdfaf5; }
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: var(--hand-tan); color: #333; }
+        :root { --main-bg: #fefaf0; --sketch-black: #333; }
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: var(--main-bg); color: var(--sketch-black); overflow-x: hidden; }
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .sketch-border { border: 2px solid #333; border-radius: 15px 50px 30px 5px/50px 30px 5px 15px; }
-        .day-tab { scroll-snap-align: start; flex-shrink: 0; }
-        .story-card { background: #fffdf0; border-left: 5px solid #ffcc00; }
-        .parent-note { background: #f0f7ff; border-left: 5px solid #007bff; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .sketch-card { background: white; border: 2.5px solid var(--sketch-black); border-radius: 12px 40px 15px 35px/35px 15px 40px 12px; transition: transform 0.1s; }
+        .sketch-card:active { transform: scale(0.98); }
+        .day-btn.active { background-color: var(--sketch-black); color: white; border-color: var(--sketch-black); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .parent-tag { background: #e0f2fe; color: #0369a1; border-radius: 4px; padding: 2px 6px; font-weight: bold; font-size: 11px; }
+        .story-bubble { background: #fffbeb; border-left: 4px solid #f59e0b; padding: 10px; font-style: italic; font-size: 13px; }
     </style>
 </head>
-<body class="pb-24">
+<body class="pb-28">
 
-    <header class="bg-white border-b-2 border-slate-800 p-6 pt-12 text-center shadow-sm">
-        <h1 class="text-2xl font-bold" style="font-family: 'ZCOOL KuaiLe';">🚢 釜山 ➔ 九州冒險日誌</h1>
-        <div class="flex justify-center gap-2 mt-2">
-            <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">KR 🇰🇷</span>
-            <span class="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded">JP 🇯🇵</span>
-        </div>
+    <header class="bg-white border-b-4 border-black p-6 pt-12 text-center shadow-sm">
+        <h1 class="text-3xl font-bold" style="font-family: 'ZCOOL KuaiLe';">🦖 跨國大冒險</h1>
+        <p class="text-xs mt-2 font-bold tracking-widest text-gray-400">YUNLIN ➔ BUSAN ➔ KYUSHU</p>
     </header>
 
     <main class="p-4 max-w-md mx-auto">
         
         <section id="plan" class="tab-content active">
-            <div class="flex overflow-x-auto gap-2 pb-4 no-scrollbar mb-4" id="daySelector">
-                <button onclick="showDay(0)" class="day-btn bg-slate-800 text-white px-4 py-2 rounded-full text-sm whitespace-nowrap">D0 出發</button>
-                <button onclick="showDay(1)" class="day-btn bg-white border border-slate-300 px-4 py-2 rounded-full text-sm whitespace-nowrap">D1 釜山</button>
-                <button onclick="showDay(2)" class="day-btn bg-white border border-slate-300 px-4 py-2 rounded-full text-sm whitespace-nowrap">D2 海雲台</button>
-                <button onclick="showDay(3)" class="day-btn bg-white border border-slate-300 px-4 py-2 rounded-full text-sm whitespace-nowrap">D3 渡輪</button>
-                <button onclick="showDay(4)" class="day-btn bg-white border border-slate-300 px-4 py-2 rounded-full text-sm whitespace-nowrap">D4 長崎</button>
-                <button onclick="showDay(5)" class="day-btn bg-white border border-slate-300 px-4 py-2 rounded-full text-sm whitespace-nowrap">D5 企鵝</button>
-                <button onclick="showDay(6)" class="day-btn bg-white border border-slate-300 px-4 py-2 rounded-full text-sm whitespace-nowrap">D6 自駕</button>
-                <button onclick="showDay(7)" class="day-btn bg-white border border-slate-300 px-4 py-2 rounded-full text-sm whitespace-nowrap">D7 動物園</button>
-                <button onclick="showDay(8)" class="day-btn bg-white border border-slate-300 px-4 py-2 rounded-full text-sm whitespace-nowrap">D8 回家</button>
-            </div>
-
-            <div id="dayContent" class="space-y-4 text-sm">
+            <div class="flex overflow-x-auto gap-2 pb-4 no-scrollbar mb-4" id="dayNav">
                 </div>
+            <div id="dayContent" class="space-y-5"></div>
         </section>
 
         <section id="story" class="tab-content">
-            <h2 class="text-xl font-bold mb-4 italic">📖 搗搗專屬故事時間</h2>
-            <div id="storyList" class="space-y-4">
-                </div>
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-wand-magic-sparkles text-yellow-500"></i> 導遊故事書
+            </h2>
+            <div id="storyContent" class="space-y-4"></div>
         </section>
 
         <section id="wallet" class="tab-content">
-            <div class="sketch-border bg-white p-6 shadow-md mb-6">
-                <h3 class="font-bold mb-2">💰 匯率快換 (TWD 0.21)</h3>
-                <input id="jpAmt" type="number" placeholder="輸入日幣/韓元" class="w-full p-3 border-2 border-slate-800 rounded-lg mb-2">
-                <div class="text-right font-bold text-orange-600">約 NT$ <span id="twResult">0</span></div>
-            </div>
-            <div id="recordList" class="space-y-2 text-sm">
+            <div class="sketch-card p-6 mb-6">
+                <h3 class="font-bold mb-4">💰 隨手記帳</h3>
+                <div class="space-y-4">
+                    <input id="jpAmt" type="number" placeholder="金額 (日幣/韓元)" class="w-full p-3 border-2 border-black rounded-lg focus:outline-none">
+                    <input id="itemDesc" type="text" placeholder="買了什麼？" class="w-full p-3 border-2 border-black rounded-lg focus:outline-none">
+                    <div class="flex justify-between items-center px-1">
+                        <span class="text-xs font-bold text-gray-400">概估匯率: 0.21 / 0.024</span>
+                        <button onclick="addRecord()" class="bg-black text-white px-6 py-2 rounded-full font-bold">記錄</button>
+                    </div>
                 </div>
+            </div>
+            <div id="recordList" class="space-y-2"></div>
         </section>
 
-        <section id="info" class="tab-content">
-            <div class="space-y-4">
-                <div class="bg-blue-600 text-white p-4 sketch-border">
-                    <h3 class="font-bold"><i class="fa-solid fa-phone"></i> 緊急聯絡</h3>
-                    <p class="text-xs mt-1">韓國: 112(警), 119(救護)</p>
-                    <p class="text-xs">日本: 110(警), 119(救護)</p>
-                </div>
-                <div class="bg-white p-4 sketch-border">
-                    <h3 class="font-bold mb-2">🚗 自駕密語</h3>
-                    <p class="text-xs">加滿油：Regular Man-tan</p>
-                    <p class="text-xs">我要折扣卡：Nagasaki Discount Card o kudasai</p>
-                </div>
-            </div>
-        </section>
     </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-slate-800 flex justify-around items-center py-3 pb-8 shadow-lg z-50">
-        <button onclick="switchTab('plan')" class="nav-btn text-slate-800 flex flex-col items-center">
-            <i class="fa-solid fa-map-location-dot"></i><span class="text-[10px] mt-1">行程</span>
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t-4 border-black flex justify-around items-center py-4 pb-10 z-50">
+        <button onclick="switchTab('plan')" class="nav-btn text-black flex flex-col items-center">
+            <i class="fa-solid fa-map"></i><span class="text-[10px] mt-1 font-bold">行程表</span>
         </button>
-        <button onclick="switchTab('story')" class="nav-btn text-slate-400 flex flex-col items-center">
-            <i class="fa-solid fa-book-open
+        <button onclick="switchTab('story')" class="nav-btn text-gray-300 flex flex-col items-center">
+            <i class="fa-solid fa-face-smile"></i><span class="text-[10px] mt-1 font-bold">說故事</span>
+        </button>
+        <button onclick="switchTab('wallet')" class="nav-btn text-gray-300 flex flex-col items-center">
+            <i class="fa-solid fa-coins"></i><span class="text-[10px] mt-1 font-bold">小錢包</span>
+        </button>
+    </nav>
+
+    <script>
+        const trip = [
+            { d: "D0", date: "2/13", country: "TW", items: [
+                { time: "21:30", act: "雲林虎尾出發", note: "預約計程車，穿好保暖衣物", story: "我們要去韓國和日本喔！它們離得很近，很久以前的人是搭船做生意的！", loc: "雲林縣虎尾鎮" },
+                { time: "22:16", act: "雲林高鐵 (末班)", note: "22:16發➔23:18著", story: "台灣高鐵的技術跟日本買的，新幹線是高鐵的爺爺！", loc: "雲林高鐵站" }
+            ]},
+            { d: "D1", date: "2/14", country: "KR", items: [
+                { time: "06:10", act: "抵達釜山金海機場", note: "Money Box換錢、Q-CODE準備", story: "韓文圓圈叉叉是世宗大王發明的，模仿嘴巴形狀喔！", loc: "Gimhae International Airport" },
+                { time: "08:00", act: "松亭三代豬肉湯飯", note: "搗搗點不辣。蝦醬調味，韭菜加湯。", story: "這是「戰爭留下來的美食」，以前沒錢買肉才用骨頭熬湯。", loc: "Songjeong Samdae Gukbap" },
+                { time: "16:00", act: "飯店補眠 (全家充電)", note: "睡2小時應付晚上人潮", story: "這叫「充電時間」，睡飽了才有體力玩！", loc: "Seomyeon Station" }
+            ]},
+            { d: "D2", date: "2/15", country: "KR", items: [
+                { time: "10:30", act: "天空膠囊列車", note: "提早兩週官網搶票 (尾浦➔青沙浦)", story: "這是積木車車！用舊鐵路改裝的，是聰明的廢物利用喔。", loc: "Mipo Station" },
+                { time: "13:00", act: "海理團路逛街", note: "Dualholic、人生四格拍貼", story: "一定要吃糖餅！那是韓國小朋友最愛的點心。", loc: "Haeridan-gil" }
+            ]},
+            { d: "D3", date: "2/16", country: "KR", items: [
+                { time: "09:30", act: "甘川洞文化村", note: "小王子拍照、集章", story: "房子漆成彩色是因為這樣才不會覺得生活灰暗，也容易認出家門！", loc: "Gamcheon Culture Village" },
+                { time: "17:00", act: "釜山港登船", note: "新山茶花號。17:30前完成報到。", story: "船是海上飯店，明天醒來大家就會說日文囉！", loc: "Busan Port International Passenger Terminal" }
+            ]},
+            { d: "D4", date: "2/17", country: "JP", items: [
+                { time: "09:00", act: "博多車站買票", note: "搶訂787系包廂。買兒童票給搗搗。", story: "日本火車便當是冷的！但包裝超漂亮，選一個吧！", loc: "Hakata Station" },
+                { time: "15:30", act: "平和公園", note: "原爆資料館➔平和公園", story: "那個雕像手指著天說「恐怖從天而降」，手平伸說「我們要和平」。", loc: "Nagasaki Peace Park" }
+            ]},
+            { d: "D6", date: "2/19", country: "JP", items: [
+                { time: "08:30", act: "取車自駕 (NIPPON)", note: "檢查雪胎、ETC卡。右駕挑戰開始！", story: "日本開車方向盤在右邊！大家要當爸爸的導航小幫手喔！", loc: "AMU PLAZA Nagasaki" },
+                { time: "17:00", act: "天瀨溫泉 溪仙閣", note: "國道210轉進路窄慢行", story: "溫泉就在河邊喔！以前的人都是直接在河邊洗澡的！", loc: "天ヶ瀬温泉 渓仙閣" }
+            ]},
+            { d: "D7", date: "2/20", country: "JP", items: [
+                { time: "09:40", act: "九州自然動物園", note: "預約Jungle Bus。餵肉夾子拿穩。", story: "今天是我們被關在籠子車裡給獅子看！獅子力氣很大喔！", loc: "African Safari" },
+                { time: "15:45", act: "金鱗湖", note: "看水中鳥居。溫泉水混地下水會冒煙。", story: "湖面會冒煙像仙境一樣，是因為湖裡有熱熱的溫泉喔。", loc: "Kinrin Lake" }
+            ]},
+            { d: "D8", date: "2/21", country: "JP", items: [
+                { time: "12:30", act: "午餐：豐後茶屋", note: "大分雞肉天婦羅 (Toriten)", story: "大分雞肉天婦羅穿著軟麵衣，是媽媽為了讓雞肉軟嫩發明的。", loc: "Oita Station" },
+                { time: "16:30", act: "大分機場起飛", note: "班機 IT241。回家囉！", story: "這次我們換了10種交通工具，是交通工具大集合之旅！", loc: "Oita Airport" }
+            ]}
+        ];
+
+        function openMap(loc, country) {
+            let url = "";
+            if (country === "KR") {
+                url = `https://map.naver.com/v5/search/${encodeURIComponent(loc)}`;
+            } else {
+                url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc)}`;
+            }
+            window.open(url, '_blank');
+        }
+
+        function showDay(idx) {
+            const data = trip[idx];
+            const nav = document.getElementById('dayNav');
+            const content = document.getElementById('dayContent');
+            const storyBox = document.getElementById('storyContent');
+
+            // Render Nav Buttons
+            nav.innerHTML = trip.map((d, i) => `
+                <button onclick="showDay(${i})" class="day-btn flex-shrink-0 px-4 py-2 border-2 border-black rounded-full text-xs font-bold ${i === idx ? 'active' : 'bg-white'}">
+                    ${d.d} ${d.date}
+                </button>
+            `).join('');
+
+            // Render Items
+            content.innerHTML = data.items.map(item => `
+                <div class="sketch-card p-5 relative overflow-hidden">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-xs font-black bg-yellow-300 px-2 py-1 rounded border border-black">${item.time}</span>
+                        <button onclick="openMap('${item.loc}', '${data.country}')" class="text-blue-500 text-lg">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </button>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">${item.act}</h3>
+                    <div class="text-xs leading-relaxed text-gray-600 mb-2">
+                        <span class="parent-tag">🎒 家長</span> ${item.note}
+                    </div>
+                </div>
+            `).join('');
+
+            // Render Stories (all days for browsing)
+            storyBox.innerHTML = trip[idx].items.map(item => `
+                <div class="sketch-card p-4 text-sm">
+                    <div class="font-bold text-orange-600 mb-2 underline">關於「${item.act}」</div>
+                    <p class="story-bubble">"${item.story}"</p>
+                </div>
+            `).join('');
+        }
+
+        function switchTab(id) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.replace('text-black', 'text-gray-300'));
+            event.currentTarget.classList.replace('text-gray-300', 'text-black');
+            window.scrollTo(0,0);
+        }
+
+        function addRecord() {
+            const amt = document.getElementById('jpAmt').value;
+            const desc = document.getElementById('itemDesc').value || '支出';
+            if(!amt) return;
+            const records = JSON.parse(localStorage.getItem('trip_wallet') || '[]');
+            records.push({ desc, amt, date: new Date().toLocaleTimeString() });
+            localStorage.setItem('trip_wallet', JSON.stringify(records));
+            document.getElementById('jpAmt').value = '';
+            document.getElementById('itemDesc').value = '';
+            renderWallet();
+        }
+
+        function renderWallet() {
+            const records = JSON.parse(localStorage.getItem('trip_wallet') || '[]');
+            document.getElementById('recordList').innerHTML = records.map(r => `
+                <div class="bg-white p-3 border-2 border-black rounded-lg flex justify-between items-center text-sm">
+                    <span class="font-bold">${r.desc}</span>
+                    <span class="font-mono">¥${r.amt}</span>
+                </div>
+            `).reverse().join('');
+        }
+
+        // Init
+        showDay(0);
+        renderWallet();
+    </script>
+</body>
+</html>
