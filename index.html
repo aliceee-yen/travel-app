@@ -8,464 +8,477 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg-paper: #fffdf5; --ink: #2c2c2c; --kr-blue: #0047a0; --jp-red: #d32f2f; }
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: var(--bg-paper); color: var(--ink); -webkit-tap-highlight-color: transparent; padding-bottom: 100px; }
+        :root { --bg-paper: #fffdf5; --ink: #2c2c2c; --kr-blue: #3b82f6; --jp-red: #ef4444; }
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: var(--bg-paper); color: var(--ink); -webkit-tap-highlight-color: transparent; padding-bottom: 110px; }
         .font-header { font-family: 'ZCOOL KuaiLe', cursive; }
         
-        /* 手繪風格邊框 */
+        /* 手繪風格元件 */
         .sketch-box { 
             background: white; 
             border: 2px solid var(--ink); 
-            border-radius: 2px 2px 2px 2px;
-            box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            box-shadow: 3px 3px 0px rgba(0,0,0,0.15);
+            transition: all 0.1s;
         }
-        .sketch-rounded {
-            border: 2px solid var(--ink);
-            border-radius: 15px 255px 15px 25px / 255px 15px 225px 15px;
-        }
+        .sketch-box:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0px rgba(0,0,0,0.15); }
+        
+        /* 標籤 */
+        .tag-kr { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+        .tag-jp { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
 
-        /* 分頁動畫 */
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* 天氣動畫 */
+        .weather-loading { animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
 
-        /* 隱藏卷軸但可滑動 */
+        /* 隱藏卷軸 */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* 自定義 Checkbox */
-        .custom-checkbox:checked + div { text-decoration: line-through; color: #9ca3af; }
-        .custom-checkbox { accent-color: var(--ink); width: 1.2rem; height: 1.2rem; }
+        /* Modal */
+        .modal-overlay { background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); }
     </style>
 </head>
 <body>
 
-    <header class="bg-white border-b-2 border-gray-800 p-4 pt-12 text-center sticky top-0 z-40 shadow-sm">
-        <h1 class="text-2xl font-header tracking-wider">🦕 跨國親子大冒險</h1>
-        <div class="flex justify-center gap-2 mt-1 text-xs font-bold text-gray-500">
-            <span>2026.02.13</span> <i class="fa-solid fa-arrow-right"></i> <span>02.21</span>
+    <header class="bg-white border-b-2 border-gray-800 pt-12 pb-4 px-4 sticky top-0 z-40 shadow-sm flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-header tracking-wider">🦕 跨國冒險</h1>
+            <div class="text-xs text-gray-500 font-bold mt-1">2026.02.13 <i class="fa-solid fa-arrow-right text-xs"></i> 02.21</div>
         </div>
+        <button onclick="resetData()" class="text-xs text-gray-300 border border-gray-200 px-2 py-1 rounded hover:text-red-500">重置</button>
     </header>
 
     <main class="p-4 max-w-lg mx-auto">
         
-        <section id="plan" class="tab-content active">
-            <div class="flex overflow-x-auto gap-2 pb-2 mb-4 no-scrollbar" id="dayNav">
-                </div>
+        <section id="plan" class="tab-content block">
+            <div class="flex overflow-x-auto gap-2 pb-2 mb-4 no-scrollbar" id="dayNav"></div>
 
-            <div id="dailyContainer" class="space-y-4">
-                </div>
-        </section>
-
-        <section id="wallet" class="tab-content">
-            <div class="sketch-box p-4 mb-6 rounded-xl relative overflow-hidden">
-                <div class="flex justify-between items-center mb-3">
-                    <h3 class="font-header text-lg"><i class="fa-solid fa-calculator"></i> 匯率換算</h3>
-                    <div class="flex bg-gray-100 rounded-lg p-1 text-xs font-bold">
-                        <button onclick="setCurrency('KR')" id="btn-KR" class="px-3 py-1 rounded transition-all bg-white shadow text-blue-700">韓幣 ₩</button>
-                        <button onclick="setCurrency('JP')" id="btn-JP" class="px-3 py-1 rounded transition-all text-gray-500">日幣 ¥</button>
+            <div id="weatherBoard" class="mb-4 bg-gradient-to-r from-blue-50 to-orange-50 p-3 rounded-lg border border-gray-200 flex justify-between items-center hidden">
+                <div class="flex items-center gap-3">
+                    <div id="w-icon" class="text-3xl">⛅</div>
+                    <div>
+                        <div id="w-city" class="text-xs font-bold text-gray-500 uppercase tracking-wide">LOCATION</div>
+                        <div class="flex items-baseline gap-1">
+                            <span id="w-temp" class="text-2xl font-black text-gray-800">--</span>
+                            <span class="text-sm">°C</span>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="flex items-end gap-2 mb-2">
-                    <div class="flex-1">
-                        <label class="text-xs text-gray-500 font-bold ml-1">外幣金額</label>
-                        <input id="calcInput" type="number" class="w-full text-2xl font-bold p-2 border-b-2 border-gray-300 focus:border-black outline-none bg-transparent" placeholder="0">
-                    </div>
-                    <div class="pb-2 text-xl text-gray-400">×</div>
-                    <div class="w-20">
-                        <label class="text-xs text-gray-500 font-bold ml-1">匯率</label>
-                        <input id="calcRate" type="number" step="0.001" class="w-full text-center p-2 border-b-2 border-gray-300 outline-none bg-transparent font-mono text-sm" value="0.024">
-                    </div>
-                </div>
-                <div class="bg-gray-50 p-3 rounded text-right">
-                    <span class="text-xs text-gray-500">約台幣</span>
-                    <div class="text-2xl font-bold text-green-600">NT$ <span id="calcResult">0</span></div>
+                <div class="text-right">
+                    <div id="w-desc" class="text-xs font-bold text-blue-600 bg-white px-2 py-1 rounded shadow-sm">正在取得天氣...</div>
                 </div>
             </div>
 
-            <div class="mb-6">
-                <h3 class="font-header text-lg mb-2 pl-1">✏️ 記一筆</h3>
-                <div class="flex gap-2 mb-2">
-                    <input id="expenseDesc" type="text" placeholder="品項 (如: 烤肉)" class="flex-1 p-3 border-2 border-gray-800 rounded-lg outline-none">
-                    <input id="expenseAmt" type="number" placeholder="外幣金額" class="w-24 p-3 border-2 border-gray-800 rounded-lg outline-none">
-                </div>
-                <button onclick="addExpense()" class="w-full bg-gray-800 text-white font-bold py-3 rounded-lg active:scale-95 transition">加入今日帳本</button>
-            </div>
-
-            <div id="walletList" class="space-y-6">
-                </div>
+            <div id="dailyContainer" class="space-y-4"></div>
             
-            <button onclick="clearExpenses()" class="w-full text-center text-xs text-gray-400 mt-8 underline">清除所有記帳資料</button>
+            <button onclick="openEditModal()" class="w-full mt-6 py-3 border-2 border-dashed border-gray-300 text-gray-400 rounded-lg font-bold hover:border-gray-800 hover:text-gray-800 transition-colors">
+                <i class="fa-solid fa-plus"></i> 新增行程
+            </button>
         </section>
 
-        <section id="shopping" class="tab-content">
-            <h2 class="font-header text-xl mb-4 pl-1">🛍️ 必買清單</h2>
+        <section id="translate" class="tab-content hidden">
+            <h2 class="font-header text-xl mb-4 pl-1 border-l-4 border-yellow-400">🗣️ 生存語音包</h2>
             
             <div class="flex gap-2 mb-4">
-                <input id="shopInput" type="text" placeholder="輸入想買的東西..." class="flex-1 p-3 border-2 border-gray-800 rounded-lg outline-none shadow-sm">
-                <button onclick="addShopItem()" class="bg-yellow-400 border-2 border-gray-800 text-black px-4 rounded-lg font-bold shadow-sm active:translate-y-1"><i class="fa-solid fa-plus"></i></button>
+                <button onclick="renderPhrases('KR')" id="btn-lang-kr" class="flex-1 py-2 rounded-lg font-bold border-2 border-gray-800 bg-blue-50 text-blue-800">🇰🇷 韓語</button>
+                <button onclick="renderPhrases('JP')" id="btn-lang-jp" class="flex-1 py-2 rounded-lg font-bold border-2 border-gray-200 text-gray-400">🇯🇵 日語</button>
             </div>
 
-            <div id="shopList" class="space-y-2">
-                </div>
+            <div id="phraseList" class="space-y-3"></div>
         </section>
 
-        <section id="info" class="tab-content">
-            <h2 class="font-header text-xl mb-4 pl-1">ℹ️ 實用資訊</h2>
+        <section id="wallet" class="tab-content hidden">
+            <h2 class="font-header text-xl mb-4 pl-1 border-l-4 border-green-500">💰 記帳與匯率</h2>
             
-            <div class="grid grid-cols-2 gap-3 mb-4">
-                <div class="sketch-box p-3 bg-blue-50">
-                    <div class="text-blue-800 font-bold mb-1"><i class="fa-solid fa-phone"></i> 韓國報警</div>
-                    <div class="text-2xl font-black">112</div>
+            <div class="sketch-box p-4 mb-6 bg-gray-50">
+                <div class="flex justify-between mb-2 text-xs font-bold text-gray-500">
+                    <span>匯率換算 (自訂)</span>
+                    <span id="currentRateLabel">1 : 0.22</span>
                 </div>
-                <div class="sketch-box p-3 bg-red-50">
-                    <div class="text-red-800 font-bold mb-1"><i class="fa-solid fa-phone"></i> 日本報警</div>
-                    <div class="text-2xl font-black">110</div>
+                <div class="flex gap-2 mb-3">
+                    <button onclick="setCurrency('KR')" class="flex-1 py-1 text-xs border border-gray-300 rounded bg-white hover:bg-blue-50">韓幣 ₩</button>
+                    <button onclick="setCurrency('JP')" class="flex-1 py-1 text-xs border border-gray-300 rounded bg-white hover:bg-red-50">日幣 ¥</button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input id="calcInput" type="number" placeholder="外幣" class="flex-1 text-xl font-bold p-2 border-b-2 border-gray-300 bg-transparent outline-none">
+                    <i class="fa-solid fa-arrow-right text-gray-400"></i>
+                    <div class="text-xl font-bold text-green-700">NT$ <span id="calcResult">0</span></div>
                 </div>
             </div>
 
-            <div class="sketch-box p-4 mb-4">
-                <h3 class="font-bold mb-2 border-b pb-2">🚗 自駕小幫手</h3>
-                <p class="mb-2"><span class="bg-black text-white px-2 py-0.5 rounded text-xs">加油</span> Regular Man-tan (紅)</p>
-                <p><span class="bg-black text-white px-2 py-0.5 rounded text-xs">導航</span> 請幫我設定 MapCode</p>
+            <div class="flex gap-2 mb-4">
+                <input id="expenseDesc" type="text" placeholder="品項" class="flex-1 p-3 border-2 border-gray-800 rounded-lg outline-none">
+                <input id="expenseAmt" type="number" placeholder="金額" class="w-24 p-3 border-2 border-gray-800 rounded-lg outline-none">
+                <button onclick="addExpense()" class="bg-gray-800 text-white px-4 rounded-lg"><i class="fa-solid fa-plus"></i></button>
             </div>
+
+            <div id="walletList" class="space-y-3 pb-8"></div>
+            <button onclick="clearExpenses()" class="text-xs text-gray-400 underline w-full text-center">清空帳本</button>
         </section>
 
     </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 flex justify-around items-center py-3 pb-8 z-50 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
-        <button onclick="switchTab('plan')" class="nav-btn text-gray-800 flex flex-col items-center w-1/4">
-            <i class="fa-solid fa-calendar-days text-xl mb-1"></i><span class="text-[10px] font-bold">行程</span>
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 flex justify-around items-center py-3 pb-8 z-50">
+        <button onclick="switchTab('plan')" class="nav-btn text-gray-800 w-1/3 flex flex-col items-center">
+            <i class="fa-solid fa-map-location-dot text-xl mb-1"></i><span class="text-[10px] font-bold">行程</span>
         </button>
-        <button onclick="switchTab('wallet')" class="nav-btn text-gray-400 flex flex-col items-center w-1/4">
-            <i class="fa-solid fa-wallet text-xl mb-1"></i><span class="text-[10px] font-bold">記帳</span>
+        <button onclick="switchTab('translate')" class="nav-btn text-gray-400 w-1/3 flex flex-col items-center">
+            <i class="fa-solid fa-language text-xl mb-1"></i><span class="text-[10px] font-bold">翻譯</span>
         </button>
-        <button onclick="switchTab('shopping')" class="nav-btn text-gray-400 flex flex-col items-center w-1/4">
-            <i class="fa-solid fa-cart-shopping text-xl mb-1"></i><span class="text-[10px] font-bold">必買</span>
-        </button>
-        <button onclick="switchTab('info')" class="nav-btn text-gray-400 flex flex-col items-center w-1/4">
-            <i class="fa-solid fa-circle-info text-xl mb-1"></i><span class="text-[10px] font-bold">資訊</span>
+        <button onclick="switchTab('wallet')" class="nav-btn text-gray-400 w-1/3 flex flex-col items-center">
+            <i class="fa-solid fa-wallet text-xl mb-1"></i><span class="text-[10px] font-bold">錢包</span>
         </button>
     </nav>
 
+    <div id="editModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-sm p-6 rounded-2xl shadow-2xl border-2 border-gray-800">
+            <h3 class="font-header text-xl mb-4" id="modalTitle">新增行程</h3>
+            <input type="hidden" id="editIndex">
+            <div class="space-y-3">
+                <div>
+                    <label class="text-xs font-bold text-gray-500">時間</label>
+                    <input id="modalTime" type="time" class="w-full p-2 border border-gray-300 rounded bg-gray-50">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-500">標題 (地點)</label>
+                    <input id="modalAct" type="text" class="w-full p-2 border border-gray-300 rounded">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-500">備註</label>
+                    <textarea id="modalNote" rows="3" class="w-full p-2 border border-gray-300 rounded"></textarea>
+                </div>
+            </div>
+            <div class="flex gap-2 mt-6">
+                <button onclick="closeModal()" class="flex-1 py-3 bg-gray-100 font-bold rounded-lg text-gray-500">取消</button>
+                <button onclick="saveItem()" class="flex-1 py-3 bg-gray-800 text-white font-bold rounded-lg">儲存</button>
+            </div>
+            <button onclick="deleteItem()" id="btnDelete" class="w-full mt-2 text-red-500 text-xs py-2 hidden">刪除此項目</button>
+        </div>
+    </div>
+
     <script>
-        // --- 資料設定 ---
-        const tripData = [
-            { id: 0, date: "2/13 (五)", loc: "Yunlin", country: "TW", title: "第一階段：台灣出發", weatherCity: "Yunlin", items: [
-                { time: "21:30", title: "雲林虎尾出發", note: "預約計程車。請提前預留緩衝時間，備妥保暖衣物手持。" },
-                { time: "22:16", title: "雲林高鐵 (末班)", note: "22:16發 ➔ 23:18 桃園著。下車衝機捷或計程車。" },
-                { time: "23:45", title: "前往桃機 T1", note: "3樓出境大廳。半夜很睏，請抓緊時間休息儲存體力。" }
+        // --- 核心資料 ---
+        // 預設行程 (如果 localStorage 沒資料就用這個)
+        const defaultTrip = [
+            { d: "D0", date: "2/13", week:"(五)", city: "Yunlin", lat: 23.7, lon: 120.4, country: "TW", items: [
+                { time: "21:30", act: "雲林虎尾出發", note: "預約計程車，保暖衣物手持" },
+                { time: "22:16", act: "雲林高鐵", note: "末班車前往桃園 (23:18著)" }
             ]},
-            { id: 1, date: "2/14 (六)", loc: "Busan", country: "KR", title: "釜山西面 (情人節)", weatherCity: "Busan", items: [
-                { time: "06:10", title: "抵達金海機場", note: "Money Box換錢(06:00開)。出大門會冷，幫小孩穿發熱衣。準備護照/Q-CODE。" },
-                { time: "07:15", title: "Jumbo Taxi", note: "約₩35,000。4人+行李務必搭大型車。先去飯店寄放行李。" },
-                { time: "08:00", title: "松亭三代豬肉湯飯", note: "西面市場。給小孩點不辣。蝦醬調鹹淡，韭菜加湯。" },
-                { time: "09:30", title: "釜田市場 & 市民公園", note: "有超大遊樂場放電。若太冷就去咖啡廳。" },
-                { time: "12:30", title: "午餐：三五亭人蔘雞", note: "西面站附近。雞肉燉很爛，適合補體力。" },
-                { time: "16:00", title: "飯店補眠 (重要)", note: "紅眼班機後全家會很睏，務必睡2小時，才能應付晚上人潮。" },
-                { time: "18:30", title: "晚餐：釜山烤肋排", note: "飯店斜對面。情人節會排隊，爸爸先去排。點原味給小孩。" }
+            { d: "D1", date: "2/14", week:"(六)", city: "Busan", lat: 35.17, lon: 129.07, country: "KR", items: [
+                { time: "06:10", act: "金海機場抵達", note: "Money Box 換錢、Q-CODE" },
+                { time: "08:00", act: "松亭三代豬肉湯飯", note: "西面市場。點不辣給小孩" },
+                { time: "12:30", act: "三五亭人蔘雞", note: "西面站附近，午餐補體力" }
             ]},
-            { id: 2, date: "2/15 (日)", loc: "Haeundae", country: "KR", title: "海雲台與膠囊列車", weatherCity: "Busan", items: [
-                { time: "09:30", title: "前往尾浦 (Mipo)", note: "Kakao T叫車。設定目的地：尾浦天空膠囊乘車處。" },
-                { time: "10:30", title: "天空膠囊列車", note: "尾浦 ➔ 青沙浦 (需2週前官網搶票)。車程30分。" },
-                { time: "11:10", title: "午餐：米寶家", note: "海雲台總店或青沙浦店。醃海鮮、鍋飯(小孩愛吃)。" },
-                { time: "13:00", title: "海理團路", note: "Dualholic(雜貨)、Fromluck(文具)、人生四格拍貼。吃糖餅。" },
-                { time: "14:40", title: "新世界百貨", note: "下午海風大，躲進室內避寒。備案：Spa Land。" }
+            { d: "D2", date: "2/15", week:"(日)", city: "Busan", lat: 35.17, lon: 129.07, country: "KR", items: [
+                { time: "10:30", act: "天空膠囊列車", note: "尾浦出發 (需預約)" },
+                { time: "13:00", act: "海理團路", note: "逛雜貨、拍貼機、吃糖餅" }
             ]},
-            { id: 3, date: "2/16 (一)", loc: "Busan Port", country: "KR", title: "釜山最後巡禮 & 搭船", weatherCity: "Busan", items: [
-                { time: "09:00", title: "港口寄行李", note: "國際客運碼頭 2F/3F。輕裝去甘川洞。" },
-                { time: "09:30", title: "甘川洞文化村", note: "搭計程車上山。必做：小王子拍照、集章。" },
-                { time: "13:30", title: "南浦洞分頭逛", note: "母女：光復路、Artbox。爸爸：中央站工具街。集合：BIFF星巴克。" },
-                { time: "17:00", title: "回港口登船", note: "新山茶花號。3F櫃檯報到 (17:30前)。超商買水、暈船藥。" }
+            { d: "D3", date: "2/16", week:"(一)", city: "Busan", lat: 35.1, lon: 129.0, country: "KR", items: [
+                { time: "09:30", act: "甘川洞文化村", note: "找小王子拍照、集章" },
+                { time: "17:00", act: "釜山港登船", note: "新山茶花號 (17:30 截止)" }
             ]},
-            { id: 4, date: "2/17 (二)", loc: "Nagasaki", country: "JP", title: "長崎：火車與原爆", weatherCity: "Nagasaki", items: [
-                { time: "07:30", title: "博多港入境", note: "計程車日文：博多駅の博多口までお願いします。自動門勿手拉。" },
-                { time: "09:00", title: "博多車站買票", note: "綠色窗口。任務：搶訂787系包廂、買4歲兒童票。" },
-                { time: "10:04", title: "海鷗號接力", note: "紅線JR中央改札口。11:00武雄溫泉同月台換新幹線。" },
-                { time: "11:30", title: "長崎 Check-in", note: "索取：Nagasaki Discount Card (5折卡)。寄放行李。" },
-                { time: "12:30", title: "午餐：文治郎豬排", note: "路面電車「大學醫院」站。浜口店。" },
-                { time: "15:30", title: "平和公園", note: "原爆資料館 ➔ 中心碑 ➔ 平和公園。吃福砂屋長崎蛋糕。" },
-                { time: "16:00", title: "COCOWALK", note: "摩天輪(用折扣卡)、橡子共和國。晚餐吃 Ringer Hut 強棒麵。" }
+            { d: "D4", date: "2/17", week:"(二)", city: "Nagasaki", lat: 32.75, lon: 129.87, country: "JP", items: [
+                { time: "09:00", act: "博多車站", note: "領票、買兒童票、火車便當" },
+                { time: "11:30", act: "長崎", note: "索取 5 折觀光卡" },
+                { time: "15:30", act: "平和公園", note: "原爆資料館參觀" }
             ]},
-            { id: 5, date: "2/18 (三)", loc: "Nagasaki", country: "JP", title: "長崎：企鵝與歷史", weatherCity: "Nagasaki", items: [
-                { time: "10:15", title: "企鵝水族館", note: "長崎站前東口搭縣營巴士(往網場)。出示折扣卡5折。" },
-                { time: "15:30", title: "軍艦島數位博物館", note: "中央橋下車。VR體驗(5折)。" },
-                { time: "17:15", title: "眼鏡橋", note: "路面電車「眼鏡橋」站。尋找愛心石頭。" }
+            { d: "D5", date: "2/18", week:"(三)", city: "Nagasaki", lat: 32.75, lon: 129.87, country: "JP", items: [
+                { time: "10:15", act: "企鵝水族館", note: "搭縣營巴士，出示折扣卡" },
+                { time: "17:15", act: "眼鏡橋", note: "找愛心石頭" }
             ]},
-            { id: 6, date: "2/19 (四)", loc: "Oita", country: "JP", title: "自駕冒險：大分山區", weatherCity: "Hita", items: [
-                { time: "08:30", title: "取車 NIPPON", note: "AMU PLAZA 新館1F。確認ETC、雪胎。右駕注意。" },
-                { time: "12:00", title: "筑前南之里", note: "道の駅午餐。必吃筑前煮。" },
-                { time: "13:40", title: "大刀洗平和館", note: "看零式戰機。" },
-                { time: "15:20", title: "日田豆田町", note: "看女兒節娃娃。買鰻魚飯糰。" },
-                { time: "16:20", title: "AEON 超市補給", note: "日田店。買牛奶、水、車上零食、日本草莓。" },
-                { time: "17:00", title: "天瀨溫泉 溪仙閣", note: "電話導航：0973-57-2355。進溫泉街路窄慢行。" }
+            { d: "D6", date: "2/19", week:"(四)", city: "Hita", lat: 33.32, lon: 130.93, country: "JP", items: [
+                { time: "08:30", act: "NIPPON 取車", note: "檢查雪胎、ETC" },
+                { time: "15:20", act: "日田豆田町", note: "鰻魚飯糰、女兒節娃娃" },
+                { time: "17:00", act: "天瀨溫泉", note: "溪仙閣 Check-in" }
             ]},
-            { id: 7, date: "2/20 (五)", loc: "Yufuin", country: "JP", title: "九州動物園 & 由布院", weatherCity: "Yufu", items: [
-                { time: "09:30", title: "前往動物園", note: "MapCode: 46 634 565。走大分自動車道較不暈。" },
-                { time: "09:40", title: "九州自然動物園", note: "門口直接預約 Jungle Bus。餵食夾子要拿穩。" },
-                { time: "14:30", title: "午餐：由布院釜飯心", note: "電話：0977-84-3111。豐後牛釜飯三吃。" },
-                { time: "15:45", title: "金鱗湖", note: "看晨霧與水中鳥居。溫泉水+地下水交匯。" },
-                { time: "18:45", title: "大分還車", note: "大分站前營業所。務必加滿油保留收據。" }
+            { d: "D7", date: "2/20", week:"(五)", city: "Yufu", lat: 33.26, lon: 131.36, country: "JP", items: [
+                { time: "09:40", act: "九州自然動物園", note: "Jungle Bus 餵獅子" },
+                { time: "15:45", act: "金鱗湖", note: "看晨霧、水中鳥居" }
             ]},
-            { id: 8, date: "2/21 (六)", loc: "Oita", country: "JP", title: "最後衝刺：大分機場", weatherCity: "Oita", items: [
-                { time: "09:00", title: "行李寄放", note: "飯店櫃檯 (等下要回來搭巴士)。" },
-                { time: "10:00", title: "AMU PLAZA", note: "1F豐後庭買伴手禮(菊家、酸橘汁、香菇)。" },
-                { time: "12:30", title: "午餐：豐後茶屋", note: "必吃大分雞肉天婦羅(Toriten)。" },
-                { time: "13:50", title: "前往巴士站", note: "大分車站前6號乘車處。搭14:00或14:15(底線)。" },
-                { time: "15:15", title: "機場報到", note: "IT241 (16:30起飛)。最後採買：2F空之站。" }
+            { d: "D8", date: "2/21", week:"(六)", city: "Oita", lat: 33.23, lon: 131.61, country: "JP", items: [
+                { time: "12:30", act: "豐後茶屋", note: "吃雞肉天婦羅" },
+                { time: "16:30", act: "大分機場", note: "IT241 回台灣" }
             ]}
         ];
 
-        let currentDayIndex = 0;
-        let currentCurrency = 'KR'; // 'KR' or 'JP'
-        const rates = { 'KR': 0.024, 'JP': 0.215 }; // 預設匯率
+        // 實用單字庫
+        const phrases = {
+            KR: [
+                { t: "你好", o: "안녕하세요", s: "安妞哈se唷" },
+                { t: "謝謝", o: "감사합니다", s: "康撒哈咪搭" },
+                { t: "多少錢?", o: "얼마예요?", s: "喔媽耶唷?" },
+                { t: "請給我這個", o: "이거 주세요", s: "伊勾 朱se唷" },
+                { t: "不辣", o: "안 맵게", s: "安 Me-Gae" },
+                { t: "廁所?", o: "화장실?", s: "花江希?" },
+                { t: "去這裡(給司機看)", o: "여기로 가주세요", s: "唷gi羅 嘎朱se唷" }
+            ],
+            JP: [
+                { t: "你好", o: "こんにちは", s: "空你七哇" },
+                { t: "謝謝", o: "ありがとうございます", s: "阿哩嘎多" },
+                { t: "多少錢?", o: "いくらですか？", s: "伊哭拉 des卡?" },
+                { t: "請給我這個", o: "これをお願いします", s: "Kore o 喔ne蓋西媽死" },
+                { t: "廁所?", o: "トイレはどこですか？", s: "Toilet 哇 哆口des卡?" },
+                { t: "我要折扣卡", o: "Discount Card ください", s: "Discount Card 哭搭賽" },
+                { t: "加滿油", o: "レギュラー満タン", s: "Regular Man-tan" }
+            ]
+        };
 
+        // 狀態變數
+        let tripData = [];
+        let curDay = 0;
+        let curRate = 0.22; 
+        
         // --- 初始化 ---
         function init() {
-            renderDayNav();
-            renderDayContent(0);
-            renderWalletList();
-            renderShopList();
+            // 讀取行程
+            const saved = localStorage.getItem('trip_data_2026');
+            tripData = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(defaultTrip));
             
-            // 匯率計算機監聽
-            document.getElementById('calcInput').addEventListener('input', calculate);
-            document.getElementById('calcRate').addEventListener('input', calculate);
+            renderDayNav();
+            renderDaily(0);
+            renderWallet();
+
+            // 監聽匯率計算
+            document.getElementById('calcInput').addEventListener('input', (e) => {
+                document.getElementById('calcResult').innerText = Math.round(e.target.value * curRate);
+            });
         }
 
-        // --- 行程功能 ---
+        // --- 核心功能：渲染行程 ---
         function renderDayNav() {
             const nav = document.getElementById('dayNav');
             nav.innerHTML = tripData.map((d, i) => `
-                <button onclick="renderDayContent(${i})" 
-                    class="flex-shrink-0 px-4 py-2 rounded-full text-xs font-bold transition-all border border-gray-300
-                    ${i === 0 ? 'bg-gray-800 text-white border-gray-800' : 'bg-white text-gray-500'}" id="day-btn-${i}">
-                    ${d.date}
+                <button onclick="renderDaily(${i})" 
+                    class="flex-shrink-0 px-4 py-2 rounded-lg text-xs font-bold transition-all border
+                    ${i === curDay ? 'bg-gray-800 text-white border-gray-800' : 'bg-white text-gray-400 border-gray-200'}">
+                    ${d.d} ${d.date}
                 </button>
             `).join('');
         }
 
-        function renderDayContent(index) {
-            currentDayIndex = index;
-            const data = tripData[index];
+        function renderDaily(idx) {
+            curDay = idx;
+            const day = tripData[idx];
+            renderDayNav();
+            fetchWeather(day.lat, day.lon, day.city); // 抓天氣
+
             const container = document.getElementById('dailyContainer');
+            if (day.items.length === 0) {
+                container.innerHTML = `<div class="text-center text-gray-300 py-10">點擊下方按鈕新增行程</div>`;
+            } else {
+                container.innerHTML = day.items.map((item, i) => `
+                    <div class="sketch-box p-4 relative" onclick="openEditModal(${i})">
+                        <div class="flex items-start justify-between mb-1">
+                            <span class="bg-yellow-300 text-xs font-black px-2 py-1 rounded border border-black">${item.time}</span>
+                            <span class="text-[10px] text-gray-300">✎ 編輯</span>
+                        </div>
+                        <div class="text-lg font-bold text-blue-700 underline decoration-blue-300 underline-offset-4 cursor-pointer mb-2" 
+                             onclick="event.stopPropagation(); openMap('${item.act}', '${day.country}')">
+                            ${item.act} <i class="fa-solid fa-location-arrow text-xs ml-1"></i>
+                        </div>
+                        <div class="text-sm text-gray-600 bg-gray-50 p-2 rounded">
+                            ${item.note || '無備註'}
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // --- 功能：地圖連結 ---
+        function openMap(keyword, country) {
+            // 移除括號內的說明文字，提高搜尋準確度
+            const cleanKey = keyword.split(/[（(]/)[0];
+            const url = country === 'KR' 
+                ? `https://map.naver.com/p/search/${cleanKey}`
+                : `https://www.google.com/maps/search/?api=1&query=${cleanKey}`;
+            window.open(url, '_blank');
+        }
+
+        // --- 功能：抓天氣 (Open-Meteo) ---
+        async function fetchWeather(lat, lon, city) {
+            const board = document.getElementById('weatherBoard');
+            board.classList.remove('hidden');
+            document.getElementById('w-city').innerText = city;
+            document.getElementById('w-desc').innerText = "更新中...";
+            document.getElementById('w-desc').classList.add('weather-loading');
+
+            try {
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+                const data = await res.json();
+                const temp = Math.round(data.current_weather.temperature);
+                const code = data.current_weather.weathercode;
+                
+                document.getElementById('w-temp').innerText = temp;
+                document.getElementById('w-icon').innerText = getWeatherIcon(code);
+                document.getElementById('w-desc').innerText = "即時氣溫";
+                document.getElementById('w-desc').classList.remove('weather-loading');
+            } catch (e) {
+                document.getElementById('w-desc').innerText = "離線";
+            }
+        }
+
+        function getWeatherIcon(code) {
+            if (code <= 1) return '☀️';
+            if (code <= 3) return '⛅';
+            if (code <= 48) return '🌫️';
+            if (code <= 67) return '🌧️';
+            if (code <= 77) return '❄️';
+            return '⛈️';
+        }
+
+        // --- 功能：編輯行程 (Modal) ---
+        function openEditModal(itemIdx = -1) {
+            const modal = document.getElementById('editModal');
+            const day = tripData[curDay];
             
-            // 更新按鈕樣式
-            document.querySelectorAll('#dayNav button').forEach((btn, i) => {
-                if(i === index) {
-                    btn.classList.add('bg-gray-800', 'text-white', 'border-gray-800');
-                    btn.classList.remove('bg-white', 'text-gray-500');
-                } else {
-                    btn.classList.remove('bg-gray-800', 'text-white', 'border-gray-800');
-                    btn.classList.add('bg-white', 'text-gray-500');
-                }
-            });
+            modal.classList.remove('hidden');
+            document.getElementById('editIndex').value = itemIdx;
+            
+            if (itemIdx === -1) {
+                // 新增
+                document.getElementById('modalTitle').innerText = "新增行程";
+                document.getElementById('modalTime').value = "09:00";
+                document.getElementById('modalAct').value = "";
+                document.getElementById('modalNote').value = "";
+                document.getElementById('btnDelete').classList.add('hidden');
+            } else {
+                // 編輯
+                const item = day.items[itemIdx];
+                document.getElementById('modalTitle').innerText = "編輯內容";
+                document.getElementById('modalTime').value = item.time;
+                document.getElementById('modalAct').value = item.act;
+                document.getElementById('modalNote').value = item.note;
+                document.getElementById('btnDelete').classList.remove('hidden');
+            }
+        }
 
-            // 自動切換匯率建議 (僅第一次進入該國天數時提示，這裡簡單做：直接切換)
-            if(data.country === 'JP' && currentCurrency !== 'JP') setCurrency('JP');
-            if(data.country === 'KR' && currentCurrency !== 'KR') setCurrency('KR');
+        function closeModal() {
+            document.getElementById('editModal').classList.add('hidden');
+        }
 
-            const weatherUrl = `https://www.accuweather.com/en/search-locations?query=${data.weatherCity}`;
+        function saveItem() {
+            const idx = parseInt(document.getElementById('editIndex').value);
+            const newItem = {
+                time: document.getElementById('modalTime').value,
+                act: document.getElementById('modalAct').value,
+                note: document.getElementById('modalNote').value
+            };
 
-            container.innerHTML = `
-                <div class="flex justify-between items-center px-1 mb-2">
-                    <h2 class="font-header text-xl text-blue-900">${data.title}</h2>
-                    <a href="${weatherUrl}" target="_blank" class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full font-bold">
-                        <i class="fa-solid fa-cloud-sun"></i> 當地天氣
-                    </a>
-                </div>
-            ` + data.items.map(item => `
-                <div class="sketch-box p-4 relative">
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="bg-yellow-300 text-xs font-black px-2 py-1 rounded border border-black shadow-sm">${item.time}</span>
-                        <button onclick="openMap('${item.title}', '${data.country}')" class="text-gray-400 hover:text-blue-600 active:scale-90 transition">
-                            <i class="fa-solid fa-map-location-dot text-xl"></i>
-                        </button>
-                    </div>
-                    <h3 class="font-bold text-lg mb-1">${item.title}</h3>
-                    <div class="text-sm text-gray-600 bg-gray-50 p-2 rounded border border-dashed border-gray-300">
-                        <i class="fa-solid fa-circle-check text-green-500 mr-1"></i> ${item.note}
-                    </div>
+            if (!newItem.act) return alert('請輸入標題');
+
+            if (idx === -1) {
+                tripData[curDay].items.push(newItem);
+            } else {
+                tripData[curDay].items[idx] = newItem;
+            }
+            
+            // 依時間排序
+            tripData[curDay].items.sort((a, b) => a.time.localeCompare(b.time));
+            
+            saveToLocal();
+            renderDaily(curDay);
+            closeModal();
+        }
+
+        function deleteItem() {
+            if(!confirm("確定刪除嗎？")) return;
+            const idx = parseInt(document.getElementById('editIndex').value);
+            tripData[curDay].items.splice(idx, 1);
+            saveToLocal();
+            renderDaily(curDay);
+            closeModal();
+        }
+
+        function saveToLocal() {
+            localStorage.setItem('trip_data_2026', JSON.stringify(tripData));
+        }
+
+        function resetData() {
+            if(confirm("這會重置所有行程內容回到預設值，確定嗎？")) {
+                localStorage.removeItem('trip_data_2026');
+                location.reload();
+            }
+        }
+
+        // --- 功能：翻譯 ---
+        function renderPhrases(lang) {
+            document.getElementById('btn-lang-kr').className = lang === 'KR' ? 'flex-1 py-2 rounded-lg font-bold border-2 border-gray-800 bg-blue-50 text-blue-800' : 'flex-1 py-2 rounded-lg font-bold border-2 border-gray-200 text-gray-400';
+            document.getElementById('btn-lang-jp').className = lang === 'JP' ? 'flex-1 py-2 rounded-lg font-bold border-2 border-gray-800 bg-red-50 text-red-800' : 'flex-1 py-2 rounded-lg font-bold border-2 border-gray-200 text-gray-400';
+            
+            const list = phrases[lang];
+            const colorClass = lang === 'KR' ? 'text-blue-600' : 'text-red-600';
+            
+            document.getElementById('phraseList').innerHTML = list.map(p => `
+                <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                    <div class="text-xs text-gray-400 font-bold mb-1">${p.t}</div>
+                    <div class="text-xl font-bold mb-1 ${colorClass}">${p.o}</div>
+                    <div class="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded inline-block">🗣️ ${p.s}</div>
                 </div>
             `).join('');
         }
 
-        function openMap(query, country) {
-            let url;
-            // 處理特殊關鍵字以提高地圖準確度
-            const cleanQuery = query.split("：")[0].split(" ")[0]; 
-            
-            if (country === 'KR') {
-                url = `https://map.naver.com/p/search/${cleanQuery}`;
-            } else {
-                url = `https://www.google.com/maps/search/?api=1&query=${cleanQuery}`;
-            }
-            window.open(url, '_blank');
-        }
-
-        // --- 錢包功能 ---
+        // --- 功能：錢包 ---
         function setCurrency(curr) {
-            currentCurrency = curr;
-            document.getElementById('calcRate').value = rates[curr];
-            
-            // 更新按鈕外觀
-            const btnKR = document.getElementById('btn-KR');
-            const btnJP = document.getElementById('btn-JP');
-            
-            if(curr === 'KR') {
-                btnKR.className = "px-3 py-1 rounded transition-all bg-white shadow text-blue-700 font-bold border border-gray-200";
-                btnJP.className = "px-3 py-1 rounded transition-all text-gray-400";
-            } else {
-                btnJP.className = "px-3 py-1 rounded transition-all bg-white shadow text-red-700 font-bold border border-gray-200";
-                btnKR.className = "px-3 py-1 rounded transition-all text-gray-400";
-            }
-            calculate();
-        }
-
-        function calculate() {
-            const input = parseFloat(document.getElementById('calcInput').value) || 0;
-            const rate = parseFloat(document.getElementById('calcRate').value) || 0;
-            document.getElementById('calcResult').innerText = Math.round(input * rate).toLocaleString();
+            curRate = curr === 'KR' ? 0.024 : 0.22;
+            document.getElementById('currentRateLabel').innerText = `1 : ${curRate}`;
+            document.getElementById('calcInput').placeholder = curr === 'KR' ? "韓元" : "日幣";
+            document.getElementById('calcInput').value = "";
+            document.getElementById('calcResult').innerText = "0";
         }
 
         function addExpense() {
             const desc = document.getElementById('expenseDesc').value;
             const amt = document.getElementById('expenseAmt').value;
-            if(!desc || !amt) return alert('請輸入完整資訊');
-
-            const todayTitle = tripData[currentDayIndex].date; // 使用當前選中的行程日期作為記帳日期
-            const newRecord = {
-                id: Date.now(),
-                desc: desc,
-                amt: parseInt(amt),
-                curr: currentCurrency,
-                date: todayTitle
-            };
-
-            let expenses = JSON.parse(localStorage.getItem('trip2026_expenses')) || [];
-            expenses.push(newRecord);
-            localStorage.setItem('trip2026_expenses', JSON.stringify(expenses));
+            if(!desc || !amt) return;
+            
+            const record = { desc, amt, twd: Math.round(amt * curRate), date: tripData[curDay].date };
+            let history = JSON.parse(localStorage.getItem('trip_wallet_2026') || '[]');
+            history.unshift(record);
+            localStorage.setItem('trip_wallet_2026', JSON.stringify(history));
             
             document.getElementById('expenseDesc').value = '';
             document.getElementById('expenseAmt').value = '';
-            renderWalletList();
+            renderWallet();
         }
 
-        function renderWalletList() {
-            const expenses = JSON.parse(localStorage.getItem('trip2026_expenses')) || [];
-            const container = document.getElementById('walletList');
-            
-            if(expenses.length === 0) {
-                container.innerHTML = '<div class="text-center text-gray-400 py-10">目前沒有記帳資料</div>';
-                return;
-            }
-
-            // Group by Date
-            const grouped = expenses.reduce((acc, curr) => {
-                if(!acc[curr.date]) acc[curr.date] = [];
-                acc[curr.date].push(curr);
-                return acc;
-            }, {});
-
-            let html = '';
-            for (const [date, items] of Object.entries(grouped)) {
-                let dayTotal = 0;
-                const itemsHtml = items.map(item => {
-                    const rate = rates[item.curr] || 0.22; // 簡單估算
-                    const twd = Math.round(item.amt * rate);
-                    dayTotal += twd;
-                    const symbol = item.curr === 'KR' ? '₩' : '¥';
-                    return `
-                        <div class="flex justify-between items-center text-sm py-1 border-b border-gray-100 last:border-0">
-                            <span class="text-gray-700">${item.desc}</span>
-                            <div class="text-right">
-                                <div class="font-mono font-bold">${symbol}${item.amt}</div>
-                                <div class="text-[10px] text-gray-400">≈ $${twd}</div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-
-                html += `
-                    <div class="bg-white border-2 border-gray-100 rounded-lg p-3 shadow-sm">
-                        <div class="flex justify-between items-center mb-2 pb-1 border-b-2 border-gray-800">
-                            <h4 class="font-bold text-gray-800">${date}</h4>
-                            <span class="text-xs font-bold bg-gray-200 px-2 rounded">總計約 $${dayTotal}</span>
-                        </div>
-                        <div class="space-y-1">${itemsHtml}</div>
+        function renderWallet() {
+            const history = JSON.parse(localStorage.getItem('trip_wallet_2026') || '[]');
+            document.getElementById('walletList').innerHTML = history.map(h => `
+                <div class="flex justify-between items-center bg-white p-3 border border-gray-200 rounded-lg">
+                    <div>
+                        <div class="font-bold text-gray-800">${h.desc}</div>
+                        <div class="text-[10px] text-gray-400">${h.date}</div>
                     </div>
-                `;
-            }
-            container.innerHTML = html;
-        }
-
-        function clearExpenses() {
-            if(confirm('確定要刪除所有記帳嗎？無法復原喔！')) {
-                localStorage.removeItem('trip2026_expenses');
-                renderWalletList();
-            }
-        }
-
-        // --- 購物清單功能 ---
-        function addShopItem() {
-            const input = document.getElementById('shopInput');
-            const val = input.value.trim();
-            if(!val) return;
-
-            let list = JSON.parse(localStorage.getItem('trip2026_shop')) || [];
-            list.push({ id: Date.now(), text: val, checked: false });
-            localStorage.setItem('trip2026_shop', JSON.stringify(list));
-            input.value = '';
-            renderShopList();
-        }
-
-        function toggleShopItem(id) {
-            let list = JSON.parse(localStorage.getItem('trip2026_shop')) || [];
-            const idx = list.findIndex(i => i.id === id);
-            if(idx > -1) {
-                list[idx].checked = !list[idx].checked;
-                localStorage.setItem('trip2026_shop', JSON.stringify(list));
-                renderShopList(); // 重新渲染以套用刪除線樣式
-            }
-        }
-
-        function deleteShopItem(id) {
-            let list = JSON.parse(localStorage.getItem('trip2026_shop')) || [];
-            const newList = list.filter(i => i.id !== id);
-            localStorage.setItem('trip2026_shop', JSON.stringify(newList));
-            renderShopList();
-        }
-
-        function renderShopList() {
-            const list = JSON.parse(localStorage.getItem('trip2026_shop')) || [];
-            const container = document.getElementById('shopList');
-            
-            container.innerHTML = list.map(item => `
-                <div class="flex items-center bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
-                    <input type="checkbox" class="custom-checkbox mr-3" 
-                        onchange="toggleShopItem(${item.id})" ${item.checked ? 'checked' : ''}>
-                    <div class="flex-1 font-medium ${item.checked ? 'text-gray-300 line-through' : 'text-gray-800'}">
-                        ${item.text}
+                    <div class="text-right">
+                        <div class="text-xs text-gray-400">${h.amt}</div>
+                        <div class="font-bold text-green-600">$${h.twd}</div>
                     </div>
-                    <button onclick="deleteShopItem(${item.id})" class="text-gray-300 hover:text-red-500 px-2">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
                 </div>
             `).join('');
         }
 
+        function clearExpenses() {
+            if(confirm("清空帳本?")) {
+                localStorage.removeItem('trip_wallet_2026');
+                renderWallet();
+            }
+        }
+
         // --- 頁面切換 ---
         function switchTab(id) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
             
-            // 導覽列樣式更新
+            // 導覽列狀態
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('text-gray-800');
                 btn.classList.add('text-gray-400');
             });
             event.currentTarget.classList.remove('text-gray-400');
             event.currentTarget.classList.add('text-gray-800');
+            
+            // 特殊初始化
+            if(id === 'translate') renderPhrases('KR');
         }
 
         // 啟動
