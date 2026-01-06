@@ -26,11 +26,17 @@
         }
         .sketch-btn:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0px rgba(0,0,0,1); }
         
-        /* 緊湊型 Checkbox */
+        /* Checkbox */
         .custom-checkbox { width: 1rem; height: 1rem; accent-color: var(--ink); }
         .checked-item { text-decoration: line-through; color: #9ca3af; }
 
-        /* 分頁與動畫 */
+        /* 照片九宮格 */
+        .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+        .photo-item { aspect-ratio: 1/1; border: 2px solid var(--ink); border-radius: 4px; overflow: hidden; position: relative; background: #eee; }
+        .photo-item img { width: 100%; height: 100%; object-fit: cover; }
+        .photo-del { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.6); color: white; width: 20px; height: 20px; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; }
+
+        /* Tab Animation */
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.2s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -68,40 +74,63 @@
 
             <div id="dailyContainer" class="space-y-3"></div>
             
-            <button onclick="openEditModal()" class="w-full mt-4 py-2 border-2 border-dashed border-gray-300 text-gray-400 rounded text-sm font-bold hover:border-gray-800 hover:text-gray-800">
+            <button onclick="openEditModal()" class="w-full mt-4 mb-6 py-2 border-2 border-dashed border-gray-300 text-gray-400 rounded text-sm font-bold hover:border-gray-800 hover:text-gray-800">
                 <i class="fa-solid fa-plus"></i> 新增行程
             </button>
 
-            <div class="mt-6 pt-4 border-t-2 border-gray-100">
-                <h3 class="font-header text-lg mb-2 pl-2 border-l-4 border-green-500 flex justify-between items-center">
-                    <span>📅 今日消費</span>
-                    <span class="text-sm font-bold text-green-600" id="dailyTotalDisplay">NT$ 0</span>
-                </h3>
-                
-                <div class="flex gap-2 mb-2">
-                    <input id="quickExpDesc" type="text" placeholder="品項" class="flex-1 p-2 border rounded bg-gray-50 text-sm">
-                    <input id="quickExpAmt" type="number" placeholder="金額" class="w-20 p-2 border rounded bg-gray-50 text-sm">
-                    <button onclick="addExpenseFromPlan()" class="bg-gray-800 text-white px-3 rounded text-sm"><i class="fa-solid fa-check"></i></button>
+            <div class="sketch-box p-3 bg-gray-50 mt-6 relative">
+                <div class="absolute -top-3 left-3 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded font-bold border border-black shadow-sm">
+                    📅 今日消費
+                </div>
+                <div class="flex justify-between items-end mb-2 mt-1">
+                    <div class="text-xs text-gray-400">當日總計</div>
+                    <div class="text-lg font-black text-green-700" id="dailyTotalDisplay">NT$ 0</div>
                 </div>
                 
-                <div id="dailyExpenseList" class="space-y-2 text-sm text-gray-600"></div>
+                <div class="flex gap-2 mb-2">
+                    <input id="quickExpDesc" type="text" placeholder="品項" class="flex-1 p-2 border-2 border-gray-300 rounded text-sm outline-none focus:border-black">
+                    <select id="quickExpCurr" class="p-1 border-2 border-gray-300 rounded text-xs bg-white font-bold outline-none focus:border-black">
+                        <option value="KR">₩</option>
+                        <option value="JP">¥</option>
+                    </select>
+                    <input id="quickExpAmt" type="number" placeholder="金額" class="w-20 p-2 border-2 border-gray-300 rounded text-sm outline-none focus:border-black">
+                    <button onclick="addExpenseFromPlan()" class="bg-black text-white px-3 rounded text-sm hover:bg-gray-800"><i class="fa-solid fa-plus"></i></button>
+                </div>
+                
+                <div id="dailyExpenseList" class="space-y-1 text-sm text-gray-600 pl-1"></div>
             </div>
         </section>
 
         <section id="shopping" class="tab-content">
             <h2 class="font-header text-lg mb-3 pl-2 border-l-4 border-yellow-400">🛍️ 必買清單</h2>
             
-            <div class="flex gap-2 mb-3">
-                <input id="shopInput" type="text" placeholder="輸入項目..." class="flex-1 p-2 sketch-box outline-none text-sm">
-                <button onclick="addShopItem()" class="bg-yellow-400 px-3 rounded sketch-btn font-bold text-sm"><i class="fa-solid fa-plus"></i></button>
+            <div class="mb-6">
+                <div class="flex gap-2 mb-2">
+                    <input id="shopInput" type="text" placeholder="輸入文字項目..." class="flex-1 p-2 sketch-box outline-none text-sm">
+                    <button onclick="addShopItem()" class="bg-yellow-400 px-3 rounded sketch-btn font-bold text-sm"><i class="fa-solid fa-pen"></i></button>
+                </div>
+                <div id="shopList" class="space-y-1 max-h-40 overflow-y-auto"></div> 
             </div>
 
-            <div id="shopList" class="space-y-1"></div> </section>
+            <hr class="border-dashed border-gray-300 mb-4">
+
+            <div>
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="font-bold text-sm text-gray-500"><i class="fa-regular fa-image"></i> 截圖/照片牆</h3>
+                    <label class="bg-gray-800 text-white px-3 py-1 rounded text-xs cursor-pointer shadow active:scale-95">
+                        <i class="fa-solid fa-camera"></i> 新增圖片
+                        <input type="file" id="imgInput" accept="image/*" class="hidden" onchange="handleAddImage()">
+                    </label>
+                </div>
+                <div id="imageGrid" class="photo-grid">
+                    </div>
+            </div>
+        </section>
 
         <section id="wallet" class="tab-content">
             <h2 class="font-header text-lg mb-3 pl-2 border-l-4 border-green-500">💰 匯率計算機</h2>
             
-            <div class="bg-gray-800 text-white p-5 rounded-xl shadow-lg mb-6 relative overflow-hidden">
+            <div class="bg-gray-800 text-white p-5 rounded-xl shadow-lg mb-6 relative">
                 <div class="flex justify-between items-center mb-6">
                     <span class="text-xs font-bold text-gray-400">購物試算 (不紀錄)</span>
                     <div class="flex bg-gray-700 rounded p-1 gap-1">
@@ -128,12 +157,13 @@
         <section id="translate" class="tab-content">
             <h2 class="font-header text-lg mb-3 pl-2 border-l-4 border-purple-500">🗣️ 翻譯小幫手</h2>
 
-            <div class="sketch-box p-3 mb-4 bg-purple-50">
-                <label class="text-xs font-bold text-gray-500 block mb-1">快速查詢</label>
-                <div class="flex gap-2">
-                    <input id="transInput" type="text" placeholder="輸入中文..." class="flex-1 p-2 border border-gray-300 rounded outline-none text-sm bg-white">
-                    <button onclick="quickTranslate()" class="bg-purple-600 text-white px-3 rounded font-bold text-sm">GO</button>
-                </div>
+            <div class="relative mb-4">
+                <input id="transInput" type="text" placeholder="輸入中文快速查詢..." 
+                    class="w-full p-3 pr-16 sketch-box outline-none text-sm bg-purple-50 focus:bg-white transition-colors">
+                <button onclick="quickTranslate()" 
+                    class="absolute right-1.5 top-1.5 bottom-1.5 bg-purple-600 text-white px-3 rounded font-bold text-xs shadow hover:bg-purple-700 active:scale-95 transition-all">
+                    GO
+                </button>
             </div>
 
             <div class="flex gap-2 mb-3">
@@ -145,32 +175,18 @@
 
         <section id="info" class="tab-content">
             <h2 class="font-header text-lg mb-3 pl-2 border-l-4 border-gray-500">ℹ️ 實用筆記</h2>
-            
             <div id="infoList" class="space-y-3"></div>
-            
-            <button onclick="addInfoItem()" class="w-full mt-4 py-2 border border-gray-300 text-gray-400 rounded text-sm hover:bg-gray-50">
-                <i class="fa-solid fa-plus"></i> 新增筆記
-            </button>
+            <button onclick="addInfoItem()" class="w-full mt-4 py-2 border border-gray-300 text-gray-400 rounded text-sm hover:bg-gray-50"><i class="fa-solid fa-plus"></i> 新增筆記</button>
         </section>
 
     </main>
 
     <nav class="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 flex justify-around items-center py-2 pb-6 z-50 text-[10px]">
-        <button onclick="switchTab('plan')" class="nav-btn text-gray-800 w-1/5 flex flex-col items-center p-2">
-            <i class="fa-solid fa-map-location-dot text-xl mb-1"></i><b>行程</b>
-        </button>
-        <button onclick="switchTab('shopping')" class="nav-btn text-gray-400 w-1/5 flex flex-col items-center p-2">
-            <i class="fa-solid fa-cart-shopping text-xl mb-1"></i><b>待購</b>
-        </button>
-        <button onclick="switchTab('wallet')" class="nav-btn text-gray-400 w-1/5 flex flex-col items-center p-2">
-            <i class="fa-solid fa-calculator text-xl mb-1"></i><b>換算</b>
-        </button>
-        <button onclick="switchTab('translate')" class="nav-btn text-gray-400 w-1/5 flex flex-col items-center p-2">
-            <i class="fa-solid fa-language text-xl mb-1"></i><b>翻譯</b>
-        </button>
-        <button onclick="switchTab('info')" class="nav-btn text-gray-400 w-1/5 flex flex-col items-center p-2">
-            <i class="fa-solid fa-circle-info text-xl mb-1"></i><b>資訊</b>
-        </button>
+        <button onclick="switchTab('plan')" class="nav-btn text-gray-800 w-1/5 flex flex-col items-center p-2"><i class="fa-solid fa-map-location-dot text-xl mb-1"></i><b>行程</b></button>
+        <button onclick="switchTab('shopping')" class="nav-btn text-gray-400 w-1/5 flex flex-col items-center p-2"><i class="fa-solid fa-cart-shopping text-xl mb-1"></i><b>待購</b></button>
+        <button onclick="switchTab('wallet')" class="nav-btn text-gray-400 w-1/5 flex flex-col items-center p-2"><i class="fa-solid fa-calculator text-xl mb-1"></i><b>換算</b></button>
+        <button onclick="switchTab('translate')" class="nav-btn text-gray-400 w-1/5 flex flex-col items-center p-2"><i class="fa-solid fa-language text-xl mb-1"></i><b>翻譯</b></button>
+        <button onclick="switchTab('info')" class="nav-btn text-gray-400 w-1/5 flex flex-col items-center p-2"><i class="fa-solid fa-circle-info text-xl mb-1"></i><b>資訊</b></button>
     </nav>
 
     <div id="editModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
@@ -203,175 +219,149 @@
             { d: "D7", date: "2/20", city: "Yufu", lat: 33.26, lon: 131.36, country: "JP", items: [{ time: "09:40", act: "九州自然動物園", note: "Jungle Bus" }, { time: "15:45", act: "金鱗湖", note: "晨霧" }]},
             { d: "D8", date: "2/21", city: "Oita", lat: 33.23, lon: 131.61, country: "JP", items: [{ time: "12:30", act: "豐後茶屋", note: "天婦羅" }, { time: "16:30", act: "大分機場", note: "回台灣" }]}
         ];
-
         const defaultInfo = [
             { id: 1, title: "日本報警", text: "110 (救護 119)", color: "bg-red-50" },
             { id: 2, title: "韓國報警", text: "112 (救護 119)", color: "bg-blue-50" },
             { id: 3, title: "日本加油", text: "Regular Man-tan (紅)", color: "bg-gray-50" },
             { id: 4, title: "日本導航", text: "請幫我設 MapCode", color: "bg-gray-50" }
         ];
-
-        const phrases = {
-            KR: [{t:"你好",o:"안녕하세요"}, {t:"謝謝",o:"감사합니다"}, {t:"多少錢?",o:"얼마예요?"}, {t:"廁所?",o:"화장실?"}, {t:"不辣",o:"안 맵게"}],
-            JP: [{t:"你好",o:"こんにちは"}, {t:"謝謝",o:"ありがとうございます"}, {t:"多少錢?",o:"いくらですか"}, {t:"廁所?",o:"トイレはどこですか"}, {t:"加滿油",o:"レギュラー満タン"}]
-        };
-
+        const phrases = { KR: [{t:"你好",o:"안녕하세요"},{t:"謝謝",o:"감사합니다"},{t:"多少錢?",o:"얼마예요?"},{t:"廁所?",o:"화장실?"},{t:"不辣",o:"안 맵게"}], JP: [{t:"你好",o:"こんにちは"},{t:"謝謝",o:"ありがとうございます"},{t:"多少錢?",o:"いくらですか"},{t:"廁所?",o:"トイレはどこですか"},{t:"加滿油",o:"レギュラー満タン"}] };
+        
+        const RATES = { 'KR': 0.024, 'JP': 0.22, 'TW': 1 };
         let tripData = [], infoData = [];
         let curDay = 0, curLang = 'KR', curRate = 0.024;
 
         function init() {
-            tripData = getStorage('trip_data_2026_v5', defaultTrip);
-            infoData = getStorage('trip_info_2026_v5', defaultInfo);
-            renderDayNav();
-            renderDaily(0);
-            renderShopList();
-            renderInfoList();
-            renderPhrases('KR');
-            
-            // 匯率監聽
-            document.getElementById('calcInput').addEventListener('input', (e) => {
-                document.getElementById('calcResult').innerText = Math.round(e.target.value * curRate).toLocaleString();
-            });
+            tripData = getStorage('trip_data_2026_v6', defaultTrip);
+            infoData = getStorage('trip_info_2026_v6', defaultInfo);
+            renderDayNav(); renderDaily(0); renderShopList(); renderShopImages(); renderInfoList(); renderPhrases('KR');
+            document.getElementById('calcInput').addEventListener('input', (e) => { document.getElementById('calcResult').innerText = Math.round(e.target.value * curRate).toLocaleString(); });
         }
 
-        // --- 1. 行程 & 每日記帳 ---
+        // --- 1. 行程 & 記帳 ---
         function renderDayNav() {
             document.getElementById('dayNav').innerHTML = tripData.map((d, i) => `
-                <button onclick="renderDaily(${i})" class="flex-shrink-0 px-3 py-1.5 rounded text-xs font-bold border transition-all ${i === curDay ? 'bg-gray-800 text-white border-gray-800' : 'bg-white text-gray-400 border-gray-200'}">
-                    ${d.d} ${d.date}
-                </button>
+                <button onclick="renderDaily(${i})" class="flex-shrink-0 px-3 py-1.5 rounded text-xs font-bold border transition-all ${i === curDay ? 'bg-gray-800 text-white border-gray-800' : 'bg-white text-gray-400 border-gray-200'}">${d.d} ${d.date}</button>
             `).join('');
         }
-
         function renderDaily(idx) {
-            curDay = idx;
-            renderDayNav();
+            curDay = idx; renderDayNav();
             const day = tripData[idx];
             fetchWeather(day.lat, day.lon, day.city);
             
-            // 自動切換設定
-            if(day.country === 'JP' && curLang !== 'JP') { setCurrency('JP'); renderPhrases('JP'); }
-            if(day.country === 'KR' && curLang !== 'KR') { setCurrency('KR'); renderPhrases('KR'); }
+            // 自動切換
+            if(day.country==='JP'){ setCurrency('JP'); renderPhrases('JP'); document.getElementById('quickExpCurr').value='JP'; }
+            if(day.country==='KR'){ setCurrency('KR'); renderPhrases('KR'); document.getElementById('quickExpCurr').value='KR'; }
 
             document.getElementById('dailyContainer').innerHTML = day.items.map((item, i) => `
                 <div class="sketch-box p-3 relative bg-white" onclick="openEditModal(${i})">
-                    <div class="flex justify-between items-start mb-1">
-                        <span class="bg-yellow-300 text-[10px] font-black px-1.5 py-0.5 rounded border border-black">${item.time}</span>
-                    </div>
-                    <div class="text-base font-bold text-blue-700 underline decoration-blue-300 underline-offset-4 cursor-pointer mb-1" 
-                         onclick="event.stopPropagation(); openMap('${item.act}', '${day.country}')">
-                        ${item.act} <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                    </div>
+                    <div class="flex justify-between items-start mb-1"><span class="bg-yellow-300 text-[10px] font-black px-1.5 py-0.5 rounded border border-black">${item.time}</span></div>
+                    <div class="text-base font-bold text-blue-700 underline decoration-blue-300 underline-offset-4 cursor-pointer mb-1" onclick="event.stopPropagation(); openMap('${item.act}', '${day.country}')">${item.act} <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></div>
                     <div class="text-xs text-gray-500 bg-gray-50 p-1.5 rounded">${item.note}</div>
                 </div>
             `).join('');
-            
             renderDailyExpenses();
         }
-
-        function openMap(key, country) {
-            const cleanKey = key.split(/[(（]/)[0];
-            const url = country === 'KR' ? `https://map.naver.com/p/search/${cleanKey}` : `https://www.google.com/maps/search/?api=1&query=${cleanKey}`;
-            window.open(url, '_blank');
-        }
-
-        // --- 每日記帳邏輯 ---
         function addExpenseFromPlan() {
             const desc = document.getElementById('quickExpDesc').value;
             const amt = document.getElementById('quickExpAmt').value;
+            const curr = document.getElementById('quickExpCurr').value;
             if(!desc || !amt) return;
-            
-            const list = getStorage('trip_wallet_v5', []);
-            list.push({
-                d: desc, 
-                a: amt, 
-                date: tripData[curDay].date, // 綁定當前日期
-                dayIdx: curDay
-            });
-            saveStorage('trip_wallet_v5', list);
-            document.getElementById('quickExpDesc').value = '';
-            document.getElementById('quickExpAmt').value = '';
+            const list = getStorage('trip_wallet_v6', []);
+            list.push({ d: desc, a: amt, c: curr, date: tripData[curDay].date });
+            saveStorage('trip_wallet_v6', list);
+            document.getElementById('quickExpDesc').value = ''; document.getElementById('quickExpAmt').value = '';
             renderDailyExpenses();
         }
-
         function renderDailyExpenses() {
-            const list = getStorage('trip_wallet_v5', []).filter(i => i.date === tripData[curDay].date);
-            const total = list.reduce((sum, item) => sum + Math.round(item.a * curRate), 0);
-            
-            document.getElementById('dailyTotalDisplay').innerText = `≈ NT$ ${total}`;
-            
-            const container = document.getElementById('dailyExpenseList');
-            if(list.length === 0) {
-                container.innerHTML = '<div class="text-xs text-gray-300 text-center py-2">今天還沒花錢錢</div>';
-                return;
-            }
-            
-            container.innerHTML = list.map((item, idx) => `
+            const list = getStorage('trip_wallet_v6', []).filter(i => i.date === tripData[curDay].date);
+            const total = list.reduce((sum, item) => sum + Math.round(item.a * RATES[item.c]), 0);
+            document.getElementById('dailyTotalDisplay').innerText = `≈ NT$ ${total.toLocaleString()}`;
+            document.getElementById('dailyExpenseList').innerHTML = list.length===0 ? '<div class="text-xs text-gray-300 text-center py-2">本日尚無紀錄</div>' : list.map((item, idx) => `
                 <div class="flex justify-between items-center border-b border-gray-100 py-1 last:border-0">
-                    <span>${item.d}</span>
-                    <div class="flex items-center gap-2">
-                        <span class="font-mono">${item.a}</span>
-                        <button onclick="delExpense('${item.date}', '${item.d}', ${item.a})" class="text-gray-300 hover:text-red-500"><i class="fa-solid fa-xmark"></i></button>
+                    <span class="truncate pr-2">${item.d}</span>
+                    <div class="flex items-center gap-2 whitespace-nowrap">
+                        <span class="font-mono text-xs">${item.c==='KR'?'₩':'¥'}${item.a}</span>
+                        <button onclick="delExpense('${item.date}', '${item.d}', ${item.a})" class="text-gray-300 hover:text-red-500 px-1"><i class="fa-solid fa-xmark"></i></button>
                     </div>
                 </div>
             `).join('');
         }
-
         function delExpense(date, desc, amt) {
-            if(!confirm('刪除這筆?')) return;
-            let list = getStorage('trip_wallet_v5', []);
+            if(!confirm('刪除?')) return;
+            let list = getStorage('trip_wallet_v6', []);
             const idx = list.findIndex(i => i.date === date && i.d === desc && i.a == amt);
-            if(idx > -1) {
-                list.splice(idx, 1);
-                saveStorage('trip_wallet_v5', list);
-                renderDailyExpenses();
-            }
+            if(idx > -1) { list.splice(idx, 1); saveStorage('trip_wallet_v6', list); renderDailyExpenses(); }
         }
 
-        // --- 2. 待購清單 (緊湊版) ---
+        // --- 2. 待購清單 (文字 + 圖片) ---
         function addShopItem() {
             const input = document.getElementById('shopInput');
             if(!input.value.trim()) return;
-            const list = getStorage('trip_shop_v5', []);
+            const list = getStorage('trip_shop_v6', []);
             list.push({id: Date.now(), txt: input.value, done: false});
-            saveStorage('trip_shop_v5', list);
-            input.value = '';
-            renderShopList();
-        }
-        function toggleShop(id) {
-            const list = getStorage('trip_shop_v5', []);
-            const item = list.find(i => i.id === id);
-            if(item) item.done = !item.done;
-            saveStorage('trip_shop_v5', list);
-            renderShopList();
-        }
-        function delShop(id) {
-            const list = getStorage('trip_shop_v5', []).filter(i => i.id !== id);
-            saveStorage('trip_shop_v5', list);
-            renderShopList();
+            saveStorage('trip_shop_v6', list);
+            input.value = ''; renderShopList();
         }
         function renderShopList() {
-            const list = getStorage('trip_shop_v5', []);
+            const list = getStorage('trip_shop_v6', []);
             document.getElementById('shopList').innerHTML = list.map(i => `
                 <div class="flex items-center bg-white p-2 border-b border-gray-100">
                     <input type="checkbox" class="custom-checkbox mr-3" onchange="toggleShop(${i.id})" ${i.done?'checked':''}>
-                    <div class="flex-1 text-sm font-medium ${i.done?'checked-item':''}">${i.txt}</div>
+                    <div class="flex-1 text-sm ${i.done?'checked-item':''}">${i.txt}</div>
                     <button onclick="delShop(${i.id})" class="text-gray-300 hover:text-red-500 px-2"><i class="fa-solid fa-trash text-xs"></i></button>
                 </div>
             `).join('');
         }
+        function toggleShop(id) { const list = getStorage('trip_shop_v6', []); const item = list.find(i => i.id === id); if(item) item.done = !item.done; saveStorage('trip_shop_v6', list); renderShopList(); }
+        function delShop(id) { const list = getStorage('trip_shop_v6', []).filter(i => i.id !== id); saveStorage('trip_shop_v6', list); renderShopList(); }
+        
+        // 圖片處理
+        function handleAddImage() {
+            const file = document.getElementById('imgInput').files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const maxWidth = 300; // 壓縮
+                    const scale = maxWidth / img.width;
+                    canvas.width = maxWidth;
+                    canvas.height = img.height * scale;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const base64 = canvas.toDataURL('image/jpeg', 0.7);
+                    
+                    const list = getStorage('trip_shop_img_v6', []);
+                    list.push({id: Date.now(), src: base64});
+                    saveStorage('trip_shop_img_v6', list);
+                    renderShopImages();
+                }
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+        function renderShopImages() {
+            const list = getStorage('trip_shop_img_v6', []);
+            document.getElementById('imageGrid').innerHTML = list.map(i => `
+                <div class="photo-item">
+                    <img src="${i.src}">
+                    <button class="photo-del" onclick="delImage(${i.id})">✕</button>
+                </div>
+            `).join('');
+        }
+        function delImage(id) { if(confirm('刪除照片?')) { const list = getStorage('trip_shop_img_v6', []).filter(i => i.id !== id); saveStorage('trip_shop_img_v6', list); renderShopImages(); } }
 
-        // --- 3. 匯率計算機 ---
+        // --- 3. 其他功能 (匯率/翻譯/資訊) ---
         function setCurrency(c) {
-            curLang = c; curRate = c === 'KR' ? 0.024 : 0.22;
+            curLang = c; curRate = RATES[c];
             document.getElementById('currencySymbol').innerText = c === 'KR' ? '₩' : '¥';
             document.getElementById('calcInput').value = ''; document.getElementById('calcResult').innerText = '0';
             const bKR = document.getElementById('btn-calc-kr'), bJP = document.getElementById('btn-calc-jp');
             if(c==='KR'){ bKR.classList.replace('text-gray-300','bg-blue-500'); bKR.classList.add('text-white'); bJP.className="text-xs px-3 py-1 rounded text-gray-300 transition-all"; }
             else { bJP.classList.replace('text-gray-300','bg-red-500'); bJP.classList.add('text-white'); bKR.className="text-xs px-3 py-1 rounded text-gray-300 transition-all"; }
         }
-
-        // --- 4. 翻譯 & 資訊 (可編輯) ---
         function renderPhrases(lang) {
             curLang = lang;
             const list = phrases[lang];
@@ -385,91 +375,34 @@
             `).join('');
         }
         function quickTranslate(txt) {
-            const input = document.getElementById('transInput').value;
-            const q = txt || input;
-            if(!q) return;
+            const input = document.getElementById('transInput').value; const q = txt || input; if(!q) return;
             window.open(`https://translate.google.com/?sl=auto&tl=${curLang==='KR'?'ko':'ja'}&text=${encodeURIComponent(q)}&op=translate`, '_blank');
         }
-
-        // --- 資訊 (CRUD) ---
         function renderInfoList() {
             document.getElementById('infoList').innerHTML = infoData.map((item, idx) => `
                 <div class="sketch-box p-3 ${item.color || 'bg-white'} flex justify-between items-center">
-                    <div>
-                        <div class="text-xs text-gray-500">${item.title}</div>
-                        <div class="text-lg font-black text-gray-800">${item.text}</div>
-                    </div>
+                    <div><div class="text-xs text-gray-500">${item.title}</div><div class="text-lg font-black text-gray-800">${item.text}</div></div>
                     <button onclick="delInfo(${idx})" class="text-gray-300 hover:text-red-500 px-2"><i class="fa-solid fa-trash text-xs"></i></button>
                 </div>
             `).join('');
         }
-        function addInfoItem() {
-            const title = prompt("標題 (例如: 飯店Wifi)");
-            if(!title) return;
-            const text = prompt("內容");
-            if(!text) return;
-            infoData.push({ title, text, color: 'bg-white' });
-            saveStorage('trip_info_2026_v5', infoData);
-            renderInfoList();
-        }
-        function delInfo(idx) {
-            if(!confirm('刪除?')) return;
-            infoData.splice(idx, 1);
-            saveStorage('trip_info_2026_v5', infoData);
-            renderInfoList();
+        function addInfoItem() { const title = prompt("標題"); if(!title) return; const text = prompt("內容"); if(!text) return; infoData.push({ title, text, color: 'bg-white' }); saveStorage('trip_info_2026_v6', infoData); renderInfoList(); }
+        function delInfo(idx) { if(!confirm('刪除?')) return; infoData.splice(idx, 1); saveStorage('trip_info_2026_v6', infoData); renderInfoList(); }
+        function openMap(key, country) { const cleanKey = key.split(/[(（]/)[0]; window.open(country === 'KR' ? `https://map.naver.com/p/search/${cleanKey}` : `https://www.google.com/maps/search/?api=1&query=${cleanKey}`, '_blank'); }
+        async function fetchWeather(lat, lon, city) {
+            document.getElementById('w-city').innerText = city; document.getElementById('w-desc').innerText = '更新中'; document.getElementById('weatherBoard').classList.remove('hidden');
+            try { const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`); const d = await r.json(); document.getElementById('w-temp').innerText = Math.round(d.current_weather.temperature); document.getElementById('w-desc').innerText = '即時'; } catch(e){ document.getElementById('w-desc').innerText = '離線'; }
         }
 
-        // --- Shared ---
+        // Shared
         function getStorage(k, d) { return JSON.parse(localStorage.getItem(k)) || JSON.parse(JSON.stringify(d)); }
         function saveStorage(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
-        
-        async function fetchWeather(lat, lon, city) {
-            document.getElementById('w-city').innerText = city; 
-            document.getElementById('w-desc').innerText = '更新中';
-            document.getElementById('weatherBoard').classList.remove('hidden');
-            try {
-                const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
-                const d = await r.json();
-                document.getElementById('w-temp').innerText = Math.round(d.current_weather.temperature);
-                document.getElementById('w-desc').innerText = '即時';
-            } catch(e){ document.getElementById('w-desc').innerText = '離線'; }
-        }
-
-        function switchTab(id) {
-            document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('text-gray-800'); b.classList.add('text-gray-400'); });
-            event.currentTarget.classList.remove('text-gray-400'); event.currentTarget.classList.add('text-gray-800');
-            window.scrollTo(0,0);
-        }
-
-        // Edit Modal
-        function openEditModal(i=-1) {
-            document.getElementById('editModal').classList.remove('hidden');
-            document.getElementById('editIndex').value = i;
-            if(i===-1) {
-                document.getElementById('modalTitle').innerText="新增"; document.getElementById('btnDelete').classList.add('hidden');
-                document.getElementById('modalTime').value="09:00"; document.getElementById('modalAct').value=""; document.getElementById('modalNote').value="";
-            } else {
-                const item = tripData[curDay].items[i];
-                document.getElementById('modalTitle').innerText="編輯"; document.getElementById('btnDelete').classList.remove('hidden');
-                document.getElementById('modalTime').value=item.time; document.getElementById('modalAct').value=item.act; document.getElementById('modalNote').value=item.note;
-            }
-        }
+        function switchTab(id) { document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('text-gray-800'); b.classList.add('text-gray-400'); }); event.currentTarget.classList.remove('text-gray-400'); event.currentTarget.classList.add('text-gray-800'); window.scrollTo(0,0); }
+        function openEditModal(i=-1) { document.getElementById('editModal').classList.remove('hidden'); document.getElementById('editIndex').value = i; if(i===-1) { document.getElementById('modalTitle').innerText="新增"; document.getElementById('btnDelete').classList.add('hidden'); document.getElementById('modalTime').value="09:00"; document.getElementById('modalAct').value=""; document.getElementById('modalNote').value=""; } else { const item = tripData[curDay].items[i]; document.getElementById('modalTitle').innerText="編輯"; document.getElementById('btnDelete').classList.remove('hidden'); document.getElementById('modalTime').value=item.time; document.getElementById('modalAct').value=item.act; document.getElementById('modalNote').value=item.note; } }
         function closeModal() { document.getElementById('editModal').classList.add('hidden'); }
-        function saveItem() {
-            const idx = parseInt(document.getElementById('editIndex').value);
-            const item = { time: document.getElementById('modalTime').value, act: document.getElementById('modalAct').value, note: document.getElementById('modalNote').value };
-            if(!item.act) return;
-            if(idx===-1) tripData[curDay].items.push(item); else tripData[curDay].items[idx]=item;
-            tripData[curDay].items.sort((a,b)=>a.time.localeCompare(b.time));
-            saveStorage('trip_data_2026_v5', tripData); renderDaily(curDay); closeModal();
-        }
-        function deleteItem() {
-            const idx = parseInt(document.getElementById('editIndex').value);
-            if(confirm('刪除?')) { tripData[curDay].items.splice(idx,1); saveStorage('trip_data_2026_v5', tripData); renderDaily(curDay); closeModal(); }
-        }
-        function resetData() { if(confirm('重置所有資料?')) { localStorage.clear(); location.reload(); } }
+        function saveItem() { const idx = parseInt(document.getElementById('editIndex').value); const item = { time: document.getElementById('modalTime').value, act: document.getElementById('modalAct').value, note: document.getElementById('modalNote').value }; if(!item.act) return; if(idx===-1) tripData[curDay].items.push(item); else tripData[curDay].items[idx]=item; tripData[curDay].items.sort((a,b)=>a.time.localeCompare(b.time)); saveStorage('trip_data_2026_v6', tripData); renderDaily(curDay); closeModal(); }
+        function deleteItem() { const idx = parseInt(document.getElementById('editIndex').value); if(confirm('刪除?')) { tripData[curDay].items.splice(idx,1); saveStorage('trip_data_2026_v6', tripData); renderDaily(curDay); closeModal(); } }
+        function resetData() { if(confirm('重置資料?')) { localStorage.clear(); location.reload(); } }
 
         init();
     </script>
