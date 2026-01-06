@@ -8,7 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg-paper: #fffdf5; --ink: #2c2c2c; --kr-blue: #3b82f6; --jp-red: #ef4444; }
+        :root { --bg-paper: #fffdf5; --ink: #2c2c2c; }
         body { font-family: 'Noto Sans TC', sans-serif; background-color: var(--bg-paper); color: var(--ink); -webkit-tap-highlight-color: transparent; padding-bottom: 110px; }
         .font-header { font-family: 'ZCOOL KuaiLe', cursive; }
         
@@ -17,56 +17,56 @@
             background: white; 
             border: 2px solid var(--ink); 
             border-radius: 8px;
-            box-shadow: 3px 3px 0px rgba(0,0,0,0.15);
+            box-shadow: 3px 3px 0px rgba(0,0,0,0.1);
+        }
+        .sketch-btn {
+            border: 2px solid var(--ink);
+            box-shadow: 2px 2px 0px rgba(0,0,0,1);
             transition: all 0.1s;
         }
-        .sketch-box:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0px rgba(0,0,0,0.15); }
+        .sketch-btn:active { transform: translate(2px, 2px); box-shadow: none; }
         
-        /* 標籤 */
-        .tag-kr { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
-        .tag-jp { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        /* Checkbox 自訂 */
+        .custom-checkbox { width: 1.2rem; height: 1.2rem; accent-color: var(--ink); }
+        .checked-item { text-decoration: line-through; color: #9ca3af; }
 
-        /* 天氣動畫 */
-        .weather-loading { animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+        /* 分頁切換 */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.2s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         /* 隱藏卷軸 */
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Modal */
-        .modal-overlay { background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); }
+        .modal-overlay { background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); }
     </style>
 </head>
 <body>
 
-    <header class="bg-white border-b-2 border-gray-800 pt-12 pb-4 px-4 sticky top-0 z-40 shadow-sm flex justify-between items-center">
+    <header class="bg-white border-b-2 border-gray-800 pt-12 pb-3 px-4 sticky top-0 z-40 flex justify-between items-center shadow-sm">
         <div>
-            <h1 class="text-2xl font-header tracking-wider">🦕 跨國冒險</h1>
-            <div class="text-xs text-gray-500 font-bold mt-1">2026.02.13 <i class="fa-solid fa-arrow-right text-xs"></i> 02.21</div>
+            <h1 class="text-xl font-header tracking-wider">🦕 跨國冒險 2026</h1>
+            <div class="text-[10px] text-gray-500 font-bold">YUNLIN ➔ BUSAN ➔ KYUSHU</div>
         </div>
-        <button onclick="resetData()" class="text-xs text-gray-300 border border-gray-200 px-2 py-1 rounded hover:text-red-500">重置</button>
+        <button onclick="resetData()" class="text-xs text-gray-400 px-2">重置</button>
     </header>
 
     <main class="p-4 max-w-lg mx-auto">
         
-        <section id="plan" class="tab-content block">
+        <section id="plan" class="tab-content active">
             <div class="flex overflow-x-auto gap-2 pb-2 mb-4 no-scrollbar" id="dayNav"></div>
 
-            <div id="weatherBoard" class="mb-4 bg-gradient-to-r from-blue-50 to-orange-50 p-3 rounded-lg border border-gray-200 flex justify-between items-center hidden">
+            <div id="weatherBoard" class="mb-4 bg-blue-50 p-3 rounded-lg border border-blue-100 flex justify-between items-center hidden">
                 <div class="flex items-center gap-3">
                     <div id="w-icon" class="text-3xl">⛅</div>
                     <div>
-                        <div id="w-city" class="text-xs font-bold text-gray-500 uppercase tracking-wide">LOCATION</div>
+                        <div id="w-city" class="text-[10px] font-bold text-gray-400 uppercase">LOCATION</div>
                         <div class="flex items-baseline gap-1">
                             <span id="w-temp" class="text-2xl font-black text-gray-800">--</span>
                             <span class="text-sm">°C</span>
                         </div>
                     </div>
                 </div>
-                <div class="text-right">
-                    <div id="w-desc" class="text-xs font-bold text-blue-600 bg-white px-2 py-1 rounded shadow-sm">正在取得天氣...</div>
-                </div>
+                <div id="w-desc" class="text-xs font-bold text-blue-600 bg-white px-2 py-1 rounded">更新中...</div>
             </div>
 
             <div id="dailyContainer" class="space-y-4"></div>
@@ -76,181 +76,196 @@
             </button>
         </section>
 
-        <section id="translate" class="tab-content hidden">
-            <h2 class="font-header text-xl mb-4 pl-1 border-l-4 border-yellow-400">🗣️ 生存語音包</h2>
+        <section id="shopping" class="tab-content">
+            <h2 class="font-header text-xl mb-4 pl-2 border-l-4 border-yellow-400">🛍️ 必買清單</h2>
             
             <div class="flex gap-2 mb-4">
-                <button onclick="renderPhrases('KR')" id="btn-lang-kr" class="flex-1 py-2 rounded-lg font-bold border-2 border-gray-800 bg-blue-50 text-blue-800">🇰🇷 韓語</button>
-                <button onclick="renderPhrases('JP')" id="btn-lang-jp" class="flex-1 py-2 rounded-lg font-bold border-2 border-gray-200 text-gray-400">🇯🇵 日語</button>
+                <input id="shopInput" type="text" placeholder="例如: 軟糖、藥妝..." class="flex-1 p-3 sketch-box outline-none">
+                <button onclick="addShopItem()" class="bg-yellow-400 px-4 rounded-lg sketch-btn font-bold"><i class="fa-solid fa-plus"></i></button>
             </div>
 
-            <div id="phraseList" class="space-y-3"></div>
+            <div id="shopList" class="space-y-2"></div>
+            <div class="text-center text-xs text-gray-400 mt-4">Tip: 點擊方塊打勾，按垃圾桶刪除</div>
         </section>
 
-        <section id="wallet" class="tab-content hidden">
-            <h2 class="font-header text-xl mb-4 pl-1 border-l-4 border-green-500">💰 記帳與匯率</h2>
-            
-            <div class="sketch-box p-4 mb-6 bg-gray-50">
-                <div class="flex justify-between mb-2 text-xs font-bold text-gray-500">
-                    <span>匯率換算 (自訂)</span>
-                    <span id="currentRateLabel">1 : 0.22</span>
+        <section id="wallet" class="tab-content">
+            <h2 class="font-header text-xl mb-4 pl-2 border-l-4 border-green-500">💰 錢包管家</h2>
+
+            <div class="bg-gray-800 text-white p-4 rounded-xl shadow-lg mb-6 relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 text-gray-700 opacity-20 text-9xl"><i class="fa-solid fa-calculator"></i></div>
+                <div class="flex justify-between items-center mb-4 relative z-10">
+                    <span class="text-xs font-bold text-gray-400">匯率試算 (只算不記)</span>
+                    <div class="flex bg-gray-700 rounded p-1 gap-1">
+                        <button onclick="setCurrency('KR')" id="btn-calc-kr" class="text-xs px-2 py-1 rounded bg-blue-500 text-white">韓幣</button>
+                        <button onclick="setCurrency('JP')" id="btn-calc-jp" class="text-xs px-2 py-1 rounded text-gray-300">日幣</button>
+                    </div>
                 </div>
-                <div class="flex gap-2 mb-3">
-                    <button onclick="setCurrency('KR')" class="flex-1 py-1 text-xs border border-gray-300 rounded bg-white hover:bg-blue-50">韓幣 ₩</button>
-                    <button onclick="setCurrency('JP')" class="flex-1 py-1 text-xs border border-gray-300 rounded bg-white hover:bg-red-50">日幣 ¥</button>
+                <div class="flex items-baseline gap-2 relative z-10">
+                    <span class="text-2xl font-mono" id="currencySymbol">₩</span>
+                    <input id="calcInput" type="number" class="bg-transparent text-4xl font-bold w-full outline-none text-white placeholder-gray-600" placeholder="0">
                 </div>
-                <div class="flex items-center gap-2">
-                    <input id="calcInput" type="number" placeholder="外幣" class="flex-1 text-xl font-bold p-2 border-b-2 border-gray-300 bg-transparent outline-none">
-                    <i class="fa-solid fa-arrow-right text-gray-400"></i>
-                    <div class="text-xl font-bold text-green-700">NT$ <span id="calcResult">0</span></div>
+                <div class="mt-2 pt-2 border-t border-gray-600 text-right relative z-10">
+                    <span class="text-green-400 font-bold text-xl">≈ NT$ <span id="calcResult">0</span></span>
                 </div>
             </div>
 
-            <div class="flex gap-2 mb-4">
-                <input id="expenseDesc" type="text" placeholder="品項" class="flex-1 p-3 border-2 border-gray-800 rounded-lg outline-none">
-                <input id="expenseAmt" type="number" placeholder="金額" class="w-24 p-3 border-2 border-gray-800 rounded-lg outline-none">
-                <button onclick="addExpense()" class="bg-gray-800 text-white px-4 rounded-lg"><i class="fa-solid fa-plus"></i></button>
+            <div class="sketch-box p-4 mb-4">
+                <h3 class="font-bold mb-3 text-sm"><i class="fa-solid fa-pen"></i> 記下一筆消費</h3>
+                <div class="flex gap-2 mb-2">
+                    <input id="expenseDesc" type="text" placeholder="品項" class="flex-1 p-2 border-b-2 border-gray-200 outline-none rounded bg-gray-50">
+                    <input id="expenseAmt" type="number" placeholder="外幣金額" class="w-24 p-2 border-b-2 border-gray-200 outline-none rounded bg-gray-50">
+                </div>
+                <button onclick="addExpense()" class="w-full bg-white border-2 border-gray-800 py-2 rounded font-bold hover:bg-gray-100 mt-1">加入帳本</button>
             </div>
 
             <div id="walletList" class="space-y-3 pb-8"></div>
-            <button onclick="clearExpenses()" class="text-xs text-gray-400 underline w-full text-center">清空帳本</button>
+            <button onclick="clearExpenses()" class="text-xs text-gray-400 underline w-full text-center mb-8">清空帳本</button>
+        </section>
+
+        <section id="translate" class="tab-content">
+            <h2 class="font-header text-xl mb-4 pl-2 border-l-4 border-purple-500">🗣️ 翻譯與溝通</h2>
+
+            <div class="sketch-box p-4 mb-6 bg-purple-50">
+                <label class="text-xs font-bold text-gray-500 block mb-2">我想跟店員說...</label>
+                <div class="flex gap-2">
+                    <input id="transInput" type="text" placeholder="輸入中文 (例如: 請給我水)" class="flex-1 p-2 border border-gray-300 rounded outline-none">
+                    <button onclick="quickTranslate()" class="bg-purple-600 text-white px-3 rounded font-bold"><i class="fa-solid fa-language"></i></button>
+                </div>
+            </div>
+
+            <div class="flex gap-2 mb-4">
+                <button onclick="renderPhrases('KR')" id="btn-lang-kr" class="flex-1 py-2 rounded font-bold border-2 border-gray-800 bg-blue-100 text-blue-800">🇰🇷 韓語包</button>
+                <button onclick="renderPhrases('JP')" id="btn-lang-jp" class="flex-1 py-2 rounded font-bold border-2 border-gray-200 text-gray-400">🇯🇵 日語包</button>
+            </div>
+            <div id="phraseList" class="space-y-3"></div>
+        </section>
+
+        <section id="info" class="tab-content">
+            <h2 class="font-header text-xl mb-4 pl-2 border-l-4 border-gray-500">ℹ️ 實用資訊</h2>
+            
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="sketch-box p-3 bg-red-50 text-center">
+                    <div class="text-xs text-gray-500">日本報警</div>
+                    <div class="text-2xl font-black text-red-600">110</div>
+                    <div class="text-xs text-gray-400">救護車 119</div>
+                </div>
+                <div class="sketch-box p-3 bg-blue-50 text-center">
+                    <div class="text-xs text-gray-500">韓國報警</div>
+                    <div class="text-2xl font-black text-blue-600">112</div>
+                    <div class="text-xs text-gray-400">救護車 119</div>
+                </div>
+            </div>
+
+            <div class="sketch-box p-4 mb-3">
+                <h3 class="font-bold border-b pb-2 mb-2">🚗 日本自駕密語</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span>加油 (紅)</span>
+                        <span class="font-bold bg-gray-100 px-2 rounded">Regular Man-tan</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>設定導航</span>
+                        <span class="font-bold bg-gray-100 px-2 rounded">MapCode Please</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>停車場</span>
+                        <span class="font-bold bg-gray-100 px-2 rounded">P (Parking)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sketch-box p-4 mb-3">
+                <h3 class="font-bold border-b pb-2 mb-2">📱 韓國計程車</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="p-2 bg-gray-100 rounded text-center font-bold text-lg">
+                        Jumbo Taxi (大車)
+                    </div>
+                    <p class="text-xs text-gray-500">請給司機看韓文地址，不要只唸英文站名。</p>
+                </div>
+            </div>
         </section>
 
     </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 flex justify-around items-center py-3 pb-8 z-50">
-        <button onclick="switchTab('plan')" class="nav-btn text-gray-800 w-1/3 flex flex-col items-center">
-            <i class="fa-solid fa-map-location-dot text-xl mb-1"></i><span class="text-[10px] font-bold">行程</span>
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 flex justify-around items-center py-2 pb-6 z-50 text-[10px]">
+        <button onclick="switchTab('plan')" class="nav-btn text-gray-800 w-1/5 flex flex-col items-center p-2">
+            <i class="fa-solid fa-map-location-dot text-xl mb-1"></i><b>行程</b>
         </button>
-        <button onclick="switchTab('translate')" class="nav-btn text-gray-400 w-1/3 flex flex-col items-center">
-            <i class="fa-solid fa-language text-xl mb-1"></i><span class="text-[10px] font-bold">翻譯</span>
+        <button onclick="switchTab('shopping')" class="nav-btn text-gray-400 w-1/5 flex flex-col items-center p-2">
+            <i class="fa-solid fa-cart-shopping text-xl mb-1"></i><b>待購</b>
         </button>
-        <button onclick="switchTab('wallet')" class="nav-btn text-gray-400 w-1/3 flex flex-col items-center">
-            <i class="fa-solid fa-wallet text-xl mb-1"></i><span class="text-[10px] font-bold">錢包</span>
+        <button onclick="switchTab('wallet')" class="nav-btn text-gray-400 w-1/5 flex flex-col items-center p-2">
+            <i class="fa-solid fa-wallet text-xl mb-1"></i><b>錢包</b>
+        </button>
+        <button onclick="switchTab('translate')" class="nav-btn text-gray-400 w-1/5 flex flex-col items-center p-2">
+            <i class="fa-solid fa-language text-xl mb-1"></i><b>翻譯</b>
+        </button>
+        <button onclick="switchTab('info')" class="nav-btn text-gray-400 w-1/5 flex flex-col items-center p-2">
+            <i class="fa-solid fa-circle-info text-xl mb-1"></i><b>資訊</b>
         </button>
     </nav>
 
     <div id="editModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-sm p-6 rounded-2xl shadow-2xl border-2 border-gray-800">
-            <h3 class="font-header text-xl mb-4" id="modalTitle">新增行程</h3>
+        <div class="bg-white w-full max-w-sm p-6 rounded-xl shadow-2xl border-2 border-gray-800">
+            <h3 class="font-header text-xl mb-4" id="modalTitle">編輯行程</h3>
             <input type="hidden" id="editIndex">
             <div class="space-y-3">
-                <div>
-                    <label class="text-xs font-bold text-gray-500">時間</label>
-                    <input id="modalTime" type="time" class="w-full p-2 border border-gray-300 rounded bg-gray-50">
-                </div>
-                <div>
-                    <label class="text-xs font-bold text-gray-500">標題 (地點)</label>
-                    <input id="modalAct" type="text" class="w-full p-2 border border-gray-300 rounded">
-                </div>
-                <div>
-                    <label class="text-xs font-bold text-gray-500">備註</label>
-                    <textarea id="modalNote" rows="3" class="w-full p-2 border border-gray-300 rounded"></textarea>
-                </div>
+                <input id="modalTime" type="time" class="w-full p-2 border rounded bg-gray-50">
+                <input id="modalAct" type="text" placeholder="標題/地點" class="w-full p-2 border rounded">
+                <textarea id="modalNote" rows="3" placeholder="備註..." class="w-full p-2 border rounded"></textarea>
             </div>
-            <div class="flex gap-2 mt-6">
-                <button onclick="closeModal()" class="flex-1 py-3 bg-gray-100 font-bold rounded-lg text-gray-500">取消</button>
-                <button onclick="saveItem()" class="flex-1 py-3 bg-gray-800 text-white font-bold rounded-lg">儲存</button>
+            <div class="flex gap-2 mt-4">
+                <button onclick="closeModal()" class="flex-1 py-2 bg-gray-100 rounded text-gray-500">取消</button>
+                <button onclick="saveItem()" class="flex-1 py-2 bg-gray-800 text-white rounded font-bold">儲存</button>
             </div>
-            <button onclick="deleteItem()" id="btnDelete" class="w-full mt-2 text-red-500 text-xs py-2 hidden">刪除此項目</button>
+            <button onclick="deleteItem()" id="btnDelete" class="w-full mt-2 text-red-500 text-xs py-2 hidden">刪除</button>
         </div>
     </div>
 
     <script>
         // --- 核心資料 ---
-        // 預設行程 (如果 localStorage 沒資料就用這個)
         const defaultTrip = [
-            { d: "D0", date: "2/13", week:"(五)", city: "Yunlin", lat: 23.7, lon: 120.4, country: "TW", items: [
-                { time: "21:30", act: "雲林虎尾出發", note: "預約計程車，保暖衣物手持" },
-                { time: "22:16", act: "雲林高鐵", note: "末班車前往桃園 (23:18著)" }
-            ]},
-            { d: "D1", date: "2/14", week:"(六)", city: "Busan", lat: 35.17, lon: 129.07, country: "KR", items: [
-                { time: "06:10", act: "金海機場抵達", note: "Money Box 換錢、Q-CODE" },
-                { time: "08:00", act: "松亭三代豬肉湯飯", note: "西面市場。點不辣給小孩" },
-                { time: "12:30", act: "三五亭人蔘雞", note: "西面站附近，午餐補體力" }
-            ]},
-            { d: "D2", date: "2/15", week:"(日)", city: "Busan", lat: 35.17, lon: 129.07, country: "KR", items: [
-                { time: "10:30", act: "天空膠囊列車", note: "尾浦出發 (需預約)" },
-                { time: "13:00", act: "海理團路", note: "逛雜貨、拍貼機、吃糖餅" }
-            ]},
-            { d: "D3", date: "2/16", week:"(一)", city: "Busan", lat: 35.1, lon: 129.0, country: "KR", items: [
-                { time: "09:30", act: "甘川洞文化村", note: "找小王子拍照、集章" },
-                { time: "17:00", act: "釜山港登船", note: "新山茶花號 (17:30 截止)" }
-            ]},
-            { d: "D4", date: "2/17", week:"(二)", city: "Nagasaki", lat: 32.75, lon: 129.87, country: "JP", items: [
-                { time: "09:00", act: "博多車站", note: "領票、買兒童票、火車便當" },
-                { time: "11:30", act: "長崎", note: "索取 5 折觀光卡" },
-                { time: "15:30", act: "平和公園", note: "原爆資料館參觀" }
-            ]},
-            { d: "D5", date: "2/18", week:"(三)", city: "Nagasaki", lat: 32.75, lon: 129.87, country: "JP", items: [
-                { time: "10:15", act: "企鵝水族館", note: "搭縣營巴士，出示折扣卡" },
-                { time: "17:15", act: "眼鏡橋", note: "找愛心石頭" }
-            ]},
-            { d: "D6", date: "2/19", week:"(四)", city: "Hita", lat: 33.32, lon: 130.93, country: "JP", items: [
-                { time: "08:30", act: "NIPPON 取車", note: "檢查雪胎、ETC" },
-                { time: "15:20", act: "日田豆田町", note: "鰻魚飯糰、女兒節娃娃" },
-                { time: "17:00", act: "天瀨溫泉", note: "溪仙閣 Check-in" }
-            ]},
-            { d: "D7", date: "2/20", week:"(五)", city: "Yufu", lat: 33.26, lon: 131.36, country: "JP", items: [
-                { time: "09:40", act: "九州自然動物園", note: "Jungle Bus 餵獅子" },
-                { time: "15:45", act: "金鱗湖", note: "看晨霧、水中鳥居" }
-            ]},
-            { d: "D8", date: "2/21", week:"(六)", city: "Oita", lat: 33.23, lon: 131.61, country: "JP", items: [
-                { time: "12:30", act: "豐後茶屋", note: "吃雞肉天婦羅" },
-                { time: "16:30", act: "大分機場", note: "IT241 回台灣" }
-            ]}
+            { d: "D0", date: "2/13", city: "Yunlin", lat: 23.7, lon: 120.4, country: "TW", items: [{ time: "21:30", act: "雲林虎尾出發", note: "預約計程車" }, { time: "22:16", act: "雲林高鐵", note: "末班車前往桃園" }]},
+            { d: "D1", date: "2/14", city: "Busan", lat: 35.17, lon: 129.07, country: "KR", items: [{ time: "06:10", act: "金海機場抵達", note: "Money Box 換錢" }, { time: "08:00", act: "松亭三代豬肉湯飯", note: "西面市場" }]},
+            { d: "D2", date: "2/15", city: "Busan", lat: 35.17, lon: 129.07, country: "KR", items: [{ time: "10:30", act: "天空膠囊列車", note: "尾浦出發" }, { time: "13:00", act: "海理團路", note: "逛街" }]},
+            { d: "D3", date: "2/16", city: "Busan", lat: 35.1, lon: 129.0, country: "KR", items: [{ time: "09:30", act: "甘川洞文化村", note: "小王子拍照" }, { time: "17:00", act: "釜山港登船", note: "新山茶花號" }]},
+            { d: "D4", date: "2/17", city: "Nagasaki", lat: 32.75, lon: 129.87, country: "JP", items: [{ time: "09:00", act: "博多車站", note: "買票" }, { time: "11:30", act: "長崎 Check-in", note: "索取折扣卡" }]},
+            { d: "D5", date: "2/18", city: "Nagasaki", lat: 32.75, lon: 129.87, country: "JP", items: [{ time: "10:15", act: "企鵝水族館", note: "搭巴士" }, { time: "17:15", act: "眼鏡橋", note: "找愛心石" }]},
+            { d: "D6", date: "2/19", city: "Hita", lat: 33.32, lon: 130.93, country: "JP", items: [{ time: "08:30", act: "NIPPON 取車", note: "檢查雪胎" }, { time: "17:00", act: "天瀨溫泉", note: "溪仙閣" }]},
+            { d: "D7", date: "2/20", city: "Yufu", lat: 33.26, lon: 131.36, country: "JP", items: [{ time: "09:40", act: "九州自然動物園", note: "Jungle Bus" }, { time: "15:45", act: "金鱗湖", note: "晨霧" }]},
+            { d: "D8", date: "2/21", city: "Oita", lat: 33.23, lon: 131.61, country: "JP", items: [{ time: "12:30", act: "豐後茶屋", note: "天婦羅" }, { time: "16:30", act: "大分機場", note: "回台灣" }]}
         ];
 
-        // 實用單字庫
         const phrases = {
-            KR: [
-                { t: "你好", o: "안녕하세요", s: "安妞哈se唷" },
-                { t: "謝謝", o: "감사합니다", s: "康撒哈咪搭" },
-                { t: "多少錢?", o: "얼마예요?", s: "喔媽耶唷?" },
-                { t: "請給我這個", o: "이거 주세요", s: "伊勾 朱se唷" },
-                { t: "不辣", o: "안 맵게", s: "安 Me-Gae" },
-                { t: "廁所?", o: "화장실?", s: "花江希?" },
-                { t: "去這裡(給司機看)", o: "여기로 가주세요", s: "唷gi羅 嘎朱se唷" }
-            ],
-            JP: [
-                { t: "你好", o: "こんにちは", s: "空你七哇" },
-                { t: "謝謝", o: "ありがとうございます", s: "阿哩嘎多" },
-                { t: "多少錢?", o: "いくらですか？", s: "伊哭拉 des卡?" },
-                { t: "請給我這個", o: "これをお願いします", s: "Kore o 喔ne蓋西媽死" },
-                { t: "廁所?", o: "トイレはどこですか？", s: "Toilet 哇 哆口des卡?" },
-                { t: "我要折扣卡", o: "Discount Card ください", s: "Discount Card 哭搭賽" },
-                { t: "加滿油", o: "レギュラー満タン", s: "Regular Man-tan" }
-            ]
+            KR: [{t:"你好",o:"안녕하세요"}, {t:"謝謝",o:"감사합니다"}, {t:"多少錢?",o:"얼마예요?"}, {t:"廁所?",o:"화장실?"}, {t:"不辣",o:"안 맵게"}, {t:"請給我這個",o:"이거 주세요"}],
+            JP: [{t:"你好",o:"こんにちは"}, {t:"謝謝",o:"ありがとうございます"}, {t:"多少錢?",o:"いくらですか"}, {t:"廁所?",o:"トイレはどこですか"}, {t:"我要折扣卡",o:"Discount Card ください"}, {t:"加滿油",o:"レギュラー満タン"}]
         };
 
-        // 狀態變數
         let tripData = [];
         let curDay = 0;
-        let curRate = 0.22; 
-        
-        // --- 初始化 ---
+        let curRate = 0.024; // Default KR
+        let curSymbol = "₩";
+        let curLang = 'KR';
+
         function init() {
-            // 讀取行程
-            const saved = localStorage.getItem('trip_data_2026');
+            const saved = localStorage.getItem('trip_data_2026_v2');
             tripData = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(defaultTrip));
-            
             renderDayNav();
             renderDaily(0);
-            renderWallet();
-
-            // 監聽匯率計算
+            renderShopList();
+            renderWalletList();
+            renderPhrases('KR');
+            
+            // 匯率監聽
             document.getElementById('calcInput').addEventListener('input', (e) => {
-                document.getElementById('calcResult').innerText = Math.round(e.target.value * curRate);
+                document.getElementById('calcResult').innerText = Math.round(e.target.value * curRate).toLocaleString();
             });
         }
 
-        // --- 核心功能：渲染行程 ---
+        // --- 1. 行程 (Plan) ---
         function renderDayNav() {
-            const nav = document.getElementById('dayNav');
-            nav.innerHTML = tripData.map((d, i) => `
-                <button onclick="renderDaily(${i})" 
-                    class="flex-shrink-0 px-4 py-2 rounded-lg text-xs font-bold transition-all border
-                    ${i === curDay ? 'bg-gray-800 text-white border-gray-800' : 'bg-white text-gray-400 border-gray-200'}">
+            document.getElementById('dayNav').innerHTML = tripData.map((d, i) => `
+                <button onclick="renderDaily(${i})" class="flex-shrink-0 px-3 py-2 rounded-lg text-xs font-bold border transition-all ${i === curDay ? 'bg-gray-800 text-white border-gray-800' : 'bg-white text-gray-400 border-gray-200'}">
                     ${d.d} ${d.date}
                 </button>
             `).join('');
@@ -258,230 +273,190 @@
 
         function renderDaily(idx) {
             curDay = idx;
-            const day = tripData[idx];
             renderDayNav();
-            fetchWeather(day.lat, day.lon, day.city); // 抓天氣
+            const day = tripData[idx];
+            fetchWeather(day.lat, day.lon, day.city);
+            
+            // 自動切換匯率/語言建議
+            if(day.country === 'JP' && curLang !== 'JP') { setCurrency('JP'); renderPhrases('JP'); }
+            if(day.country === 'KR' && curLang !== 'KR') { setCurrency('KR'); renderPhrases('KR'); }
 
-            const container = document.getElementById('dailyContainer');
-            if (day.items.length === 0) {
-                container.innerHTML = `<div class="text-center text-gray-300 py-10">點擊下方按鈕新增行程</div>`;
-            } else {
-                container.innerHTML = day.items.map((item, i) => `
-                    <div class="sketch-box p-4 relative" onclick="openEditModal(${i})">
-                        <div class="flex items-start justify-between mb-1">
-                            <span class="bg-yellow-300 text-xs font-black px-2 py-1 rounded border border-black">${item.time}</span>
-                            <span class="text-[10px] text-gray-300">✎ 編輯</span>
-                        </div>
-                        <div class="text-lg font-bold text-blue-700 underline decoration-blue-300 underline-offset-4 cursor-pointer mb-2" 
-                             onclick="event.stopPropagation(); openMap('${item.act}', '${day.country}')">
-                            ${item.act} <i class="fa-solid fa-location-arrow text-xs ml-1"></i>
-                        </div>
-                        <div class="text-sm text-gray-600 bg-gray-50 p-2 rounded">
-                            ${item.note || '無備註'}
+            document.getElementById('dailyContainer').innerHTML = day.items.map((item, i) => `
+                <div class="sketch-box p-4 relative bg-white" onclick="openEditModal(${i})">
+                    <div class="flex justify-between items-start mb-1">
+                        <span class="bg-yellow-300 text-xs font-black px-2 py-1 rounded border border-black">${item.time}</span>
+                        <div class="text-blue-600 font-bold underline cursor-pointer" onclick="event.stopPropagation(); openMap('${item.act}', '${day.country}')">
+                            <i class="fa-solid fa-location-arrow"></i> 地圖
                         </div>
                     </div>
-                `).join('');
-            }
+                    <div class="text-lg font-bold mb-1">${item.act}</div>
+                    <div class="text-sm text-gray-500 bg-gray-50 p-2 rounded">${item.note}</div>
+                </div>
+            `).join('');
         }
 
-        // --- 功能：地圖連結 ---
-        function openMap(keyword, country) {
-            // 移除括號內的說明文字，提高搜尋準確度
-            const cleanKey = keyword.split(/[（(]/)[0];
-            const url = country === 'KR' 
-                ? `https://map.naver.com/p/search/${cleanKey}`
-                : `https://www.google.com/maps/search/?api=1&query=${cleanKey}`;
+        function openMap(key, country) {
+            const url = country === 'KR' ? `https://map.naver.com/p/search/${key}` : `https://www.google.com/maps/search/?api=1&query=${key}`;
             window.open(url, '_blank');
         }
 
-        // --- 功能：抓天氣 (Open-Meteo) ---
-        async function fetchWeather(lat, lon, city) {
-            const board = document.getElementById('weatherBoard');
-            board.classList.remove('hidden');
-            document.getElementById('w-city').innerText = city;
-            document.getElementById('w-desc').innerText = "更新中...";
-            document.getElementById('w-desc').classList.add('weather-loading');
-
-            try {
-                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
-                const data = await res.json();
-                const temp = Math.round(data.current_weather.temperature);
-                const code = data.current_weather.weathercode;
-                
-                document.getElementById('w-temp').innerText = temp;
-                document.getElementById('w-icon').innerText = getWeatherIcon(code);
-                document.getElementById('w-desc').innerText = "即時氣溫";
-                document.getElementById('w-desc').classList.remove('weather-loading');
-            } catch (e) {
-                document.getElementById('w-desc').innerText = "離線";
-            }
+        // --- 2. 待購清單 (Shopping) ---
+        function addShopItem() {
+            const input = document.getElementById('shopInput');
+            if(!input.value.trim()) return;
+            const list = getStorage('trip_shop_v2');
+            list.push({id: Date.now(), txt: input.value, done: false});
+            saveStorage('trip_shop_v2', list);
+            input.value = '';
+            renderShopList();
         }
-
-        function getWeatherIcon(code) {
-            if (code <= 1) return '☀️';
-            if (code <= 3) return '⛅';
-            if (code <= 48) return '🌫️';
-            if (code <= 67) return '🌧️';
-            if (code <= 77) return '❄️';
-            return '⛈️';
+        function toggleShop(id) {
+            const list = getStorage('trip_shop_v2');
+            const item = list.find(i => i.id === id);
+            if(item) item.done = !item.done;
+            saveStorage('trip_shop_v2', list);
+            renderShopList();
         }
-
-        // --- 功能：編輯行程 (Modal) ---
-        function openEditModal(itemIdx = -1) {
-            const modal = document.getElementById('editModal');
-            const day = tripData[curDay];
-            
-            modal.classList.remove('hidden');
-            document.getElementById('editIndex').value = itemIdx;
-            
-            if (itemIdx === -1) {
-                // 新增
-                document.getElementById('modalTitle').innerText = "新增行程";
-                document.getElementById('modalTime').value = "09:00";
-                document.getElementById('modalAct').value = "";
-                document.getElementById('modalNote').value = "";
-                document.getElementById('btnDelete').classList.add('hidden');
-            } else {
-                // 編輯
-                const item = day.items[itemIdx];
-                document.getElementById('modalTitle').innerText = "編輯內容";
-                document.getElementById('modalTime').value = item.time;
-                document.getElementById('modalAct').value = item.act;
-                document.getElementById('modalNote').value = item.note;
-                document.getElementById('btnDelete').classList.remove('hidden');
-            }
+        function delShop(id) {
+            const list = getStorage('trip_shop_v2').filter(i => i.id !== id);
+            saveStorage('trip_shop_v2', list);
+            renderShopList();
         }
-
-        function closeModal() {
-            document.getElementById('editModal').classList.add('hidden');
-        }
-
-        function saveItem() {
-            const idx = parseInt(document.getElementById('editIndex').value);
-            const newItem = {
-                time: document.getElementById('modalTime').value,
-                act: document.getElementById('modalAct').value,
-                note: document.getElementById('modalNote').value
-            };
-
-            if (!newItem.act) return alert('請輸入標題');
-
-            if (idx === -1) {
-                tripData[curDay].items.push(newItem);
-            } else {
-                tripData[curDay].items[idx] = newItem;
-            }
-            
-            // 依時間排序
-            tripData[curDay].items.sort((a, b) => a.time.localeCompare(b.time));
-            
-            saveToLocal();
-            renderDaily(curDay);
-            closeModal();
-        }
-
-        function deleteItem() {
-            if(!confirm("確定刪除嗎？")) return;
-            const idx = parseInt(document.getElementById('editIndex').value);
-            tripData[curDay].items.splice(idx, 1);
-            saveToLocal();
-            renderDaily(curDay);
-            closeModal();
-        }
-
-        function saveToLocal() {
-            localStorage.setItem('trip_data_2026', JSON.stringify(tripData));
-        }
-
-        function resetData() {
-            if(confirm("這會重置所有行程內容回到預設值，確定嗎？")) {
-                localStorage.removeItem('trip_data_2026');
-                location.reload();
-            }
-        }
-
-        // --- 功能：翻譯 ---
-        function renderPhrases(lang) {
-            document.getElementById('btn-lang-kr').className = lang === 'KR' ? 'flex-1 py-2 rounded-lg font-bold border-2 border-gray-800 bg-blue-50 text-blue-800' : 'flex-1 py-2 rounded-lg font-bold border-2 border-gray-200 text-gray-400';
-            document.getElementById('btn-lang-jp').className = lang === 'JP' ? 'flex-1 py-2 rounded-lg font-bold border-2 border-gray-800 bg-red-50 text-red-800' : 'flex-1 py-2 rounded-lg font-bold border-2 border-gray-200 text-gray-400';
-            
-            const list = phrases[lang];
-            const colorClass = lang === 'KR' ? 'text-blue-600' : 'text-red-600';
-            
-            document.getElementById('phraseList').innerHTML = list.map(p => `
-                <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
-                    <div class="text-xs text-gray-400 font-bold mb-1">${p.t}</div>
-                    <div class="text-xl font-bold mb-1 ${colorClass}">${p.o}</div>
-                    <div class="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded inline-block">🗣️ ${p.s}</div>
+        function renderShopList() {
+            const list = getStorage('trip_shop_v2');
+            document.getElementById('shopList').innerHTML = list.map(i => `
+                <div class="flex items-center bg-white p-3 border-b border-gray-100">
+                    <input type="checkbox" class="custom-checkbox mr-3" onchange="toggleShop(${i.id})" ${i.done?'checked':''}>
+                    <div class="flex-1 font-bold ${i.done?'checked-item':''}">${i.txt}</div>
+                    <button onclick="delShop(${i.id})" class="text-gray-300 hover:text-red-500 px-2"><i class="fa-solid fa-trash"></i></button>
                 </div>
             `).join('');
         }
 
-        // --- 功能：錢包 ---
-        function setCurrency(curr) {
-            curRate = curr === 'KR' ? 0.024 : 0.22;
-            document.getElementById('currentRateLabel').innerText = `1 : ${curRate}`;
-            document.getElementById('calcInput').placeholder = curr === 'KR' ? "韓元" : "日幣";
-            document.getElementById('calcInput').value = "";
-            document.getElementById('calcResult').innerText = "0";
+        // --- 3. 錢包 (Wallet) ---
+        function setCurrency(c) {
+            curLang = c;
+            curRate = c === 'KR' ? 0.024 : 0.22;
+            curSymbol = c === 'KR' ? '₩' : '¥';
+            document.getElementById('currencySymbol').innerText = curSymbol;
+            document.getElementById('calcInput').value = '';
+            document.getElementById('calcResult').innerText = '0';
+            
+            // Btn Styles
+            const bKR = document.getElementById('btn-calc-kr');
+            const bJP = document.getElementById('btn-calc-jp');
+            if(c==='KR'){ bKR.className="text-xs px-2 py-1 rounded bg-blue-500 text-white"; bJP.className="text-xs px-2 py-1 rounded text-gray-300"; }
+            else { bKR.className="text-xs px-2 py-1 rounded text-gray-300"; bJP.className="text-xs px-2 py-1 rounded bg-red-500 text-white"; }
         }
-
         function addExpense() {
-            const desc = document.getElementById('expenseDesc').value;
-            const amt = document.getElementById('expenseAmt').value;
-            if(!desc || !amt) return;
-            
-            const record = { desc, amt, twd: Math.round(amt * curRate), date: tripData[curDay].date };
-            let history = JSON.parse(localStorage.getItem('trip_wallet_2026') || '[]');
-            history.unshift(record);
-            localStorage.setItem('trip_wallet_2026', JSON.stringify(history));
-            
-            document.getElementById('expenseDesc').value = '';
-            document.getElementById('expenseAmt').value = '';
-            renderWallet();
+            const d = document.getElementById('expenseDesc').value;
+            const a = document.getElementById('expenseAmt').value;
+            if(!d || !a) return;
+            const list = getStorage('trip_wallet_v2');
+            list.unshift({d, a, s: curSymbol, t: Math.round(a*curRate), date: tripData[curDay].date});
+            saveStorage('trip_wallet_v2', list);
+            document.getElementById('expenseDesc').value='';
+            document.getElementById('expenseAmt').value='';
+            renderWalletList();
         }
-
-        function renderWallet() {
-            const history = JSON.parse(localStorage.getItem('trip_wallet_2026') || '[]');
-            document.getElementById('walletList').innerHTML = history.map(h => `
-                <div class="flex justify-between items-center bg-white p-3 border border-gray-200 rounded-lg">
+        function renderWalletList() {
+            const list = getStorage('trip_wallet_v2');
+            document.getElementById('walletList').innerHTML = list.map(i => `
+                <div class="flex justify-between items-center bg-white p-3 border-b border-gray-100 last:border-0">
                     <div>
-                        <div class="font-bold text-gray-800">${h.desc}</div>
-                        <div class="text-[10px] text-gray-400">${h.date}</div>
+                        <div class="font-bold text-gray-800">${i.d}</div>
+                        <div class="text-[10px] text-gray-400">${i.date}</div>
                     </div>
                     <div class="text-right">
-                        <div class="text-xs text-gray-400">${h.amt}</div>
-                        <div class="font-bold text-green-600">$${h.twd}</div>
+                        <div class="text-xs text-gray-400">${i.s}${i.a}</div>
+                        <div class="font-bold text-green-600">$${i.t}</div>
                     </div>
                 </div>
             `).join('');
         }
+        function clearExpenses() { if(confirm('清空?')) { saveStorage('trip_wallet_v2', []); renderWalletList(); } }
 
-        function clearExpenses() {
-            if(confirm("清空帳本?")) {
-                localStorage.removeItem('trip_wallet_2026');
-                renderWallet();
+        // --- 4. 翻譯 (Translate) ---
+        function renderPhrases(lang) {
+            curLang = lang;
+            const list = phrases[lang];
+            // Update Btns
+            document.getElementById('btn-lang-kr').className = lang==='KR' ? 'flex-1 py-2 rounded font-bold border-2 border-gray-800 bg-blue-100 text-blue-800' : 'flex-1 py-2 rounded font-bold border-2 border-gray-200 text-gray-400';
+            document.getElementById('btn-lang-jp').className = lang==='JP' ? 'flex-1 py-2 rounded font-bold border-2 border-gray-800 bg-red-100 text-red-800' : 'flex-1 py-2 rounded font-bold border-2 border-gray-200 text-gray-400';
+
+            document.getElementById('phraseList').innerHTML = list.map(p => `
+                <div class="bg-white p-3 rounded border border-gray-200 shadow-sm flex justify-between items-center">
+                    <div>
+                        <div class="text-xs text-gray-400 font-bold">${p.t}</div>
+                        <div class="text-lg font-bold ${lang==='KR'?'text-blue-600':'text-red-600'}">${p.o}</div>
+                    </div>
+                    <button class="text-gray-300" onclick="quickTranslate('${p.o}')"><i class="fa-solid fa-volume-high"></i></button>
+                </div>
+            `).join('');
+        }
+        function quickTranslate(txt) {
+            const input = document.getElementById('transInput').value;
+            const q = txt || input;
+            if(!q) return;
+            window.open(`https://translate.google.com/?sl=auto&tl=${curLang==='KR'?'ko':'ja'}&text=${encodeURIComponent(q)}&op=translate`, '_blank');
+        }
+
+        // --- Shared & Helpers ---
+        function getStorage(k) { return JSON.parse(localStorage.getItem(k)||'[]'); }
+        function saveStorage(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
+        
+        async function fetchWeather(lat, lon, city) {
+            const elC = document.getElementById('w-city');
+            const elT = document.getElementById('w-temp');
+            const elD = document.getElementById('w-desc');
+            const board = document.getElementById('weatherBoard');
+            board.classList.remove('hidden');
+            elC.innerText = city; elD.innerText = '更新中...';
+            try {
+                const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+                const d = await r.json();
+                elT.innerText = Math.round(d.current_weather.temperature);
+                elD.innerText = '即時氣溫';
+            } catch(e){ elD.innerText = '離線'; }
+        }
+
+        function switchTab(id) {
+            document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('text-gray-800'); b.classList.add('text-gray-400'); });
+            event.currentTarget.classList.remove('text-gray-400'); event.currentTarget.classList.add('text-gray-800');
+            window.scrollTo(0,0);
+        }
+
+        // Edit Modal
+        function openEditModal(i=-1) {
+            document.getElementById('editModal').classList.remove('hidden');
+            document.getElementById('editIndex').value = i;
+            if(i===-1) {
+                document.getElementById('modalTitle').innerText="新增"; document.getElementById('btnDelete').classList.add('hidden');
+                document.getElementById('modalTime').value="09:00"; document.getElementById('modalAct').value=""; document.getElementById('modalNote').value="";
+            } else {
+                const item = tripData[curDay].items[i];
+                document.getElementById('modalTitle').innerText="編輯"; document.getElementById('btnDelete').classList.remove('hidden');
+                document.getElementById('modalTime').value=item.time; document.getElementById('modalAct').value=item.act; document.getElementById('modalNote').value=item.note;
             }
         }
-
-        // --- 頁面切換 ---
-        function switchTab(id) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-            
-            // 導覽列狀態
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('text-gray-800');
-                btn.classList.add('text-gray-400');
-            });
-            event.currentTarget.classList.remove('text-gray-400');
-            event.currentTarget.classList.add('text-gray-800');
-            
-            // 特殊初始化
-            if(id === 'translate') renderPhrases('KR');
+        function closeModal() { document.getElementById('editModal').classList.add('hidden'); }
+        function saveItem() {
+            const idx = parseInt(document.getElementById('editIndex').value);
+            const item = { time: document.getElementById('modalTime').value, act: document.getElementById('modalAct').value, note: document.getElementById('modalNote').value };
+            if(!item.act) return;
+            if(idx===-1) tripData[curDay].items.push(item); else tripData[curDay].items[idx]=item;
+            tripData[curDay].items.sort((a,b)=>a.time.localeCompare(b.time));
+            localStorage.setItem('trip_data_2026_v2', JSON.stringify(tripData));
+            renderDaily(curDay); closeModal();
         }
+        function deleteItem() {
+            const idx = parseInt(document.getElementById('editIndex').value);
+            if(confirm('刪除?')) { tripData[curDay].items.splice(idx,1); localStorage.setItem('trip_data_2026_v2', JSON.stringify(tripData)); renderDaily(curDay); closeModal(); }
+        }
+        function resetData() { if(confirm('重置所有資料?')) { localStorage.clear(); location.reload(); } }
 
-        // 啟動
         init();
     </script>
 </body>
