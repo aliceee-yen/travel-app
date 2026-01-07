@@ -188,7 +188,7 @@
         <section id="info" class="tab-content">
             <h2 class="font-header text-lg mb-3 pl-2 border-l-4 border-gray-500">ℹ️ 實用筆記</h2>
             <div id="infoList" class="space-y-3"></div>
-            <button onclick="openInfoModal()" class="w-full mt-4 py-3 border-2 border-dashed border-gray-300 text-gray-400 rounded-lg text-sm hover:border-gray-500 hover:text-gray-600 font-bold transition-all"><i class="fa-solid fa-plus"></i> 新增筆記</button>
+            <button onclick="openInfoModal()" class="w-full mt-4 py-3 border-2 border-dashed border-gray-300 text-gray-400 rounded-lg text-sm hover:border-gray-500 hover:text-gray-600 font-bold transition-all relative z-10"><i class="fa-solid fa-plus"></i> 新增筆記</button>
         </section>
 
     </main>
@@ -277,18 +277,18 @@
         let curDay = 0, curLang = 'KR', curRate = 0.024, tempDiaryImg = null;
 
         function init() {
-            tripData = getStorage('trip_data_v12', defaultTrip);
-            infoData = getStorage('trip_info_v12', defaultInfo);
-            // Fix legacy info data missing IDs
-            if(infoData.some(i => !i.id)) {
-                infoData = infoData.map((i, idx) => ({ ...i, id: i.id || Date.now() + idx }));
-                saveStorage('trip_info_v12', infoData);
-            }
+            tripData = getStorage('trip_data_v13', defaultTrip);
+            infoData = getStorage('trip_info_v13', defaultInfo);
+            
+            // --- CRITICAL FIX for ID types ---
+            // Ensure all IDs are Numbers to prevent string/number mismatch errors
+            infoData = infoData.map(i => ({...i, id: Number(i.id) || Date.now() + Math.random()}));
+            saveStorage('trip_info_v13', infoData);
 
-            bookings.traffic = getStorage('trip_traffic_v12', defaultTraffic);
-            bookings.stay = getStorage('trip_stay_v12', defaultStay);
-            diary = getStorage('trip_diary_v12', []);
-            todos = getStorage('trip_todo_v12', [{id:1, txt:"線上投保旅平險", done:false},{id:2, txt:"開通漫遊/網卡", done:false}]);
+            bookings.traffic = getStorage('trip_traffic_v13', defaultTraffic);
+            bookings.stay = getStorage('trip_stay_v13', defaultStay);
+            diary = getStorage('trip_diary_v13', []);
+            todos = getStorage('trip_todo_v13', [{id:1, txt:"線上投保旅平險", done:false},{id:2, txt:"開通漫遊/網卡", done:false}]);
 
             renderDayNav(); renderDaily(0); renderShopList(); renderShopImages(); renderInfoList(); renderPhrases('KR');
             renderBookings('traffic'); renderBookings('stay'); renderDiary(); renderTodo();
@@ -312,22 +312,22 @@
         function addExpenseFromPlan() {
             const desc = document.getElementById('quickExpDesc').value; const amt = document.getElementById('quickExpAmt').value; const curr = document.getElementById('quickExpCurr').value;
             if(!desc || !amt) return;
-            const list = getStorage('trip_wallet_v12', []); list.push({ d: desc, a: amt, c: curr, date: tripData[curDay].date });
-            saveStorage('trip_wallet_v12', list); document.getElementById('quickExpDesc').value = ''; document.getElementById('quickExpAmt').value = ''; renderDailyExpenses();
+            const list = getStorage('trip_wallet_v13', []); list.push({ d: desc, a: amt, c: curr, date: tripData[curDay].date });
+            saveStorage('trip_wallet_v13', list); document.getElementById('quickExpDesc').value = ''; document.getElementById('quickExpAmt').value = ''; renderDailyExpenses();
         }
         function renderDailyExpenses() {
-            const list = getStorage('trip_wallet_v12', []).filter(i => i.date === tripData[curDay].date);
+            const list = getStorage('trip_wallet_v13', []).filter(i => i.date === tripData[curDay].date);
             const total = list.reduce((sum, item) => sum + Math.round(item.a * RATES[item.c]), 0);
             document.getElementById('dailyTotalDisplay').innerText = `NT$ ${total.toLocaleString()}`;
             document.getElementById('dailyExpenseList').innerHTML = list.length===0 ? '<div class="text-xs text-gray-300 text-center py-2">本日尚無紀錄</div>' : list.map(item => `<div class="flex justify-between items-center border-b border-gray-100 py-1 last:border-0"><span class="truncate pr-2">${item.d}</span><div class="flex items-center gap-2 whitespace-nowrap"><span class="font-mono text-xs">${item.c==='KR'?'₩':'¥'}${item.a}</span><button onclick="delExpense('${item.date}', '${item.d}', ${item.a})" class="text-gray-300 hover:text-red-500 px-1"><i class="fa-solid fa-xmark"></i></button></div></div>`).join('');
         }
-        function delExpense(date, desc, amt) { if(confirm('刪除?')) { let list = getStorage('trip_wallet_v12', []); const idx = list.findIndex(i => i.date === date && i.d === desc && i.a == amt); if(idx > -1) { list.splice(idx, 1); saveStorage('trip_wallet_v12', list); renderDailyExpenses(); }}}
+        function delExpense(date, desc, amt) { if(confirm('刪除?')) { let list = getStorage('trip_wallet_v13', []); const idx = list.findIndex(i => i.date === date && i.d === desc && i.a == amt); if(idx > -1) { list.splice(idx, 1); saveStorage('trip_wallet_v13', list); renderDailyExpenses(); }}}
 
         // --- 2. Shopping (Enhanced Image + Notes) ---
-        function addShopItem() { const input = document.getElementById('shopInput'); if(!input.value.trim()) return; const list = getStorage('trip_shop_v12', []); list.push({id: Date.now(), txt: input.value, done: false}); saveStorage('trip_shop_v12', list); input.value = ''; renderShopList(); }
-        function renderShopList() { const list = getStorage('trip_shop_v12', []); document.getElementById('shopList').innerHTML = list.map(i => `<div class="flex items-center bg-white p-2 border-b border-gray-100"><input type="checkbox" class="custom-checkbox mr-3" onchange="toggleShop(${i.id})" ${i.done?'checked':''}><div class="flex-1 text-sm ${i.done?'checked-item':''}">${i.txt}</div><button onclick="delShop(${i.id})" class="text-gray-300 hover:text-red-500 px-2"><i class="fa-solid fa-trash text-xs"></i></button></div>`).join(''); }
-        function toggleShop(id) { const list = getStorage('trip_shop_v12', []); const item = list.find(i => i.id === id); if(item) item.done = !item.done; saveStorage('trip_shop_v12', list); renderShopList(); }
-        function delShop(id) { const list = getStorage('trip_shop_v12', []).filter(i => i.id !== id); saveStorage('trip_shop_v12', list); renderShopList(); }
+        function addShopItem() { const input = document.getElementById('shopInput'); if(!input.value.trim()) return; const list = getStorage('trip_shop_v13', []); list.push({id: Date.now(), txt: input.value, done: false}); saveStorage('trip_shop_v13', list); input.value = ''; renderShopList(); }
+        function renderShopList() { const list = getStorage('trip_shop_v13', []); document.getElementById('shopList').innerHTML = list.map(i => `<div class="flex items-center bg-white p-2 border-b border-gray-100"><input type="checkbox" class="custom-checkbox mr-3" onchange="toggleShop(${i.id})" ${i.done?'checked':''}><div class="flex-1 text-sm ${i.done?'checked-item':''}">${i.txt}</div><button onclick="delShop(${i.id})" class="text-gray-300 hover:text-red-500 px-2"><i class="fa-solid fa-trash text-xs"></i></button></div>`).join(''); }
+        function toggleShop(id) { const list = getStorage('trip_shop_v13', []); const item = list.find(i => i.id === id); if(item) item.done = !item.done; saveStorage('trip_shop_v13', list); renderShopList(); }
+        function delShop(id) { const list = getStorage('trip_shop_v13', []).filter(i => i.id !== id); saveStorage('trip_shop_v13', list); renderShopList(); }
         
         function handleAddImage(type) { 
             const inputId = type === 'diary' ? 'diaryImgInput' : 'imgInput';
@@ -339,16 +339,16 @@
                     const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); const maxWidth = 300; const scale = maxWidth / img.width; canvas.width = maxWidth; canvas.height = img.height * scale; ctx.drawImage(img, 0, 0, canvas.width, canvas.height); const base64 = canvas.toDataURL('image/jpeg', 0.7); 
                     if(type === 'shop') { 
                         const note = prompt("照片備註 (可選):");
-                        const list = getStorage('trip_shop_img_v12', []); 
+                        const list = getStorage('trip_shop_img_v13', []); 
                         list.push({id: Date.now(), src: base64, txt: note || "點擊編輯..."}); 
-                        saveStorage('trip_shop_img_v12', list); 
+                        saveStorage('trip_shop_img_v13', list); 
                         renderShopImages(); 
                     } else { tempDiaryImg = base64; document.getElementById('dPreview').src = base64; document.getElementById('diaryImgPreview').classList.remove('hidden'); }
                 }; img.src = e.target.result; 
             }; reader.readAsDataURL(file); 
         }
         function renderShopImages() { 
-            const list = getStorage('trip_shop_img_v12', []); 
+            const list = getStorage('trip_shop_img_v13', []); 
             document.getElementById('imageGrid').innerHTML = list.map(i => `
                 <div class="photo-row">
                     <img src="${i.src}" class="photo-thumb" onclick="viewImage('${i.src}')">
@@ -360,10 +360,10 @@
         function viewImage(src) { document.getElementById('zoomImg').src = src; document.getElementById('imgModal').classList.remove('hidden'); }
         function closeImgModal() { document.getElementById('imgModal').classList.add('hidden'); }
         function editImgNote(id) {
-            const list = getStorage('trip_shop_img_v12', []); const item = list.find(i => i.id === id);
-            const newTxt = prompt("編輯備註:", item.txt); if(newTxt !== null) { item.txt = newTxt; saveStorage('trip_shop_img_v12', list); renderShopImages(); }
+            const list = getStorage('trip_shop_img_v13', []); const item = list.find(i => i.id === id);
+            const newTxt = prompt("編輯備註:", item.txt); if(newTxt !== null) { item.txt = newTxt; saveStorage('trip_shop_img_v13', list); renderShopImages(); }
         }
-        function delImage(id) { if(confirm('刪除照片?')) { const list = getStorage('trip_shop_img_v12', []).filter(i => i.id !== id); saveStorage('trip_shop_img_v12', list); renderShopImages(); } }
+        function delImage(id) { if(confirm('刪除照片?')) { const list = getStorage('trip_shop_img_v13', []).filter(i => i.id !== id); saveStorage('trip_shop_img_v13', list); renderShopImages(); } }
 
         // --- 3,4. Traffic & Stay ---
         function renderBookings(type) {
@@ -388,7 +388,7 @@
             const txt = document.getElementById('diaryInput').value; if(!txt && !tempDiaryImg) return;
             const now = new Date(); const dateStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2,'0')}`;
             diary.unshift({id: Date.now(), time: dateStr, txt, img: tempDiaryImg});
-            saveStorage('trip_diary_v12', diary);
+            saveStorage('trip_diary_v13', diary);
             document.getElementById('diaryInput').value = ''; clearDiaryImg(); renderDiary();
         }
         function renderDiary() {
@@ -401,20 +401,20 @@
                 </div>
             `).join('');
         }
-        function delDiary(id) { if(confirm('刪除日記?')) { diary = diary.filter(d => d.id !== id); saveStorage('trip_diary_v12', diary); renderDiary(); }}
+        function delDiary(id) { if(confirm('刪除日記?')) { diary = diary.filter(d => d.id !== id); saveStorage('trip_diary_v13', diary); renderDiary(); }}
 
         // --- 6. Todo ---
-        function addTodo() { const txt = document.getElementById('todoInput').value; if(!txt) return; todos.push({id:Date.now(), txt, done:false}); saveStorage('trip_todo_v12', todos); document.getElementById('todoInput').value=''; renderTodo(); }
+        function addTodo() { const txt = document.getElementById('todoInput').value; if(!txt) return; todos.push({id:Date.now(), txt, done:false}); saveStorage('trip_todo_v13', todos); document.getElementById('todoInput').value=''; renderTodo(); }
         function renderTodo() { document.getElementById('todoList').innerHTML = todos.map(t => `<div class="flex items-center bg-white p-2 border-b border-gray-100"><input type="checkbox" class="custom-checkbox mr-3" onchange="toggleTodo(${t.id})" ${t.done?'checked':''}><div class="flex-1 text-sm ${t.done?'checked-item':''}">${t.txt}</div><button onclick="delTodo(${t.id})" class="text-gray-300 hover:text-red-500 px-2"><i class="fa-solid fa-trash text-xs"></i></button></div>`).join(''); }
-        function toggleTodo(id) { const item = todos.find(t => t.id === id); if(item) item.done = !item.done; saveStorage('trip_todo_v12', todos); renderTodo(); }
-        function delTodo(id) { todos = todos.filter(t => t.id !== id); saveStorage('trip_todo_v12', todos); renderTodo(); }
+        function toggleTodo(id) { const item = todos.find(t => t.id === id); if(item) item.done = !item.done; saveStorage('trip_todo_v13', todos); renderTodo(); }
+        function delTodo(id) { todos = todos.filter(t => t.id !== id); saveStorage('trip_todo_v13', todos); renderTodo(); }
 
         // --- 7,8,9. Wallet/Translate/Info ---
         function setCurrency(c) { curLang = c; curRate = RATES[c]; document.getElementById('currencySymbol').innerText = c === 'KR' ? '₩' : '¥'; document.getElementById('calcInput').value = ''; document.getElementById('calcResult').innerText = '0'; const bKR = document.getElementById('btn-calc-kr'), bJP = document.getElementById('btn-calc-jp'); if(c==='KR'){ bKR.classList.replace('text-gray-300','bg-blue-500'); bKR.classList.add('text-white'); bJP.className="text-xs px-3 py-1 rounded text-gray-300 transition-all"; } else { bJP.classList.replace('text-gray-300','bg-red-500'); bJP.classList.add('text-white'); bKR.className="text-xs px-3 py-1 rounded text-gray-300 transition-all"; } }
         function renderPhrases(lang) { curLang = lang; const list = phrases[lang]; document.getElementById('btn-lang-kr').className = lang==='KR' ? 'flex-1 py-1.5 rounded text-sm font-bold border bg-blue-100 text-blue-800' : 'flex-1 py-1.5 rounded text-sm font-bold border bg-white text-gray-400'; document.getElementById('btn-lang-jp').className = lang==='JP' ? 'flex-1 py-1.5 rounded text-sm font-bold border bg-red-100 text-red-800' : 'flex-1 py-1.5 rounded text-sm font-bold border bg-white text-gray-400'; document.getElementById('phraseList').innerHTML = list.map(p => `<div class="bg-white p-2 rounded border border-gray-200 shadow-sm flex justify-between items-center"><div><div class="text-[10px] text-gray-400 font-bold">${p.t}</div><div class="text-base font-bold text-gray-800">${p.o}</div></div><button onclick="quickTranslate('${p.o}')" class="text-gray-400 p-2"><i class="fa-solid fa-volume-high"></i></button></div>`).join(''); }
         function quickTranslate(txt) { const input = document.getElementById('transInput').value; const q = txt || input; if(!q) return; window.open(`https://translate.google.com/?sl=auto&tl=${curLang==='KR'?'ko':'ja'}&text=${encodeURIComponent(q)}&op=translate`, '_blank'); }
         
-        // --- Info (FIXED) ---
+        // --- Info (FIXED LOGIC) ---
         function renderInfoList() { 
             document.getElementById('infoList').innerHTML = infoData.map((item) => `
                 <div class="sketch-box p-3 ${item.color || 'bg-white'} flex justify-between items-center" onclick="openBookingModal('info', ${item.id})">
@@ -426,7 +426,7 @@
                 </div>`).join(''); 
         }
         function openInfoModal() { openBookingModal('info', -1); }
-        function delInfo(id) { if(!confirm('刪除?')) return; infoData = infoData.filter(i => i.id !== id); saveStorage('trip_info_v12', infoData); renderInfoList(); }
+        function delInfo(id) { if(!confirm('刪除?')) return; infoData = infoData.filter(i => i.id !== id); saveStorage('trip_info_v13', infoData); renderInfoList(); }
 
         // --- Modals & Helpers ---
         function openEditModal(type, i=-1) {
@@ -434,19 +434,21 @@
             if(i===-1) { document.getElementById('modalTitle').innerText="新增行程"; document.getElementById('btnDelete').classList.add('hidden'); document.getElementById('modalTime').value="09:00"; document.getElementById('modalAct').value=""; document.getElementById('modalNote').value=""; } 
             else { const item = tripData[curDay].items[i]; document.getElementById('modalTitle').innerText="編輯行程"; document.getElementById('btnDelete').classList.remove('hidden'); document.getElementById('modalTime').value=item.time; document.getElementById('modalAct').value=item.act; document.getElementById('modalNote').value=item.note; }
         }
-        function saveItem() { const idx = parseInt(document.getElementById('editIndex').value); const item = { time: document.getElementById('modalTime').value, act: document.getElementById('modalAct').value, note: document.getElementById('modalNote').value }; if(!item.act) return; if(idx===-1) tripData[curDay].items.push(item); else tripData[curDay].items[idx]=item; tripData[curDay].items.sort((a,b)=>a.time.localeCompare(b.time)); saveStorage('trip_data_v12', tripData); renderDaily(curDay); closeModal('editModal'); }
-        function deleteItem() { const idx = parseInt(document.getElementById('editIndex').value); if(confirm('刪除?')) { tripData[curDay].items.splice(idx,1); saveStorage('trip_data_v12', tripData); renderDaily(curDay); closeModal('editModal'); } }
+        function saveItem() { const idx = parseInt(document.getElementById('editIndex').value); const item = { time: document.getElementById('modalTime').value, act: document.getElementById('modalAct').value, note: document.getElementById('modalNote').value }; if(!item.act) return; if(idx===-1) tripData[curDay].items.push(item); else tripData[curDay].items[idx]=item; tripData[curDay].items.sort((a,b)=>a.time.localeCompare(b.time)); saveStorage('trip_data_v13', tripData); renderDaily(curDay); closeModal('editModal'); }
+        function deleteItem() { const idx = parseInt(document.getElementById('editIndex').value); if(confirm('刪除?')) { tripData[curDay].items.splice(idx,1); saveStorage('trip_data_v13', tripData); renderDaily(curDay); closeModal('editModal'); } }
 
-        function openBookingModal(type, id=-1) {
+        function openBookingModal(type, id) {
             document.getElementById('bookingModal').classList.remove('hidden'); 
-            document.getElementById('bkType').value = type; document.getElementById('bkId').value = id;
+            document.getElementById('bkType').value = type; 
+            document.getElementById('bkId').value = id; // Store ID
             const isInfo = type === 'info';
             document.getElementById('bookingTitle').innerText = id === -1 ? (isInfo?"新增筆記":"新增資訊") : (isInfo?"編輯筆記":"編輯資訊");
             document.getElementById('bkDelete').classList.toggle('hidden', id === -1);
             
-            // Logic to clear or fill inputs
             if(id !== -1) {
-                const item = isInfo ? infoData.find(i => i.id === id) : bookings[type].find(b => b.id === id);
+                // IMPORTANT: Ensure ID types match for find()
+                const targetId = Number(id);
+                const item = isInfo ? infoData.find(i => i.id === targetId) : bookings[type].find(b => b.id === targetId);
                 if(item) {
                     document.getElementById('bkTitle').value = item.title;
                     document.getElementById('bkSub').value = isInfo ? item.text : item.sub;
@@ -459,27 +461,36 @@
             }
         }
         function saveBooking() {
-            const type = document.getElementById('bkType').value; const id = parseInt(document.getElementById('bkId').value);
+            const type = document.getElementById('bkType').value; 
+            const idVal = document.getElementById('bkId').value;
+            const id = Number(idVal); // Convert form value to Number
             const title = document.getElementById('bkTitle').value; const sub = document.getElementById('bkSub').value; const note = document.getElementById('bkNote').value;
             if(!title) return;
 
             if(type === 'info') {
-                if(id === -1) infoData.push({id: Date.now(), title, text: sub, color: 'bg-white'}); 
-                else { const item = infoData.find(i=>i.id===id); if(item) { item.title = title; item.text = sub; } }
-                saveStorage('trip_info_v12', infoData); renderInfoList();
+                if(idVal == "-1") infoData.push({id: Date.now(), title, text: sub, color: 'bg-white'}); 
+                else { 
+                    const item = infoData.find(i => i.id === id); 
+                    if(item) { item.title = title; item.text = sub; } 
+                }
+                saveStorage('trip_info_v13', infoData); renderInfoList();
             } else {
-                if(id === -1) bookings[type].push({id: Date.now(), title, sub, note});
-                else { const b = bookings[type].find(b => b.id === id); if(b) { b.title = title; b.sub = sub; b.note = note; } }
-                saveStorage('trip_'+type+'_v12', bookings[type]); renderBookings(type);
+                if(idVal == "-1") bookings[type].push({id: Date.now(), title, sub, note});
+                else { 
+                    const b = bookings[type].find(b => b.id === id); 
+                    if(b) { b.title = title; b.sub = sub; b.note = note; } 
+                }
+                saveStorage('trip_'+type+'_v13', bookings[type]); renderBookings(type);
             }
             closeModal('bookingModal');
             document.getElementById('bkNote').parentElement.classList.remove('hidden');
         }
         function deleteBooking() {
-            const type = document.getElementById('bkType').value; const id = parseInt(document.getElementById('bkId').value);
+            const type = document.getElementById('bkType').value; 
+            const id = Number(document.getElementById('bkId').value);
             if(confirm('刪除?')) {
-                if(type === 'info') { /* info delete handled in delInfo via list button */ }
-                else { bookings[type] = bookings[type].filter(b => b.id !== id); saveStorage('trip_'+type+'_v12', bookings[type]); renderBookings(type); }
+                if(type === 'info') { /* info handled elsewhere */ }
+                else { bookings[type] = bookings[type].filter(b => b.id !== id); saveStorage('trip_'+type+'_v13', bookings[type]); renderBookings(type); }
                 closeModal('bookingModal');
                 document.getElementById('bkNote').parentElement.classList.remove('hidden');
             }
