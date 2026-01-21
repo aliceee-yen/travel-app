@@ -12,24 +12,34 @@
         body { font-family: 'Noto Sans TC', sans-serif; background-color: var(--bg-paper); color: var(--ink); -webkit-tap-highlight-color: transparent; padding-bottom: 110px; }
         .font-header { font-family: 'ZCOOL KuaiLe', cursive; }
         
-        /* 元件樣式 */
-        .sketch-box { background: white; border: 2px solid var(--ink); border-radius: 8px; box-shadow: 2px 2px 0px rgba(0,0,0,0.1); }
+        /* 手繪風格 */
+        .sketch-box { 
+            background: white; 
+            border: 2px solid var(--ink); 
+            border-radius: 8px;
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+        }
+        
+        /* Checkbox */
         .custom-checkbox { width: 1rem; height: 1rem; accent-color: var(--ink); }
         .checked-item { text-decoration: line-through; color: #9ca3af; }
 
-        /* 分頁動畫 */
+        /* Tab Animation */
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.2s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .modal-overlay { background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); z-index: 60; }
-        
+
+        /* Booking Card Tag */
         .booking-tag { position: absolute; top: -10px; left: 10px; background: var(--ink); color: white; padding: 2px 8px; font-size: 10px; border-radius: 4px; font-weight: bold; }
+        
+        /* Photo List Item */
         .photo-row { display: flex; gap: 10px; align-items: center; border: 2px solid #eee; padding: 8px; border-radius: 8px; background: white; margin-bottom: 8px; }
         .photo-thumb { width: 80px; height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; cursor: zoom-in; flex-shrink: 0; }
 
-        /* PRINT */
+        /* Print Styles */
         @media print {
             body { background: white; padding: 0; }
             header, nav, .tab-content, #weatherBoard, button, .modal-overlay { display: none !important; }
@@ -190,7 +200,7 @@
         <section id="info" class="tab-content">
             <h2 class="font-header text-lg mb-3 pl-2 border-l-4 border-gray-500">ℹ️ 實用筆記</h2>
             <div id="infoList" class="space-y-3"></div>
-            <button onclick="openInfoModal()" class="w-full mt-4 py-3 border-2 border-dashed border-gray-300 text-gray-400 rounded-lg text-sm hover:border-gray-500 hover:text-gray-600 font-bold transition-all relative z-10"><i class="fa-solid fa-plus"></i> 新增筆記</button>
+            <button onclick="openDedicatedInfoModal()" class="w-full mt-4 py-3 border-2 border-dashed border-gray-300 text-gray-400 rounded-lg text-sm hover:border-gray-500 hover:text-gray-600 font-bold transition-all relative z-10"><i class="fa-solid fa-plus"></i> 新增筆記</button>
 
             <div class="mt-8 pt-6 border-t-2 border-gray-100">
                 <h3 class="font-bold text-gray-400 text-xs mb-3 uppercase tracking-wider">系統管理 & 備份</h3>
@@ -249,7 +259,7 @@
             <div class="space-y-3">
                 <input id="bkTitle" type="text" placeholder="標題 (必填)" class="w-full p-2 border rounded font-bold">
                 <input id="bkSub" type="text" placeholder="內容 / 副標題" class="w-full p-2 border rounded">
-                <textarea id="bkNote" rows="3" placeholder="備註..." class="w-full p-2 border rounded"></textarea>
+                <textarea id="bkNote" rows="5" placeholder="備註 (支援換行，貼上網址自動連結)..." class="w-full p-2 border rounded"></textarea>
             </div>
             <div class="flex gap-2 mt-4">
                 <button onclick="closeModal('bookingModal')" class="flex-1 py-2 bg-gray-100 rounded text-gray-500 text-sm">取消</button>
@@ -265,7 +275,7 @@
             <input type="hidden" id="infoIndex">
             <div class="space-y-3">
                 <input id="infoTitleInput" type="text" placeholder="標題 (例如: 飯店Wifi)" class="w-full p-2 border rounded font-bold">
-                <textarea id="infoContentInput" rows="3" placeholder="內容..." class="w-full p-2 border rounded"></textarea>
+                <textarea id="infoContentInput" rows="5" placeholder="內容 (支援換行)..." class="w-full p-2 border rounded"></textarea>
             </div>
             <div class="flex gap-2 mt-4">
                 <button onclick="closeModal('infoModal')" class="flex-1 py-2 bg-gray-100 rounded text-gray-500 text-sm">取消</button>
@@ -314,21 +324,28 @@
 
         function init() {
             try {
-                tripData = getStorage('trip_data_v15', defaultTrip);
-                infoData = getStorage('trip_info_v15_clean', defaultInfo);
-                // Ensure IDs
+                tripData = getStorage('trip_data_v16', defaultTrip);
+                infoData = getStorage('trip_info_v16', defaultInfo);
                 infoData = infoData.map(i => ({...i, id: Number(i.id) || Date.now() + Math.random()}));
-                saveStorage('trip_info_v15_clean', infoData);
+                saveStorage('trip_info_v16', infoData);
 
-                bookings.traffic = getStorage('trip_traffic_v15', defaultTraffic);
-                bookings.stay = getStorage('trip_stay_v15', defaultStay);
-                diary = getStorage('trip_diary_v15', []);
-                todos = getStorage('trip_todo_v15', [{id:1, txt:"線上投保旅平險", done:false},{id:2, txt:"開通漫遊/網卡", done:false}]);
+                bookings.traffic = getStorage('trip_traffic_v16', defaultTraffic);
+                bookings.stay = getStorage('trip_stay_v16', defaultStay);
+                diary = getStorage('trip_diary_v16', []);
+                todos = getStorage('trip_todo_v16', [{id:1, txt:"線上投保旅平險", done:false},{id:2, txt:"開通漫遊/網卡", done:false}]);
 
                 renderDayNav(); renderDaily(0); renderShopList(); renderShopImages(); renderInfoList(); renderPhrases('KR');
                 renderBookings('traffic'); renderBookings('stay'); renderDiary(); renderTodo();
                 document.getElementById('calcInput').addEventListener('input', (e) => { document.getElementById('calcResult').innerText = Math.round(e.target.value * curRate).toLocaleString(); });
             } catch(e) { console.log("Init Error", e); }
+        }
+
+        // --- HELPER: Linkify & Format ---
+        function linkify(text) {
+            if (!text) return '';
+            let safe = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            // Auto link URLs
+            return safe.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" class="text-blue-500 underline decoration-blue-300 break-all">$1</a>');
         }
 
         // --- 1. Plan ---
@@ -341,67 +358,37 @@
                 <div class="sketch-box p-3 relative bg-white" onclick="openEditModal('trip', ${i})">
                     <div class="flex justify-between items-start mb-1"><span class="bg-yellow-300 text-[10px] font-black px-1.5 py-0.5 rounded border border-black">${item.time}</span></div>
                     <div class="text-base font-bold text-blue-700 underline decoration-blue-300 underline-offset-4 cursor-pointer mb-1" onclick="event.stopPropagation(); openMap('${item.act}', '${day.country}')">${item.act} <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></div>
-                    <div class="text-xs text-gray-500 bg-gray-50 p-1.5 rounded">${item.note}</div>
+                    <div class="text-xs text-gray-500 bg-gray-50 p-1.5 rounded whitespace-pre-wrap">${item.note}</div>
                 </div>`).join('');
             renderDailyExpenses();
         }
         function addExpenseFromPlan() {
             const desc = document.getElementById('quickExpDesc').value; const amt = document.getElementById('quickExpAmt').value; const curr = document.getElementById('quickExpCurr').value;
             if(!desc || !amt) return;
-            const list = getStorage('trip_wallet_v15', []); list.push({ d: desc, a: amt, c: curr, date: tripData[curDay].date });
-            saveStorage('trip_wallet_v15', list); document.getElementById('quickExpDesc').value = ''; document.getElementById('quickExpAmt').value = ''; renderDailyExpenses();
+            const list = getStorage('trip_wallet_v16', []); list.push({ d: desc, a: amt, c: curr, date: tripData[curDay].date });
+            saveStorage('trip_wallet_v16', list); document.getElementById('quickExpDesc').value = ''; document.getElementById('quickExpAmt').value = ''; renderDailyExpenses();
         }
         function renderDailyExpenses() {
-            const list = getStorage('trip_wallet_v15', []).filter(i => i.date === tripData[curDay].date);
+            const list = getStorage('trip_wallet_v16', []).filter(i => i.date === tripData[curDay].date);
             const total = list.reduce((sum, item) => sum + Math.round(item.a * RATES[item.c]), 0);
             document.getElementById('dailyTotalDisplay').innerText = `NT$ ${total.toLocaleString()}`;
             document.getElementById('dailyExpenseList').innerHTML = list.length===0 ? '<div class="text-xs text-gray-300 text-center py-2">本日尚無紀錄</div>' : list.map(item => `<div class="flex justify-between items-center border-b border-gray-100 py-1 last:border-0"><span class="truncate pr-2">${item.d}</span><div class="flex items-center gap-2 whitespace-nowrap"><span class="font-mono text-xs">${item.c==='KR'?'₩':'¥'}${item.a}</span><button onclick="delExpense('${item.date}', '${item.d}', ${item.a})" class="text-gray-300 hover:text-red-500 px-1"><i class="fa-solid fa-xmark"></i></button></div></div>`).join('');
         }
-        function delExpense(date, desc, amt) { if(confirm('刪除?')) { let list = getStorage('trip_wallet_v15', []); const idx = list.findIndex(i => i.date === date && i.d === desc && i.a == amt); if(idx > -1) { list.splice(idx, 1); saveStorage('trip_wallet_v15', list); renderDailyExpenses(); }}}
+        function delExpense(date, desc, amt) { if(confirm('刪除?')) { let list = getStorage('trip_wallet_v16', []); const idx = list.findIndex(i => i.date === date && i.d === desc && i.a == amt); if(idx > -1) { list.splice(idx, 1); saveStorage('trip_wallet_v16', list); renderDailyExpenses(); }}}
 
         // --- 2. Shopping ---
-        function addShopItem() { const input = document.getElementById('shopInput'); if(!input.value.trim()) return; const list = getStorage('trip_shop_v15', []); list.push({id: Date.now(), txt: input.value, done: false}); saveStorage('trip_shop_v15', list); input.value = ''; renderShopList(); }
-        function renderShopList() { const list = getStorage('trip_shop_v15', []); document.getElementById('shopList').innerHTML = list.map(i => `<div class="flex items-center bg-white p-2 border-b border-gray-100"><input type="checkbox" class="custom-checkbox mr-3" onchange="toggleShop(${i.id})" ${i.done?'checked':''}><div class="flex-1 text-sm ${i.done?'checked-item':''}">${i.txt}</div><button onclick="delShop(${i.id})" class="text-gray-300 hover:text-red-500 px-2"><i class="fa-solid fa-trash text-xs"></i></button></div>`).join(''); }
-        function toggleShop(id) { const list = getStorage('trip_shop_v15', []); const item = list.find(i => i.id === id); if(item) item.done = !item.done; saveStorage('trip_shop_v15', list); renderShopList(); }
-        function delShop(id) { const list = getStorage('trip_shop_v15', []).filter(i => i.id !== id); saveStorage('trip_shop_v15', list); renderShopList(); }
-        
-        function handleAddImage(type) { 
-            const inputId = type === 'diary' ? 'diaryImgInput' : 'imgInput';
-            const file = document.getElementById(inputId).files[0]; if(!file) return; 
-            const reader = new FileReader(); 
-            reader.onload = function(e) { 
-                const img = new Image(); 
-                img.onload = function() { 
-                    const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); const maxWidth = 300; const scale = maxWidth / img.width; canvas.width = maxWidth; canvas.height = img.height * scale; ctx.drawImage(img, 0, 0, canvas.width, canvas.height); const base64 = canvas.toDataURL('image/jpeg', 0.7); 
-                    if(type === 'shop') { 
-                        const note = prompt("照片備註 (可選):");
-                        const list = getStorage('trip_shop_img_v15', []); 
-                        list.push({id: Date.now(), src: base64, txt: note || "點擊編輯..."}); 
-                        saveStorage('trip_shop_img_v15', list); 
-                        renderShopImages(); 
-                    } else { tempDiaryImg = base64; document.getElementById('dPreview').src = base64; document.getElementById('diaryImgPreview').classList.remove('hidden'); }
-                }; img.src = e.target.result; 
-            }; reader.readAsDataURL(file); 
-        }
-        function renderShopImages() { 
-            const list = getStorage('trip_shop_img_v15', []); 
-            document.getElementById('imageGrid').innerHTML = list.map(i => `
-                <div class="photo-row">
-                    <img src="${i.src}" class="photo-thumb" onclick="viewImage('${i.src}')">
-                    <div class="flex-1 text-sm text-gray-600 font-bold px-2 cursor-pointer" onclick="editImgNote(${i.id})">${i.txt}</div>
-                    <button class="text-gray-300 hover:text-red-500 px-2" onclick="delImage(${i.id})">✕</button>
-                </div>
-            `).join(''); 
-        }
+        function addShopItem() { const input = document.getElementById('shopInput'); if(!input.value.trim()) return; const list = getStorage('trip_shop_v16', []); list.push({id: Date.now(), txt: input.value, done: false}); saveStorage('trip_shop_v16', list); input.value = ''; renderShopList(); }
+        function renderShopList() { const list = getStorage('trip_shop_v16', []); document.getElementById('shopList').innerHTML = list.map(i => `<div class="flex items-center bg-white p-2 border-b border-gray-100"><input type="checkbox" class="custom-checkbox mr-3" onchange="toggleShop(${i.id})" ${i.done?'checked':''}><div class="flex-1 text-sm ${i.done?'checked-item':''}">${i.txt}</div><button onclick="delShop(${i.id})" class="text-gray-300 hover:text-red-500 px-2"><i class="fa-solid fa-trash text-xs"></i></button></div>`).join(''); }
+        function toggleShop(id) { const list = getStorage('trip_shop_v16', []); const item = list.find(i => i.id === id); if(item) item.done = !item.done; saveStorage('trip_shop_v16', list); renderShopList(); }
+        function delShop(id) { const list = getStorage('trip_shop_v16', []).filter(i => i.id !== id); saveStorage('trip_shop_v16', list); renderShopList(); }
+        function handleAddImage(type) { const inputId = type === 'diary' ? 'diaryImgInput' : 'imgInput'; const file = document.getElementById(inputId).files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { const img = new Image(); img.onload = function() { const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); const maxWidth = 300; const scale = maxWidth / img.width; canvas.width = maxWidth; canvas.height = img.height * scale; ctx.drawImage(img, 0, 0, canvas.width, canvas.height); const base64 = canvas.toDataURL('image/jpeg', 0.7); if(type === 'shop') { const note = prompt("照片備註 (可選):"); const list = getStorage('trip_shop_img_v16', []); list.push({id: Date.now(), src: base64, txt: note || "點擊編輯..."}); saveStorage('trip_shop_img_v16', list); renderShopImages(); } else { tempDiaryImg = base64; document.getElementById('dPreview').src = base64; document.getElementById('diaryImgPreview').classList.remove('hidden'); } }; img.src = e.target.result; }; reader.readAsDataURL(file); }
+        function renderShopImages() { const list = getStorage('trip_shop_img_v16', []); document.getElementById('imageGrid').innerHTML = list.map(i => `<div class="photo-row"><img src="${i.src}" class="photo-thumb" onclick="viewImage('${i.src}')"><div class="flex-1 text-sm text-gray-600 font-bold px-2 cursor-pointer" onclick="editImgNote(${i.id})">${i.txt}</div><button class="text-gray-300 hover:text-red-500 px-2" onclick="delImage(${i.id})">✕</button></div>`).join(''); }
         function viewImage(src) { document.getElementById('zoomImg').src = src; document.getElementById('imgModal').classList.remove('hidden'); }
         function closeImgModal() { document.getElementById('imgModal').classList.add('hidden'); }
-        function editImgNote(id) {
-            const list = getStorage('trip_shop_img_v15', []); const item = list.find(i => i.id === id);
-            const newTxt = prompt("編輯備註:", item.txt); if(newTxt !== null) { item.txt = newTxt; saveStorage('trip_shop_img_v15', list); renderShopImages(); }
-        }
-        function delImage(id) { if(confirm('刪除照片?')) { const list = getStorage('trip_shop_img_v15', []).filter(i => i.id !== id); saveStorage('trip_shop_img_v15', list); renderShopImages(); } }
+        function editImgNote(id) { const list = getStorage('trip_shop_img_v16', []); const item = list.find(i => i.id === id); const newTxt = prompt("編輯備註:", item.txt); if(newTxt !== null) { item.txt = newTxt; saveStorage('trip_shop_img_v16', list); renderShopImages(); } }
+        function delImage(id) { if(confirm('刪除照片?')) { const list = getStorage('trip_shop_img_v16', []).filter(i => i.id !== id); saveStorage('trip_shop_img_v16', list); renderShopImages(); } }
 
-        // --- 3,4. Traffic & Stay ---
+        // --- 3,4. Traffic & Stay (UPDATED: Formatting) ---
         function renderBookings(type) {
             const list = bookings[type];
             document.getElementById(type+'List').innerHTML = list.map((b, i) => `
@@ -411,8 +398,8 @@
                         <button onclick="openBookingModal('${type}', ${b.id})" class="text-gray-400 p-2"><i class="fa-solid fa-pen text-sm"></i></button>
                     </div>
                     <div class="font-bold text-lg mt-2">${b.title}</div>
-                    <div class="text-sm font-bold text-gray-500">${b.sub}</div>
-                    <div class="text-xs mt-2 bg-gray-50 p-2 rounded text-gray-600">${b.note}</div>
+                    <div class="text-sm font-bold text-gray-500 mb-2">${b.sub}</div>
+                    <div class="text-xs bg-gray-50 p-3 rounded text-gray-600 whitespace-pre-wrap leading-relaxed break-words border border-gray-100">${linkify(b.note)}</div>
                 </div>
             `).join('');
         }
@@ -420,30 +407,15 @@
         // --- 5. Diary ---
         function handleDiaryImg() { handleAddImage('diary'); }
         function clearDiaryImg() { tempDiaryImg = null; document.getElementById('diaryImgInput').value = ''; document.getElementById('diaryImgPreview').classList.add('hidden'); }
-        function addDiary() {
-            const txt = document.getElementById('diaryInput').value; if(!txt && !tempDiaryImg) return;
-            const now = new Date(); const dateStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2,'0')}`;
-            diary.unshift({id: Date.now(), time: dateStr, txt, img: tempDiaryImg});
-            saveStorage('trip_diary_v15', diary);
-            document.getElementById('diaryInput').value = ''; clearDiaryImg(); renderDiary();
-        }
-        function renderDiary() {
-            document.getElementById('diaryList').innerHTML = diary.map(d => `
-                <div class="sketch-box p-3 bg-pink-50 relative">
-                    <div class="text-[10px] text-pink-400 font-bold mb-1">${d.time}</div>
-                    <div class="text-sm text-gray-700 whitespace-pre-wrap">${d.txt}</div>
-                    ${d.img ? `<img src="${d.img}" class="mt-2 rounded w-full border border-pink-200">` : ''}
-                    <button onclick="delDiary(${d.id})" class="absolute top-2 right-2 text-pink-200 hover:text-pink-500"><i class="fa-solid fa-trash text-xs"></i></button>
-                </div>
-            `).join('');
-        }
-        function delDiary(id) { if(confirm('刪除日記?')) { diary = diary.filter(d => d.id !== id); saveStorage('trip_diary_v15', diary); renderDiary(); }}
+        function addDiary() { const txt = document.getElementById('diaryInput').value; if(!txt && !tempDiaryImg) return; const now = new Date(); const dateStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2,'0')}`; diary.unshift({id: Date.now(), time: dateStr, txt, img: tempDiaryImg}); saveStorage('trip_diary_v16', diary); document.getElementById('diaryInput').value = ''; clearDiaryImg(); renderDiary(); }
+        function renderDiary() { document.getElementById('diaryList').innerHTML = diary.map(d => `<div class="sketch-box p-3 bg-pink-50 relative"><div class="text-[10px] text-pink-400 font-bold mb-1">${d.time}</div><div class="text-sm text-gray-700 whitespace-pre-wrap">${d.txt}</div>${d.img ? `<img src="${d.img}" class="mt-2 rounded w-full border border-pink-200">` : ''}<button onclick="delDiary(${d.id})" class="absolute top-2 right-2 text-pink-200 hover:text-pink-500"><i class="fa-solid fa-trash text-xs"></i></button></div>`).join(''); }
+        function delDiary(id) { if(confirm('刪除日記?')) { diary = diary.filter(d => d.id !== id); saveStorage('trip_diary_v16', diary); renderDiary(); }}
 
         // --- 6. Todo ---
-        function addTodo() { const txt = document.getElementById('todoInput').value; if(!txt) return; todos.push({id:Date.now(), txt, done:false}); saveStorage('trip_todo_v15', todos); document.getElementById('todoInput').value=''; renderTodo(); }
+        function addTodo() { const txt = document.getElementById('todoInput').value; if(!txt) return; todos.push({id:Date.now(), txt, done:false}); saveStorage('trip_todo_v16', todos); document.getElementById('todoInput').value=''; renderTodo(); }
         function renderTodo() { document.getElementById('todoList').innerHTML = todos.map(t => `<div class="flex items-center bg-white p-2 border-b border-gray-100"><input type="checkbox" class="custom-checkbox mr-3" onchange="toggleTodo(${t.id})" ${t.done?'checked':''}><div class="flex-1 text-sm ${t.done?'checked-item':''}">${t.txt}</div><button onclick="delTodo(${t.id})" class="text-gray-300 hover:text-red-500 px-2"><i class="fa-solid fa-trash text-xs"></i></button></div>`).join(''); }
-        function toggleTodo(id) { const item = todos.find(t => t.id === id); if(item) item.done = !item.done; saveStorage('trip_todo_v15', todos); renderTodo(); }
-        function delTodo(id) { todos = todos.filter(t => t.id !== id); saveStorage('trip_todo_v15', todos); renderTodo(); }
+        function toggleTodo(id) { const item = todos.find(t => t.id === id); if(item) item.done = !item.done; saveStorage('trip_todo_v16', todos); renderTodo(); }
+        function delTodo(id) { todos = todos.filter(t => t.id !== id); saveStorage('trip_todo_v16', todos); renderTodo(); }
 
         // --- 7,8. Wallet/Translate ---
         function setCurrency(c) { curLang = c; curRate = RATES[c]; document.getElementById('currencySymbol').innerText = c === 'KR' ? '₩' : '¥'; document.getElementById('calcInput').value = ''; document.getElementById('calcResult').innerText = '0'; const bKR = document.getElementById('btn-calc-kr'), bJP = document.getElementById('btn-calc-jp'); if(c==='KR'){ bKR.classList.replace('text-gray-300','bg-blue-500'); bKR.classList.add('text-white'); bJP.className="text-xs px-3 py-1 rounded text-gray-300 transition-all"; } else { bJP.classList.replace('text-gray-300','bg-red-500'); bJP.classList.add('text-white'); bKR.className="text-xs px-3 py-1 rounded text-gray-300 transition-all"; } }
@@ -451,129 +423,30 @@
         function quickTranslate(txt) { const input = document.getElementById('transInput').value; const q = txt || input; if(!q) return; window.open(`https://translate.google.com/?sl=auto&tl=${curLang==='KR'?'ko':'ja'}&text=${encodeURIComponent(q)}&op=translate`, '_blank'); }
         
         // --- 9. INFO ---
-        function renderInfoList() { 
-            document.getElementById('infoList').innerHTML = infoData.map((item, idx) => `
-                <div class="sketch-box p-3 ${item.color || 'bg-white'} flex justify-between items-center" onclick="openDedicatedInfoModal(${idx})">
-                    <div>
-                        <div class="text-xs text-gray-500">${item.title}</div>
-                        <div class="text-lg font-black text-gray-800">${item.text}</div>
-                    </div>
-                    <button onclick="event.stopPropagation(); deleteInfoItem(${idx})" class="text-gray-300 hover:text-red-500 px-2"><i class="fa-solid fa-trash text-xs"></i></button>
-                </div>`).join(''); 
-        }
-        function openDedicatedInfoModal(idx = -1) {
-            document.getElementById('infoModal').classList.remove('hidden');
-            document.getElementById('infoIndex').value = idx;
-            document.getElementById('infoTitle').innerText = idx === -1 ? "新增筆記" : "編輯筆記";
-            document.getElementById('infoDelete').classList.toggle('hidden', idx === -1);
-            
-            if(idx !== -1) {
-                const item = infoData[idx];
-                document.getElementById('infoTitleInput').value = item.title;
-                document.getElementById('infoContentInput').value = item.text;
-            } else {
-                document.getElementById('infoTitleInput').value = "";
-                document.getElementById('infoContentInput').value = "";
-            }
-        }
-        function saveInfo() {
-            const idx = parseInt(document.getElementById('infoIndex').value);
-            const title = document.getElementById('infoTitleInput').value;
-            const text = document.getElementById('infoContentInput').value;
-            if(!title) return;
-
-            if(idx === -1) {
-                infoData.push({ id: Date.now(), title, text, color: 'bg-white' });
-            } else {
-                infoData[idx].title = title;
-                infoData[idx].text = text;
-            }
-            saveStorage('trip_info_v15_clean', infoData);
-            renderInfoList();
-            closeModal('infoModal');
-        }
-        function deleteInfoItem(idx) {
-            if(confirm('刪除?')) {
-                infoData.splice(idx, 1);
-                saveStorage('trip_info_v15_clean', infoData);
-                renderInfoList();
-            }
-        }
-        function deleteInfoModal() {
-            const idx = parseInt(document.getElementById('infoIndex').value);
-            deleteInfoItem(idx);
-            closeModal('infoModal');
-        }
+        function renderInfoList() { document.getElementById('infoList').innerHTML = infoData.map((item, idx) => `<div class="sketch-box p-3 ${item.color || 'bg-white'} flex justify-between items-center" onclick="openDedicatedInfoModal(${idx})"><div><div class="text-xs text-gray-500">${item.title}</div><div class="text-lg font-black text-gray-800 whitespace-pre-wrap">${item.text}</div></div><button onclick="event.stopPropagation(); deleteInfoItem(${idx})" class="text-gray-300 hover:text-red-500 px-2"><i class="fa-solid fa-trash text-xs"></i></button></div>`).join(''); }
+        function openDedicatedInfoModal(idx = -1) { document.getElementById('infoModal').classList.remove('hidden'); document.getElementById('infoIndex').value = idx; document.getElementById('infoTitle').innerText = idx === -1 ? "新增筆記" : "編輯筆記"; document.getElementById('infoDelete').classList.toggle('hidden', idx === -1); if(idx !== -1) { const item = infoData[idx]; document.getElementById('infoTitleInput').value = item.title; document.getElementById('infoContentInput').value = item.text; } else { document.getElementById('infoTitleInput').value = ""; document.getElementById('infoContentInput').value = ""; } }
+        function saveInfo() { const idx = parseInt(document.getElementById('infoIndex').value); const title = document.getElementById('infoTitleInput').value; const text = document.getElementById('infoContentInput').value; if(!title) return; if(idx === -1) { infoData.push({ id: Date.now(), title, text, color: 'bg-white' }); } else { infoData[idx].title = title; infoData[idx].text = text; } saveStorage('trip_info_v16', infoData); renderInfoList(); closeModal('infoModal'); }
+        function deleteInfoItem(idx) { if(confirm('刪除?')) { infoData.splice(idx, 1); saveStorage('trip_info_v16', infoData); renderInfoList(); } }
+        function deleteInfoModal() { const idx = parseInt(document.getElementById('infoIndex').value); deleteInfoItem(idx); closeModal('infoModal'); }
 
         // --- PRINT & EXPORT ---
         function printBrochure() {
             let html = `<div class="print-page"><h1 class="print-h1">跨國冒險 2026 手冊</h1>`;
-            html += `<div class="print-section"><div class="print-h2">✈️ 交通</div>`;
-            bookings.traffic.forEach(b => html += `<div class="print-item"><strong>${b.title}</strong>: ${b.sub} <br><span class="print-note">${b.note}</span></div>`);
-            html += `</div><div class="print-section"><div class="print-h2">🏨 住宿</div>`;
-            bookings.stay.forEach(b => html += `<div class="print-item"><strong>${b.title}</strong>: ${b.sub} <br><span class="print-note">${b.note}</span></div>`);
+            html += `<div class="print-section"><div class="print-h2">✈️ 交通</div>`; bookings.traffic.forEach(b => html += `<div class="print-item"><strong>${b.title}</strong>: ${b.sub} <br><span class="print-note">${linkify(b.note)}</span></div>`);
+            html += `</div><div class="print-section"><div class="print-h2">🏨 住宿</div>`; bookings.stay.forEach(b => html += `<div class="print-item"><strong>${b.title}</strong>: ${b.sub} <br><span class="print-note">${linkify(b.note)}</span></div>`);
             html += `</div>`;
-            tripData.forEach(d => {
-                html += `<div class="print-section"><div class="print-h2">${d.d} ${d.date} (${d.city})</div>`;
-                d.items.forEach(i => html += `<div class="print-item"><span class="print-time">${i.time}</span> ${i.act} <div class="print-note">${i.note}</div></div>`);
-                html += `</div>`;
-            });
-            const shops = getStorage('trip_shop_v15', []);
-            html += `<div class="print-section"><div class="print-h2">🛍️ 購物清單</div><ul>`;
-            shops.forEach(s => html += `<li>[ ] ${s.txt}</li>`);
-            html += `</ul></div></div>`;
-            document.getElementById('print-area').innerHTML = html;
-            window.print();
+            tripData.forEach(d => { html += `<div class="print-section"><div class="print-h2">${d.d} ${d.date} (${d.city})</div>`; d.items.forEach(i => html += `<div class="print-item"><span class="print-time">${i.time}</span> ${i.act} <div class="print-note">${i.note}</div></div>`); html += `</div>`; });
+            const shops = getStorage('trip_shop_v16', []); html += `<div class="print-section"><div class="print-h2">🛍️ 購物清單</div><ul>`; shops.forEach(s => html += `<li>[ ] ${s.txt}</li>`); html += `</ul></div></div>`;
+            document.getElementById('print-area').innerHTML = html; window.print();
         }
-
-        function exportData() {
-            const allData = {
-                trip: getStorage('trip_data_v15', []),
-                info: getStorage('trip_info_v15_clean', []),
-                traffic: getStorage('trip_traffic_v15', []),
-                stay: getStorage('trip_stay_v15', []),
-                shop: getStorage('trip_shop_v15', []),
-                diary: getStorage('trip_diary_v15', []),
-                todo: getStorage('trip_todo_v15', []),
-                wallet: getStorage('trip_wallet_v15', [])
-            };
-            const blob = new Blob([JSON.stringify(allData)], {type: "application/json"});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href = url; a.download = "trip_backup_2026.json"; a.click();
-        }
-
-        function importData(input) {
-            const file = input.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    if(data.trip) saveStorage('trip_data_v15', data.trip);
-                    if(data.info) saveStorage('trip_info_v15_clean', data.info);
-                    if(data.traffic) saveStorage('trip_traffic_v15', data.traffic);
-                    if(data.stay) saveStorage('trip_stay_v15', data.stay);
-                    if(data.shop) saveStorage('trip_shop_v15', data.shop);
-                    if(data.diary) saveStorage('trip_diary_v15', data.diary);
-                    if(data.todo) saveStorage('trip_todo_v15', data.todo);
-                    if(data.wallet) saveStorage('trip_wallet_v15', data.wallet);
-                    alert("還原成功！");
-                    location.reload();
-                } catch(err) { alert("檔案格式錯誤"); }
-            };
-            reader.readAsText(file);
-        }
+        function exportData() { const allData = { trip: getStorage('trip_data_v16', []), info: getStorage('trip_info_v16', []), traffic: getStorage('trip_traffic_v16', []), stay: getStorage('trip_stay_v16', []), shop: getStorage('trip_shop_v16', []), diary: getStorage('trip_diary_v16', []), todo: getStorage('trip_todo_v16', []), wallet: getStorage('trip_wallet_v16', []) }; const blob = new Blob([JSON.stringify(allData)], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = "trip_backup_2026.json"; a.click(); }
+        function importData(input) { const file = input.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const data = JSON.parse(e.target.result); if(data.trip) saveStorage('trip_data_v16', data.trip); if(data.info) saveStorage('trip_info_v16', data.info); if(data.traffic) saveStorage('trip_traffic_v16', data.traffic); if(data.stay) saveStorage('trip_stay_v16', data.stay); if(data.shop) saveStorage('trip_shop_v16', data.shop); if(data.diary) saveStorage('trip_diary_v16', data.diary); if(data.todo) saveStorage('trip_todo_v16', data.todo); if(data.wallet) saveStorage('trip_wallet_v16', data.wallet); alert("還原成功！"); location.reload(); } catch(err) { alert("檔案格式錯誤"); } }; reader.readAsText(file); }
 
         // --- Modals & Helpers ---
-        function openEditModal(type, i=-1) {
-            document.getElementById('editModal').classList.remove('hidden'); document.getElementById('editIndex').value = i;
-            if(i===-1) { document.getElementById('modalTitle').innerText="新增行程"; document.getElementById('btnDelete').classList.add('hidden'); document.getElementById('modalTime').value="09:00"; document.getElementById('modalAct').value=""; document.getElementById('modalNote').value=""; } 
-            else { const item = tripData[curDay].items[i]; document.getElementById('modalTitle').innerText="編輯行程"; document.getElementById('btnDelete').classList.remove('hidden'); document.getElementById('modalTime').value=item.time; document.getElementById('modalAct').value=item.act; document.getElementById('modalNote').value=item.note; }
-        }
-        function saveItem() { const idx = parseInt(document.getElementById('editIndex').value); const item = { time: document.getElementById('modalTime').value, act: document.getElementById('modalAct').value, note: document.getElementById('modalNote').value }; if(!item.act) return; if(idx===-1) tripData[curDay].items.push(item); else tripData[curDay].items[idx]=item; tripData[curDay].items.sort((a,b)=>a.time.localeCompare(b.time)); saveStorage('trip_data_v15', tripData); renderDaily(curDay); closeModal('editModal'); }
-        function deleteItem() { const idx = parseInt(document.getElementById('editIndex').value); if(confirm('刪除?')) { tripData[curDay].items.splice(idx,1); saveStorage('trip_data_v15', tripData); renderDaily(curDay); closeModal('editModal'); } }
+        function openEditModal(type, i=-1) { document.getElementById('editModal').classList.remove('hidden'); document.getElementById('editIndex').value = i; if(i===-1) { document.getElementById('modalTitle').innerText="新增行程"; document.getElementById('btnDelete').classList.add('hidden'); document.getElementById('modalTime').value="09:00"; document.getElementById('modalAct').value=""; document.getElementById('modalNote').value=""; } else { const item = tripData[curDay].items[i]; document.getElementById('modalTitle').innerText="編輯行程"; document.getElementById('btnDelete').classList.remove('hidden'); document.getElementById('modalTime').value=item.time; document.getElementById('modalAct').value=item.act; document.getElementById('modalNote').value=item.note; } }
+        function saveItem() { const idx = parseInt(document.getElementById('editIndex').value); const item = { time: document.getElementById('modalTime').value, act: document.getElementById('modalAct').value, note: document.getElementById('modalNote').value }; if(!item.act) return; if(idx===-1) tripData[curDay].items.push(item); else tripData[curDay].items[idx]=item; tripData[curDay].items.sort((a,b)=>a.time.localeCompare(b.time)); saveStorage('trip_data_v16', tripData); renderDaily(curDay); closeModal('editModal'); }
+        function deleteItem() { const idx = parseInt(document.getElementById('editIndex').value); if(confirm('刪除?')) { tripData[curDay].items.splice(idx,1); saveStorage('trip_data_v16', tripData); renderDaily(curDay); closeModal('editModal'); } }
 
-        // FIXED: Added default -1 for new items
         function openBookingModal(type, id = -1) {
             document.getElementById('bookingModal').classList.remove('hidden'); 
             document.getElementById('bkType').value = type; document.getElementById('bkId').value = id;
@@ -594,12 +467,12 @@
 
             if(id === -1) bookings[type].push({id: Date.now(), title, sub, note});
             else { const b = bookings[type].find(b => b.id === id); if(b) { b.title = title; b.sub = sub; b.note = note; } }
-            saveStorage('trip_'+type+'_v15', bookings[type]); renderBookings(type);
+            saveStorage('trip_'+type+'_v16', bookings[type]); renderBookings(type);
             closeModal('bookingModal');
         }
         function deleteBooking() {
             const type = document.getElementById('bkType').value; const id = parseInt(document.getElementById('bkId').value);
-            if(confirm('刪除?')) { bookings[type] = bookings[type].filter(b => b.id !== id); saveStorage('trip_'+type+'_v15', bookings[type]); renderBookings(type); closeModal('bookingModal'); }
+            if(confirm('刪除?')) { bookings[type] = bookings[type].filter(b => b.id !== id); saveStorage('trip_'+type+'_v16', bookings[type]); renderBookings(type); closeModal('bookingModal'); }
         }
 
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
