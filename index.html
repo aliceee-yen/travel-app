@@ -12,30 +12,20 @@
         body { font-family: 'Noto Sans TC', sans-serif; background-color: var(--bg-paper); color: var(--ink); -webkit-tap-highlight-color: transparent; padding-bottom: 110px; }
         .font-header { font-family: 'ZCOOL KuaiLe', cursive; }
         
-        /* 手繪風格 */
-        .sketch-box { 
-            background: white; 
-            border: 2px solid var(--ink); 
-            border-radius: 8px;
-            box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
-        }
-        
-        /* Checkbox */
+        /* 元件樣式 */
+        .sketch-box { background: white; border: 2px solid var(--ink); border-radius: 8px; box-shadow: 2px 2px 0px rgba(0,0,0,0.1); }
         .custom-checkbox { width: 1rem; height: 1rem; accent-color: var(--ink); }
         .checked-item { text-decoration: line-through; color: #9ca3af; }
 
-        /* Tab Animation */
+        /* 分頁動畫 */
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.2s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .modal-overlay { background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); z-index: 60; }
-
-        /* Booking Card Tag */
-        .booking-tag { position: absolute; top: -10px; left: 10px; background: var(--ink); color: white; padding: 2px 8px; font-size: 10px; border-radius: 4px; font-weight: bold; }
         
-        /* Photo List Item */
+        .booking-tag { position: absolute; top: -10px; left: 10px; background: var(--ink); color: white; padding: 2px 8px; font-size: 10px; border-radius: 4px; font-weight: bold; }
         .photo-row { display: flex; gap: 10px; align-items: center; border: 2px solid #eee; padding: 8px; border-radius: 8px; background: white; margin-bottom: 8px; }
         .photo-thumb { width: 80px; height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; cursor: zoom-in; flex-shrink: 0; }
 
@@ -50,7 +40,7 @@
             .print-h2 { font-size: 18px; font-weight: bold; margin-top: 15px; margin-bottom: 5px; color: #333; border-left: 5px solid #333; padding-left: 10px; background: #eee; }
             .print-item { margin-bottom: 8px; font-size: 14px; }
             .print-time { font-weight: bold; display: inline-block; width: 60px; background: #ddd; text-align: center; border-radius: 4px; margin-right: 5px; }
-            .print-note { font-size: 12px; color: #555; margin-left: 65px; margin-top: 2px; }
+            .print-note { font-size: 12px; color: #555; margin-left: 65px; margin-top: 2px; white-space: pre-wrap; }
         }
         #print-area { display: none; }
     </style>
@@ -200,7 +190,7 @@
         <section id="info" class="tab-content">
             <h2 class="font-header text-lg mb-3 pl-2 border-l-4 border-gray-500">ℹ️ 實用筆記</h2>
             <div id="infoList" class="space-y-3"></div>
-            <button onclick="openDedicatedInfoModal()" class="w-full mt-4 py-3 border-2 border-dashed border-gray-300 text-gray-400 rounded-lg text-sm hover:border-gray-500 hover:text-gray-600 font-bold transition-all relative z-10"><i class="fa-solid fa-plus"></i> 新增筆記</button>
+            <button onclick="openInfoModal()" class="w-full mt-4 py-3 border-2 border-dashed border-gray-300 text-gray-400 rounded-lg text-sm hover:border-gray-500 hover:text-gray-600 font-bold transition-all relative z-10"><i class="fa-solid fa-plus"></i> 新增筆記</button>
 
             <div class="mt-8 pt-6 border-t-2 border-gray-100">
                 <h3 class="font-bold text-gray-400 text-xs mb-3 uppercase tracking-wider">系統管理 & 備份</h3>
@@ -259,7 +249,7 @@
             <div class="space-y-3">
                 <input id="bkTitle" type="text" placeholder="標題 (必填)" class="w-full p-2 border rounded font-bold">
                 <input id="bkSub" type="text" placeholder="內容 / 副標題" class="w-full p-2 border rounded">
-                <textarea id="bkNote" rows="5" placeholder="備註 (支援換行，貼上網址自動連結)..." class="w-full p-2 border rounded"></textarea>
+                <textarea id="bkNote" rows="6" placeholder="備註 (支援換行，貼上網址自動變連結)..." class="w-full p-2 border rounded"></textarea>
             </div>
             <div class="flex gap-2 mt-4">
                 <button onclick="closeModal('bookingModal')" class="flex-1 py-2 bg-gray-100 rounded text-gray-500 text-sm">取消</button>
@@ -275,7 +265,7 @@
             <input type="hidden" id="infoIndex">
             <div class="space-y-3">
                 <input id="infoTitleInput" type="text" placeholder="標題 (例如: 飯店Wifi)" class="w-full p-2 border rounded font-bold">
-                <textarea id="infoContentInput" rows="5" placeholder="內容 (支援換行)..." class="w-full p-2 border rounded"></textarea>
+                <textarea id="infoContentInput" rows="6" placeholder="內容 (支援換行)..." class="w-full p-2 border rounded"></textarea>
             </div>
             <div class="flex gap-2 mt-4">
                 <button onclick="closeModal('infoModal')" class="flex-1 py-2 bg-gray-100 rounded text-gray-500 text-sm">取消</button>
@@ -292,7 +282,7 @@
     <div id="print-area"></div>
 
     <script>
-        // --- DATA ---
+        // --- DATA WITH USER BACKUP INTEGRATION ---
         const defaultTrip = [
             { d: "D0", date: "2/13", city: "Yunlin", lat: 23.7, lon: 120.4, country: "TW", items: [{ time: "21:30", act: "雲林虎尾出發", note: "預約計程車" }, { time: "22:16", act: "雲林高鐵", note: "末班車" }]},
             { d: "D1", date: "2/14", city: "Busan", lat: 35.17, lon: 129.07, country: "KR", items: [{ time: "06:10", act: "金海機場", note: "換錢/Q-CODE" }, { time: "08:00", act: "松亭三代豬肉湯飯", note: "西面市場" }]},
@@ -304,18 +294,24 @@
             { d: "D7", date: "2/20", city: "Yufu", lat: 33.26, lon: 131.36, country: "JP", items: [{ time: "09:40", act: "九州自然動物園", note: "Jungle Bus" }, { time: "15:45", act: "金鱗湖", note: "晨霧" }]},
             { d: "D8", date: "2/21", city: "Oita", lat: 33.23, lon: 131.61, country: "JP", items: [{ time: "12:30", act: "豐後茶屋", note: "天婦羅" }, { time: "16:30", act: "大分機場", note: "回台灣" }]}
         ];
-        const defaultInfo = [{ title: "日本報警", text: "110 (救護 119)", color: "bg-red-50" }, { title: "韓國報警", text: "112 (救護 119)", color: "bg-blue-50" }, { title: "日本加油", text: "Regular Man-tan (紅)", color: "bg-gray-50" }, { title: "日本導航", text: "請幫我設 MapCode", color: "bg-gray-50" }];
+        // User Info + Defaults
+        const defaultInfo = [{ title: "日本報警", text: "110 (救護 119)", color: "bg-red-50", id: 1768977333327 }, { title: "韓國報警", text: "112 (救護 119)", color: "bg-blue-50", id: 1768977333328 }, { title: "日本加油", text: "Regular Man-tan (紅)", color: "bg-gray-50", id: 1768977333329 }, { title: "日本導航", text: "請幫我設 MapCode", color: "bg-gray-50", id: 1768977333330 }];
+        // User Traffic + Defaults
         const defaultTraffic = [
             {id:1, title:"濟州航空 7C6164", sub:"TPE 02:50 ➔ PUS 06:10", note:"2/14 (六) | 代號: D4ZK4L | 4人"},
             {id:2, title:"新山茶花號 (渡輪)", sub:"釜山港 ➔ 博多港", note:"2/16 (一) | 2等+特等室 | 費用: $14,250"},
             {id:3, title:"NIPPON Rent-A-Car", sub:"AMU PLAZA 新館 1F", note:"Day 6 08:30 取車。需雪胎/ETC"},
             {id:4, title:"台灣虎航 IT751", sub:"OIT 16:30 ➔ TPE 18:10", note:"2/21 (六) | 代號: V82MGZ | 大分機場"}
         ];
+        // USER STAY DATA (INJECTED)
         const defaultStay = [
-            {id:1, title:"釜山西面飯店", sub:"釜山", note:"Day 1-3"},
-            {id:2, title:"JR九州飯店長崎", sub:"長崎車站內", note:"Day 4-5 (記得索取折扣卡)"},
-            {id:3, title:"天瀨溫泉 溪仙閣", sub:"日田市", note:"Day 6 (電話: 0973-57-2355)"}
+            {"id":1,"title":"釜山西面飯店","sub":"釜山","note":"Day 1-3"},
+            {"id":2,"title":"JR九州飯店長崎","sub":"長崎車站內","note":"Day 4-5 (記得索取折扣卡)"},
+            {"id":3,"title":"天瀨溫泉 溪仙閣","sub":"日田市","note":"Day 6 (電話: 0973-57-2355)"},
+            {"id":1768977504334,"title":"[D7]JR九州飯店 Blossom 大分","sub":"2026/02/20(五)〜2026/02/21(六)豪華雙人房（三人房）(含早餐)","note":"會員編號：WEB1004419\n預訂編號：3251-0282-3462\nhttps://www.jrhotel-m.jp/special/lang/zh-tw/\n\n大概抵達時間我填20:00"},
+            {"id":1768977688341,"title":"郵輪","sub":"","note":""}
         ];
+
         const phrases = { KR: [{t:"你好",o:"안녕하세요"},{t:"謝謝",o:"감사합니다"},{t:"多少錢?",o:"얼마예요?"},{t:"廁所?",o:"화장실?"},{t:"不辣",o:"안 맵게"}], JP: [{t:"你好",o:"こんにちは"},{t:"謝謝",o:"ありがとうございます"},{t:"多少錢?",o:"いくらですか"},{t:"廁所?",o:"トイレはどこですか"},{t:"加滿油",o:"レギュラー満タン"}] };
         const RATES = { 'KR': 0.024, 'JP': 0.22, 'TW': 1 };
         
@@ -324,13 +320,11 @@
 
         function init() {
             try {
+                // Changed Key to v16 to force new defaults but keep structure
                 tripData = getStorage('trip_data_v16', defaultTrip);
                 infoData = getStorage('trip_info_v16', defaultInfo);
-                infoData = infoData.map(i => ({...i, id: Number(i.id) || Date.now() + Math.random()}));
-                saveStorage('trip_info_v16', infoData);
-
                 bookings.traffic = getStorage('trip_traffic_v16', defaultTraffic);
-                bookings.stay = getStorage('trip_stay_v16', defaultStay);
+                bookings.stay = getStorage('trip_stay_v16', defaultStay); // User data is here!
                 diary = getStorage('trip_diary_v16', []);
                 todos = getStorage('trip_todo_v16', [{id:1, txt:"線上投保旅平險", done:false},{id:2, txt:"開通漫遊/網卡", done:false}]);
 
@@ -340,12 +334,11 @@
             } catch(e) { console.log("Init Error", e); }
         }
 
-        // --- HELPER: Linkify & Format ---
+        // --- HELPER: Linkify ---
         function linkify(text) {
             if (!text) return '';
-            let safe = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            // Auto link URLs
-            return safe.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" class="text-blue-500 underline decoration-blue-300 break-all">$1</a>');
+            let safe = text.replace(/</g, "<").replace(/>/g, ">");
+            return safe.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" class="text-blue-600 underline font-bold break-all">$1</a>');
         }
 
         // --- 1. Plan ---
@@ -388,7 +381,7 @@
         function editImgNote(id) { const list = getStorage('trip_shop_img_v16', []); const item = list.find(i => i.id === id); const newTxt = prompt("編輯備註:", item.txt); if(newTxt !== null) { item.txt = newTxt; saveStorage('trip_shop_img_v16', list); renderShopImages(); } }
         function delImage(id) { if(confirm('刪除照片?')) { const list = getStorage('trip_shop_img_v16', []).filter(i => i.id !== id); saveStorage('trip_shop_img_v16', list); renderShopImages(); } }
 
-        // --- 3,4. Traffic & Stay (UPDATED: Formatting) ---
+        // --- 3,4. Traffic & Stay ---
         function renderBookings(type) {
             const list = bookings[type];
             document.getElementById(type+'List').innerHTML = list.map((b, i) => `
@@ -432,8 +425,8 @@
         // --- PRINT & EXPORT ---
         function printBrochure() {
             let html = `<div class="print-page"><h1 class="print-h1">跨國冒險 2026 手冊</h1>`;
-            html += `<div class="print-section"><div class="print-h2">✈️ 交通</div>`; bookings.traffic.forEach(b => html += `<div class="print-item"><strong>${b.title}</strong>: ${b.sub} <br><span class="print-note">${linkify(b.note)}</span></div>`);
-            html += `</div><div class="print-section"><div class="print-h2">🏨 住宿</div>`; bookings.stay.forEach(b => html += `<div class="print-item"><strong>${b.title}</strong>: ${b.sub} <br><span class="print-note">${linkify(b.note)}</span></div>`);
+            html += `<div class="print-section"><div class="print-h2">✈️ 交通</div>`; bookings.traffic.forEach(b => html += `<div class="print-item"><strong>${b.title}</strong>: ${b.sub} <br><div class="print-note">${linkify(b.note)}</div></div>`);
+            html += `</div><div class="print-section"><div class="print-h2">🏨 住宿</div>`; bookings.stay.forEach(b => html += `<div class="print-item"><strong>${b.title}</strong>: ${b.sub} <br><div class="print-note">${linkify(b.note)}</div></div>`);
             html += `</div>`;
             tripData.forEach(d => { html += `<div class="print-section"><div class="print-h2">${d.d} ${d.date} (${d.city})</div>`; d.items.forEach(i => html += `<div class="print-item"><span class="print-time">${i.time}</span> ${i.act} <div class="print-note">${i.note}</div></div>`); html += `</div>`; });
             const shops = getStorage('trip_shop_v16', []); html += `<div class="print-section"><div class="print-h2">🛍️ 購物清單</div><ul>`; shops.forEach(s => html += `<li>[ ] ${s.txt}</li>`); html += `</ul></div></div>`;
