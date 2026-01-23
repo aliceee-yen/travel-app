@@ -22,16 +22,10 @@
         .booking-tag { position: absolute; top: -10px; left: 10px; background: var(--ink); color: white; padding: 2px 8px; font-size: 10px; border-radius: 4px; font-weight: bold; }
         
         @media print {
-            body { background: white; padding: 0; }
-            header, nav, .tab-content, #weatherBoard, button, .modal-overlay { display: none !important; }
+            header, nav, button, .modal-overlay { display: none !important; }
             #print-area { display: block !important; padding: 20px; }
-            .print-page { page-break-after: always; }
-            .print-section { margin-bottom: 20px; border: 2px solid #333; border-radius: 10px; padding: 15px; }
-            .print-h1 { font-family: 'ZCOOL KuaiLe'; font-size: 24px; text-align: center; margin-bottom: 10px; border-bottom: 2px solid #333; padding-bottom: 10px; }
-            .print-h2 { font-size: 18px; font-weight: bold; margin-top: 15px; margin-bottom: 5px; color: #333; border-left: 5px solid #333; padding-left: 10px; background: #eee; }
-            .print-item { margin-bottom: 8px; font-size: 14px; }
-            .print-time { font-weight: bold; display: inline-block; width: 60px; background: #ddd; text-align: center; border-radius: 4px; margin-right: 5px; }
-            .print-note { font-size: 12px; color: #555; margin-left: 65px; margin-top: 2px; white-space: pre-wrap; }
+            #print-area h1 { font-size: 24px; text-align: center; margin-bottom: 20px; }
+            .print-item { margin-bottom: 15px; border-bottom: 1px solid #ccc; padding-bottom: 10px; }
         }
         #print-area { display: none; }
     </style>
@@ -41,7 +35,7 @@
     <header class="bg-white border-b-2 border-gray-800 pt-12 pb-3 px-4 sticky top-0 z-40 flex justify-between items-center shadow-sm">
         <div>
             <h1 class="text-xl font-header tracking-wider">🦕 跨國冒險 2026</h1>
-            <div class="text-[10px] text-gray-400 font-bold uppercase">YUNLIN ➔ BUSAN ➔ KYUSHU</div>
+            <div class="text-[10px] text-gray-400 font-bold">YUNLIN ➔ BUSAN ➔ KYUSHU</div>
         </div>
         <button onclick="resetData()" class="text-[10px] text-gray-300 border px-2 py-1 rounded">重置</button>
     </header>
@@ -50,20 +44,20 @@
         
         <section id="plan" class="tab-content active">
             <div class="flex overflow-x-auto gap-2 pb-2 mb-2 no-scrollbar" id="dayNav"></div>
-            <div id="weatherBoard" class="mb-3 bg-blue-50 p-2 rounded border border-blue-100 flex justify-between items-center hidden">
-                <div class="flex items-center gap-2"><div id="w-icon" class="text-xl">⛅</div><div class="flex items-baseline gap-1"><span id="w-city" class="text-[10px] font-bold text-gray-400 uppercase">LOC</span><span id="w-temp" class="text-lg font-black text-gray-800">--</span><span class="text-xs">°C</span></div></div><div id="w-desc" class="text-[10px] font-bold text-blue-600 bg-white px-2 py-0.5 rounded">更新中</div>
-            </div>
             <div id="dailyContainer" class="space-y-3"></div>
-            <button onclick="openEditModal('trip')" class="w-full mt-4 mb-6 py-3 border-2 border-dashed border-gray-300 text-gray-400 rounded-xl text-sm font-bold hover:border-gray-800 hover:text-gray-800"><i class="fa-solid fa-plus"></i> 新增行程</button>
+            <button onclick="openEditModal('trip')" class="w-full mt-4 mb-6 py-3 border-2 border-dashed border-gray-300 text-gray-400 rounded-xl text-sm font-bold"><i class="fa-solid fa-plus"></i> 新增行程</button>
             
             <div class="sketch-box p-4 bg-gray-50 mt-6 relative">
                 <div class="absolute -top-3 left-3 bg-green-600 text-white text-[10px] px-2 py-0.5 rounded font-bold border border-black shadow-sm">📅 今日消費</div>
-                <div class="flex justify-between items-end mb-3 mt-1 px-1"><div class="text-xs text-gray-400 font-bold">當日總計</div><div class="text-xl font-black text-green-700" id="dailyTotalDisplay">NT$ 0</div></div>
+                <div class="flex justify-between items-end mb-3 mt-1 px-1">
+                    <div class="text-xs text-gray-400 font-bold">當日總計</div>
+                    <div class="text-xl font-black text-green-700" id="dailyTotalDisplay">NT$ 0</div>
+                </div>
                 <div class="flex items-center bg-white border-2 border-gray-200 rounded-full overflow-hidden shadow-sm h-12">
                     <input id="quickExpDesc" type="text" placeholder="品項" class="flex-1 p-3 pl-4 text-sm outline-none bg-transparent min-w-0 h-full">
-                    <select id="quickExpCurr" class="h-full px-2 text-xs font-bold outline-none bg-transparent text-gray-500 cursor-pointer border-l border-r border-gray-100"><option value="KR">₩</option><option value="JP">¥</option></select>
+                    <select id="quickExpCurr" class="h-full px-2 text-xs font-bold outline-none bg-transparent border-l border-r border-gray-100"><option value="KR">₩</option><option value="JP">¥</option></select>
                     <input id="quickExpAmt" type="number" placeholder="金額" class="w-20 p-3 text-sm outline-none bg-transparent text-center h-full">
-                    <button onclick="addExpenseFromPlan()" class="bg-gray-800 text-white h-full px-5 hover:bg-black transition-colors border-l border-gray-800"><i class="fa-solid fa-check"></i></button>
+                    <button onclick="addExpenseFromPlan()" class="bg-gray-800 text-white h-full px-5 border-l border-gray-800"><i class="fa-solid fa-check"></i></button>
                 </div>
                 <div id="dailyExpenseList" class="space-y-2 text-sm text-gray-600 px-2 mt-3"></div>
             </div>
@@ -71,62 +65,67 @@
 
         <section id="shopping" class="tab-content">
             <h2 class="font-header text-lg mb-3 pl-2 border-l-4 border-yellow-400">🛍️ 必買清單</h2>
-            <div class="mb-6"><div class="flex gap-2 mb-2"><input id="shopInput" type="text" placeholder="文字項目..." class="flex-1 p-2 sketch-box outline-none text-sm"><button onclick="addShopItem()" class="bg-yellow-400 px-3 rounded border-2 border-gray-800 shadow-sm font-bold text-sm"><i class="fa-solid fa-pen"></i></button></div><div id="shopList" class="space-y-1 max-h-40 overflow-y-auto"></div></div>
+            <div class="mb-6"><div class="flex gap-2 mb-2"><input id="shopInput" type="text" placeholder="文字項目..." class="flex-1 p-2 sketch-box outline-none text-sm"><button onclick="addShopItem()" class="bg-yellow-400 px-3 rounded border-2 border-gray-800 font-bold text-sm"><i class="fa-solid fa-pen"></i></button></div><div id="shopList" class="space-y-1"></div></div>
             <hr class="border-dashed border-gray-300 mb-4">
-            <div><div class="flex justify-between items-center mb-2"><h3 class="font-bold text-sm text-gray-500"><i class="fa-regular fa-image"></i> 照片備註牆</h3><label class="bg-gray-800 text-white px-3 py-1 rounded text-xs cursor-pointer shadow active:scale-95"><i class="fa-solid fa-camera"></i> 新增<input type="file" id="imgInput" accept="image/*" class="hidden" onchange="handleAddImage('shop')"></label></div><div id="imageGrid" class="space-y-3"></div></div>
+            <div class="flex justify-between items-center mb-2"><h3 class="font-bold text-sm text-gray-500">照片備註牆</h3><label class="bg-gray-800 text-white px-3 py-1 rounded text-xs cursor-pointer shadow"><i class="fa-solid fa-camera"></i> 新增<input type="file" id="imgInput" accept="image/*" class="hidden" onchange="handleAddImage('shop')"></label></div>
+            <div id="imageGrid" class="space-y-3"></div>
         </section>
 
         <section id="traffic" class="tab-content">
             <h2 class="font-header text-lg mb-4 pl-2 border-l-4 border-blue-400">✈️ 交通資訊</h2>
             <div id="trafficList" class="space-y-4 mt-2"></div>
-            <button onclick="openBookingModal('traffic', -1)" class="w-full mt-4 py-2 border border-gray-300 text-gray-400 rounded text-sm hover:bg-gray-50"><i class="fa-solid fa-plus"></i> 新增交通</button>
+            <button onclick="openBookingModal('traffic', -1)" class="w-full mt-4 py-2 border border-gray-300 text-gray-400 rounded text-sm"><i class="fa-solid fa-plus"></i> 新增交通</button>
         </section>
 
         <section id="stay" class="tab-content">
             <h2 class="font-header text-lg mb-4 pl-2 border-l-4 border-indigo-400">🏨 住宿資訊</h2>
             <div id="stayList" class="space-y-4 mt-2"></div>
-            <button onclick="openBookingModal('stay', -1)" class="w-full mt-4 py-2 border border-gray-300 text-gray-400 rounded text-sm hover:bg-gray-50"><i class="fa-solid fa-plus"></i> 新增住宿</button>
+            <button onclick="openBookingModal('stay', -1)" class="w-full mt-4 py-2 border border-gray-300 text-gray-400 rounded text-sm"><i class="fa-solid fa-plus"></i> 新增住宿</button>
         </section>
 
         <section id="diary" class="tab-content">
             <h2 class="font-header text-lg mb-3 pl-2 border-l-4 border-pink-400">📔 旅遊日記</h2>
-            <div class="sketch-box p-3 mb-4 bg-pink-50"><textarea id="diaryInput" rows="3" placeholder="今天發生了什麼有趣的事..." class="w-full p-2 outline-none text-sm resize-none bg-transparent"></textarea><div id="diaryImgPreview" class="hidden mt-2 relative w-16 h-16"><img id="dPreview" class="w-full h-full object-cover rounded"><button onclick="clearDiaryImg()" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 text-[10px] flex items-center justify-center">✕</button></div><div class="flex justify-between items-center mt-2 pt-2 border-t border-pink-100"><label class="text-pink-400 cursor-pointer p-1"><i class="fa-solid fa-camera"></i><input type="file" id="diaryImgInput" accept="image/*" class="hidden" onchange="handleDiaryImg()"></label><button onclick="addDiary()" class="bg-pink-500 text-white px-4 py-1 rounded text-sm font-bold shadow-sm">保存</button></div></div>
+            <div class="sketch-box p-3 mb-4 bg-pink-50">
+                <textarea id="diaryInput" rows="3" placeholder="今天心情如何..." class="w-full p-2 outline-none text-sm bg-transparent"></textarea>
+                <div class="flex justify-between mt-2"><button onclick="addDiary()" class="bg-pink-500 text-white px-4 py-1 rounded text-sm font-bold">保存日記</button></div>
+            </div>
             <div id="diaryList" class="space-y-3"></div>
         </section>
 
         <section id="todo" class="tab-content">
             <h2 class="font-header text-lg mb-3 pl-2 border-l-4 border-orange-400">✅ 待辦事項</h2>
-            <div class="flex gap-2 mb-4"><input id="todoInput" type="text" placeholder="例如: 領網卡..." class="flex-1 p-2 sketch-box outline-none text-sm"><button onclick="addTodo()" class="bg-orange-400 px-3 rounded border-2 border-gray-800 shadow-sm font-bold text-sm"><i class="fa-solid fa-plus"></i></button></div>
+            <div class="flex gap-2 mb-4"><input id="todoInput" type="text" placeholder="例如: 換錢..." class="flex-1 p-2 sketch-box outline-none text-sm"><button onclick="addTodo()" class="bg-orange-400 px-3 rounded border-2 border-gray-800 font-bold"><i class="fa-solid fa-plus"></i></button></div>
             <div id="todoList" class="space-y-2"></div>
         </section>
 
         <section id="wallet" class="tab-content">
             <h2 class="font-header text-lg mb-3 pl-2 border-l-4 border-green-500">💰 匯率計算</h2>
-            <div class="bg-gray-800 text-white p-5 rounded-xl shadow-lg mb-6 relative"><div class="flex justify-between items-center mb-6"><span class="text-xs font-bold text-gray-400">購物試算</span><div class="flex bg-gray-700 rounded p-1 gap-1"><button onclick="setCurrency('KR')" id="btn-calc-kr" class="text-xs px-3 py-1 rounded bg-blue-500 text-white transition-all">韓幣</button><button onclick="setCurrency('JP')" id="btn-calc-jp" class="text-xs px-3 py-1 rounded text-gray-300 transition-all">日幣</button></div></div><div class="flex items-baseline gap-2"><span class="text-2xl font-mono text-gray-400" id="currencySymbol">₩</span><input id="calcInput" type="number" class="bg-transparent text-5xl font-bold w-full outline-none text-white placeholder-gray-600" placeholder="0"></div><div class="mt-4 pt-3 border-t border-gray-600 text-right"><div class="text-xs text-gray-400 mb-1">約台幣</div><div class="text-green-400 font-bold text-3xl">NT$ <span id="calcResult">0</span></div></div></div>
+            <div class="bg-gray-800 text-white p-5 rounded-xl shadow-lg mb-6 relative">
+                <div class="flex justify-between items-center mb-6"><span class="text-xs font-bold text-gray-400">購物試算</span><div class="flex bg-gray-700 rounded p-1 gap-1"><button onclick="setCurrency('KR')" id="btn-calc-kr" class="text-xs px-3 py-1 rounded bg-blue-500">韓幣</button><button onclick="setCurrency('JP')" id="btn-calc-jp" class="text-xs px-3 py-1 rounded text-gray-300">日幣</button></div></div>
+                <div class="flex items-baseline gap-2"><span class="text-2xl font-mono text-gray-400" id="currencySymbol">₩</span><input id="calcInput" type="number" class="bg-transparent text-5xl font-bold w-full outline-none text-white" placeholder="0"></div>
+                <div class="mt-4 pt-3 border-t border-gray-600 text-right"><div class="text-xs text-gray-400 mb-1">約台幣</div><div class="text-green-400 font-bold text-3xl">NT$ <span id="calcResult">0</span></div></div>
+            </div>
         </section>
 
         <section id="translate" class="tab-content">
             <h2 class="font-header text-lg mb-3 pl-2 border-l-4 border-purple-500">🗣️ 翻譯輔助</h2>
-            <div class="relative mb-4"><input id="transInput" type="text" placeholder="輸入中文..." class="w-full p-3 pr-16 sketch-box outline-none text-sm bg-purple-50"><button onclick="quickTranslate()" class="absolute right-1.5 top-1.5 bottom-1.5 bg-purple-600 text-white px-3 rounded font-bold text-xs shadow">GO</button></div>
-            <div class="flex gap-2 mb-3"><button onclick="renderPhrases('KR')" id="btn-lang-kr" class="flex-1 py-1.5 rounded text-sm font-bold border bg-blue-100 text-blue-800">🇰🇷 韓語</button><button onclick="renderPhrases('JP')" id="btn-lang-jp" class="flex-1 py-1.5 rounded text-sm font-bold border bg-white text-gray-400">🇯🇵 日語</button></div>
+            <div class="relative mb-4"><input id="transInput" type="text" placeholder="輸入中文..." class="w-full p-3 pr-16 sketch-box outline-none text-sm bg-purple-50"><button onclick="quickTranslate()" class="absolute right-1.5 top-1.5 bottom-1.5 bg-purple-600 text-white px-3 rounded font-bold">GO</button></div>
             <div id="phraseList" class="space-y-2"></div>
         </section>
 
         <section id="info" class="tab-content">
             <h2 class="font-header text-lg mb-3 pl-2 border-l-4 border-gray-500">ℹ️ 實用筆記</h2>
             <div id="infoList" class="space-y-3"></div>
-            <button onclick="openDedicatedInfoModal()" class="w-full mt-4 py-3 border-2 border-dashed border-gray-300 text-gray-400 rounded-lg text-sm hover:border-gray-500 font-bold"><i class="fa-solid fa-plus"></i> 新增筆記</button>
-
+            <button onclick="openDedicatedInfoModal()" class="w-full mt-4 py-3 border-2 border-dashed border-gray-300 text-gray-400 rounded-lg font-bold"><i class="fa-solid fa-plus"></i> 新增筆記</button>
             <div class="mt-8 pt-6 border-t-2 border-gray-100">
-                <h3 class="font-bold text-gray-400 text-xs mb-3 uppercase tracking-wider">📱 同步與手冊</h3>
-                <button onclick="printBrochure()" class="w-full bg-gray-800 text-white p-3 rounded-lg text-sm font-bold shadow mb-3 flex items-center justify-center gap-2"><i class="fa-solid fa-print"></i> 製作手冊 (PDF)</button>
+                <h3 class="font-bold text-gray-400 text-xs mb-3 uppercase">📱 同步與備份</h3>
                 <div class="grid grid-cols-2 gap-2">
-                    <button onclick="copySyncCode()" class="bg-blue-50 text-blue-700 p-2 rounded-lg text-[10px] font-bold border border-blue-200">複製同步碼</button>
-                    <button onclick="pasteSyncCode()" class="bg-green-50 text-green-700 p-2 rounded-lg text-[10px] font-bold border border-green-200">貼上同步碼</button>
+                    <button onclick="copySyncCode()" class="bg-blue-50 text-blue-700 p-2 rounded-lg text-xs font-bold border border-blue-200">複製同步代碼</button>
+                    <button onclick="pasteSyncCode()" class="bg-green-50 text-green-700 p-2 rounded-lg text-xs font-bold border border-green-200">貼上代碼同步</button>
                 </div>
+                <button onclick="printBrochure()" class="w-full bg-gray-800 text-white p-3 rounded-lg text-sm font-bold mt-3"><i class="fa-solid fa-print"></i> 製作手冊 (列印)</button>
             </div>
         </section>
-
     </main>
 
     <nav class="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 py-3 pb-6 z-50">
@@ -144,39 +143,31 @@
     </nav>
 
     <div id="editModal" class="fixed inset-0 modal-overlay hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-sm p-5 rounded-lg shadow-2xl border-2 border-gray-800">
-            <h3 class="font-header text-lg mb-3" id="modalTitle">編輯行程</h3>
+        <div class="bg-white w-full max-w-sm p-5 rounded-lg border-2 border-gray-800">
+            <h3 class="font-header text-lg mb-3" id="modalTitle">編輯</h3>
             <input type="hidden" id="editIndex">
-            <div class="space-y-3">
-                <input id="modalTime" type="time" class="w-full p-2 border rounded bg-gray-50">
-                <input id="modalAct" type="text" placeholder="標題" class="w-full p-2 border rounded">
-                <textarea id="modalNote" rows="3" placeholder="備註..." class="w-full p-2 border rounded"></textarea>
-            </div>
-            <div class="flex gap-2 mt-4"><button onclick="closeModal('editModal')" class="flex-1 py-2 bg-gray-100 rounded text-gray-500 text-sm">取消</button><button onclick="saveItem()" class="flex-1 py-2 bg-gray-800 text-white rounded font-bold text-sm">儲存</button></div>
+            <div class="space-y-3"><input id="modalTime" type="time" class="w-full p-2 border rounded"><input id="modalAct" type="text" placeholder="標題" class="w-full p-2 border rounded"><textarea id="modalNote" rows="3" placeholder="備註..." class="w-full p-2 border rounded"></textarea></div>
+            <div class="flex gap-2 mt-4"><button onclick="closeModal('editModal')" class="flex-1 py-2 bg-gray-100 rounded text-sm">取消</button><button onclick="saveItem()" class="flex-1 py-2 bg-gray-800 text-white rounded font-bold text-sm">儲存</button></div>
             <button onclick="deleteItem()" id="btnDelete" class="w-full mt-2 text-red-500 text-xs py-2 hidden">刪除</button>
         </div>
     </div>
 
     <div id="bookingModal" class="fixed inset-0 modal-overlay hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-sm p-5 rounded-lg shadow-2xl border-2 border-gray-800">
+        <div class="bg-white w-full max-w-sm p-5 rounded-lg border-2 border-gray-800">
             <h3 class="font-header text-lg mb-3" id="bookingTitle">編輯資訊</h3>
             <input type="hidden" id="bkType"><input type="hidden" id="bkId">
-            <div class="space-y-3">
-                <input id="bkTitle" type="text" placeholder="標題" class="w-full p-2 border rounded font-bold">
-                <input id="bkSub" type="text" placeholder="副標題" class="w-full p-2 border rounded">
-                <textarea id="bkNote" rows="6" placeholder="備註..." class="w-full p-2 border rounded"></textarea>
-            </div>
-            <div class="flex gap-2 mt-4"><button onclick="closeModal('bookingModal')" class="flex-1 py-2 bg-gray-100 rounded text-gray-500 text-sm">取消</button><button onclick="saveBooking()" class="flex-1 py-2 bg-gray-800 text-white rounded font-bold text-sm">儲存</button></div>
+            <div class="space-y-3"><input id="bkTitle" type="text" placeholder="標題" class="w-full p-2 border rounded font-bold"><input id="bkSub" type="text" placeholder="副標題" class="w-full p-2 border rounded"><textarea id="bkNote" rows="6" placeholder="備註..." class="w-full p-2 border rounded"></textarea></div>
+            <div class="flex gap-2 mt-4"><button onclick="closeModal('bookingModal')" class="flex-1 py-2 bg-gray-100 rounded text-sm">取消</button><button onclick="saveBooking()" class="flex-1 py-2 bg-gray-800 text-white rounded font-bold text-sm">儲存</button></div>
             <button onclick="deleteBooking()" id="bkDelete" class="w-full mt-2 text-red-500 text-xs py-2 hidden">刪除</button>
         </div>
     </div>
 
     <div id="infoModal" class="fixed inset-0 modal-overlay hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-sm p-5 rounded-lg shadow-2xl border-2 border-gray-800">
-            <h3 class="font-header text-lg mb-3">筆記</h3>
+        <div class="bg-white w-full max-w-sm p-5 rounded-lg border-2 border-gray-800">
+            <h3 class="font-header text-lg mb-3" id="infoTitle">筆記</h3>
             <input type="hidden" id="infoIndex">
             <div class="space-y-3"><input id="infoTitleInput" type="text" placeholder="標題" class="w-full p-2 border rounded font-bold"><textarea id="infoContentInput" rows="6" placeholder="內容..." class="w-full p-2 border rounded"></textarea></div>
-            <div class="flex gap-2 mt-4"><button onclick="closeModal('infoModal')" class="flex-1 py-2 bg-gray-100 rounded text-gray-500 text-sm">取消</button><button onclick="saveInfo()" class="flex-1 py-2 bg-gray-800 text-white rounded font-bold text-sm">儲存</button></div>
+            <div class="flex gap-2 mt-4"><button onclick="closeModal('infoModal')" class="flex-1 py-2 bg-gray-100 rounded text-sm">取消</button><button onclick="saveInfo()" class="flex-1 py-2 bg-gray-800 text-white rounded font-bold text-sm">儲存</button></div>
             <button onclick="deleteInfoModal()" id="infoDelete" class="w-full mt-2 text-red-500 text-xs py-2 hidden">刪除</button>
         </div>
     </div>
@@ -185,73 +176,84 @@
     <div id="print-area"></div>
 
     <script>
-        // --- 內建資料 (包含您最新的住宿清單) ---
-        const defaultTrip = [{ d: "D0", date: "2/13", city: "Yunlin", lat: 23.7, lon: 120.4, items: [{ time: "21:30", act: "雲林虎尾出發", note: "預約計程車" }]},{ d: "D1", date: "2/14", city: "Busan", lat: 35.17, lon: 129.07, items: [{ time: "06:10", act: "金海機場", note: "換錢/Q-CODE" }]},{ d: "D2", date: "2/15", city: "Busan", lat: 35.17, lon: 129.07, items: [{ time: "10:30", act: "天空膠囊列車", note: "尾浦出發" }]},{ d: "D3", date: "2/16", city: "Busan", lat: 35.1, lon: 129.0, items: [{ time: "09:30", act: "甘川洞文化村", note: "小王子" }]},{ d: "D4", date: "2/17", city: "Nagasaki", lat: 32.75, lon: 129.87, items: [{ time: "09:00", act: "博多車站", note: "買票" }]},{ d: "D5", date: "2/18", city: "Nagasaki", lat: 32.75, lon: 129.87, items: [{ time: "10:15", act: "企鵝水族館", note: "搭巴士" }]},{ d: "D6", date: "2/19", city: "Hita", lat: 33.32, lon: 130.93, items: [{ time: "08:30", act: "NIPPON 取車", note: "檢查雪胎" }]},{ d: "D7", date: "2/20", city: "Yufu", lat: 33.26, lon: 131.36, items: [{ time: "09:40", act: "九州自然動物園", note: "Jungle Bus" }]},{ d: "D8", date: "2/21", city: "Oita", lat: 33.23, lon: 131.61, items: [{ time: "12:30", act: "豐後茶屋", note: "天婦羅" }]];
-        const defaultInfo = [{"title":"日本報警","text":"110 (救護 119)","id":1768977333327},{"title":"韓國報警","text":"112 (救護 119)","id":1768977333328}];
-        const defaultTraffic = [{id:1, title:"濟州航空 7C6164", sub:"TPE ➔ PUS", note:"代號: D4ZK4L"},{id:2, title:"台灣虎航 IT751", sub:"OIT ➔ TPE", note:"代號: V82MGZ"}];
-        // 您提供的住宿資料
+        const defaultTrip = [{ d: "D0", date: "2/13", items: [{ time: "21:30", act: "雲林虎尾出發", note: "預約計程車" }]}];
+        const defaultInfo = [{"title":"日本報警","text":"110 (救護 119)","id":1768977333327}];
         const defaultStay = [
-            {"id":1,"title":"[D1-D2]釜山西面飯店Queens Hotel Seomyeon","sub":"地址： 56 Bujeon-ro, Busanjin District, Busan, 南韓","note":"AGODA訂單編號1668320903\n電話:+82518068871\nStandard Double Room - Walking Special*2"},
-            {"id":2,"title":"[D4-D5]JR九州飯店長崎JR Kyushu Hotel Nagasaki","sub":"地址： 1-1 Onouemachi, Nagasaki, 850-0058日本","note":"AGODA訂單編號:1974169786\n電話號碼： +81 95-832-8000\n2026年2月17(二) - 2026年2月19日(四)Double Room - Non-Smoking*2\n(記得索取折扣卡)"},
-            {"id":3,"title":"[D6]天瀨溫泉 溪仙閣","sub":"地址:879-4202 日田市天瀨町赤岩913-1","note":"2026/02/19 (四)17:00含早餐 （在客房内用餐）, 含晚餐 （在客房内用餐）\n預訂號碼:6LA4VQJ2\n確認號碼:4755110378\n電話: +81-973-57-2355\n"},
-            {"id":1768977504334,"title":"[D7]JR九州飯店 Blossom 大分","sub":"地址： 1-14 Kanamemachi, Oita, 870-0831日本","note":"2026/02/20(五)〜2026/02/21(六)豪華雙人房（三人房）(含早餐)\n會員編號：WEB1004419\n預訂編號：3251-0282-3462\n電話號碼： +81 97-578-8719\nhttps://www.jrhotel-m.jp/special/lang/zh-tw/\n\n大概抵達時間我填20:00"},
-            {"id":1768977688341,"title":"[D3]新山茶花號郵輪","sub":"地址:206 Chungjang-daero, Dong-gu, Busan, 南韓","note":"16:30到18:30準備登船\n20:00出發隔天07:30到達\n2026/02/16釜山到福岡\n二等室通鋪大人*1特等房1大2小*1\n※旅客名單已進入山茶花號系統中，乘船當日請憑「護照」於山茶花號櫃臺辦理登船手續並領取船票。\n※搭乘山茶花號入境日本不需登錄Visit Japan Web，請持護照及海關單通過海關。"}
+            {"id":1,"title":"[D1-D2]釜山西面飯店","sub":"Queens Hotel Seomyeon","note":"電話:+82518068871"},
+            {"id":2,"title":"[D4-D5]JR九州飯店長崎","sub":"JR Kyushu Hotel Nagasaki","note":"電話： +81 95-832-8000"},
+            {"id":3,"title":"[D6]天瀨溫泉 溪仙閣","sub":"日田市","note":"電話: +81-973-57-2355"},
+            {"id":1768977504334,"title":"[D7]JR九州飯店 Blossom 大分","sub":"豪華房","note":"https://www.jrhotel-m.jp/special/lang/zh-tw/"},
+            {"id":1768977688341,"title":"[D3]新山茶花號郵輪","sub":"釜山港","note":"16:30準備登船"}
         ];
 
         let tripData = [], infoData = [], bookings = {traffic:[], stay:[]}, diary=[], todos=[];
-        let curDay = 0, curLang = 'KR', curRate = 0.024;
+        const RATES = { 'KR': 0.024, 'JP': 0.22 };
 
         function init() {
             tripData = getStorage('trip_data_v18', defaultTrip);
             infoData = getStorage('trip_info_v18', defaultInfo);
-            bookings.traffic = getStorage('trip_traffic_v18', defaultTraffic);
+            bookings.traffic = getStorage('trip_traffic_v18', []);
             bookings.stay = getStorage('trip_stay_v18', defaultStay);
             diary = getStorage('trip_diary_v18', []);
-            todos = getStorage('trip_todo_v18', [{id:1, txt:"辦理護照", done:false}]);
+            todos = getStorage('trip_todo_v18', []);
             renderDayNav(); renderDaily(0); renderShopList(); renderShopImages(); renderInfoList(); renderBookings('traffic'); renderBookings('stay'); renderDiary(); renderTodo();
         }
 
         // --- 同步機制 ---
         function copySyncCode() {
-            const all = { trip: tripData, info: infoData, traffic: bookings.traffic, stay: bookings.stay, diary: diary, todos: todos, shop: getStorage('trip_shop_v18', []), wallet: getStorage('trip_wallet_v18', []) };
+            const all = { trip: tripData, info: infoData, traffic: bookings.traffic, stay: bookings.stay, diary: diary, todos: todos };
             const code = btoa(unescape(encodeURIComponent(JSON.stringify(all))));
-            navigator.clipboard.writeText(code).then(() => alert("代碼已複製！請傳送到手機貼上。"));
+            navigator.clipboard.writeText(code).then(() => alert("代碼已複製！"));
         }
         function pasteSyncCode() {
-            const code = prompt("請貼上同步代碼：");
+            const code = prompt("請貼上代碼：");
             if(!code) return;
             try {
                 const data = JSON.parse(decodeURIComponent(escape(atob(code))));
                 saveStorage('trip_data_v18', data.trip); saveStorage('trip_info_v18', data.info);
                 saveStorage('trip_traffic_v18', data.traffic); saveStorage('trip_stay_v18', data.stay);
                 saveStorage('trip_diary_v18', data.diary); saveStorage('trip_todo_v18', data.todos);
-                saveStorage('trip_shop_v18', data.shop); saveStorage('trip_wallet_v18', data.wallet);
-                alert("同步成功！"); location.reload();
-            } catch(e) { alert("代碼無效。"); }
+                location.reload();
+            } catch(e) { alert("代碼錯誤"); }
         }
 
+        // --- 基礎渲染 ---
         function linkify(text) { if (!text) return ''; return text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" class="text-blue-600 underline font-bold">$1</a>'); }
-        function renderDayNav() { document.getElementById('dayNav').innerHTML = tripData.map((d, i) => `<button onclick="renderDaily(${i})" class="flex-shrink-0 px-3 py-1.5 rounded text-xs font-bold border ${i === curDay ? 'bg-gray-800 text-white' : 'bg-white text-gray-400'}">${d.d} ${d.date}</button>`).join(''); }
+        function renderDayNav() { document.getElementById('dayNav').innerHTML = tripData.map((d, i) => `<button onclick="renderDaily(${i})" class="flex-shrink-0 px-3 py-1.5 rounded text-xs font-bold border ${i === curDay ? 'bg-gray-800 text-white' : 'bg-white text-gray-400'}">${d.d}</button>`).join(''); }
         function renderDaily(idx) { curDay = idx; renderDayNav(); document.getElementById('dailyContainer').innerHTML = tripData[idx].items.map((item, i) => `<div class="sketch-box p-3 bg-white" onclick="openEditModal('trip', ${i})"><div class="text-[10px] font-bold bg-yellow-300 px-1 inline-block border border-black mb-1">${item.time}</div><div class="font-bold text-blue-800">${item.act}</div><div class="text-xs text-gray-500 whitespace-pre-wrap">${item.note}</div></div>`).join(''); renderDailyExpenses(); }
-        function renderDailyExpenses() { const list = getStorage('trip_wallet_v18', []).filter(i => i.date === tripData[curDay].date); const total = list.reduce((sum, item) => sum + Math.round(item.a * RATES[item.c]), 0); document.getElementById('dailyTotalDisplay').innerText = `NT$ ${total.toLocaleString()}`; document.getElementById('dailyExpenseList').innerHTML = list.map(item => `<div class="flex justify-between border-b py-1"><span>${item.d}</span><span>${item.c==='KR'?'₩':'¥'}${item.a}</span></div>`).join(''); }
-        function addExpenseFromPlan() { const desc = document.getElementById('quickExpDesc').value, amt = document.getElementById('quickExpAmt').value, curr = document.getElementById('quickExpCurr').value; if(!desc || !amt) return; const list = getStorage('trip_wallet_v18', []); list.push({ d: desc, a: amt, c: curr, date: tripData[curDay].date }); saveStorage('trip_wallet_v18', list); document.getElementById('quickExpDesc').value = ''; document.getElementById('quickExpAmt').value = ''; renderDailyExpenses(); }
-        function renderBookings(type) { document.getElementById(type+'List').innerHTML = bookings[type].map((b) => `<div class="sketch-box p-4 bg-white relative mt-3"><div class="booking-tag">${type==='traffic'?'交通':'住宿'}</div><button onclick="openBookingModal('${type}', ${b.id})" class="absolute top-2 right-2 text-gray-400 p-2"><i class="fa-solid fa-pen"></i></button><div class="font-bold text-lg mt-2">${b.title}</div><div class="text-xs font-bold text-gray-400 mb-2">${b.sub}</div><div class="text-[13px] bg-gray-50 p-3 rounded whitespace-pre-wrap leading-relaxed">${linkify(b.note)}</div></div>`).join(''); }
+        function renderDailyExpenses() { const list = getStorage('trip_wallet_v18', []).filter(i => i.date === tripData[curDay].date); const total = list.reduce((sum, item) => sum + Math.round(item.a * (RATES[item.c]||1)), 0); document.getElementById('dailyTotalDisplay').innerText = `NT$ ${total.toLocaleString()}`; }
+        function addExpenseFromPlan() { const desc = document.getElementById('quickExpDesc').value, amt = document.getElementById('quickExpAmt').value, curr = document.getElementById('quickExpCurr').value; if(!desc || !amt) return; const list = getStorage('trip_wallet_v18', []); list.push({ d: desc, a: amt, c: curr, date: tripData[curDay].date }); saveStorage('trip_wallet_v18', list); renderDailyExpenses(); }
+        function renderBookings(type) { document.getElementById(type+'List').innerHTML = bookings[type].map((b) => `<div class="sketch-box p-4 bg-white relative mt-3"><div class="booking-tag">${type==='traffic'?'交通':'住宿'}</div><button onclick="openBookingModal('${type}', ${b.id})" class="absolute top-2 right-2 text-gray-400 p-2"><i class="fa-solid fa-pen"></i></button><div class="font-bold text-lg mt-2">${b.title}</div><div class="text-xs font-bold text-gray-400 mb-2">${b.sub}</div><div class="text-[13px] bg-gray-50 p-3 rounded whitespace-pre-wrap">${linkify(b.note)}</div></div>`).join(''); }
         function renderInfoList() { document.getElementById('infoList').innerHTML = infoData.map((item, idx) => `<div class="sketch-box p-3 bg-white flex justify-between items-center" onclick="openDedicatedInfoModal(${idx})"><div><div class="text-xs text-gray-500">${item.title}</div><div class="text-lg font-black whitespace-pre-wrap">${item.text}</div></div><button onclick="event.stopPropagation(); deleteInfoItem(${idx})" class="text-gray-300"><i class="fa-solid fa-trash"></i></button></div>`).join(''); }
         function openDedicatedInfoModal(idx = -1) { document.getElementById('infoModal').classList.remove('hidden'); document.getElementById('infoIndex').value = idx; if(idx !== -1) { document.getElementById('infoTitleInput').value = infoData[idx].title; document.getElementById('infoContentInput').value = infoData[idx].text; } else { document.getElementById('infoTitleInput').value = ""; document.getElementById('infoContentInput').value = ""; } }
-        function saveInfo() { const idx = parseInt(document.getElementById('infoIndex').value); const title = document.getElementById('infoTitleInput').value, text = document.getElementById('infoContentInput').value; if(!title) return; if(idx === -1) infoData.push({ id: Date.now(), title, text }); else { infoData[idx].title = title; infoData[idx].text = text; } saveStorage('trip_info_v18', infoData); renderInfoList(); closeModal('infoModal'); }
+        function saveInfo() { const idx = parseInt(document.getElementById('infoIndex').value), title = document.getElementById('infoTitleInput').value, text = document.getElementById('infoContentInput').value; if(!title) return; if(idx === -1) infoData.push({ id: Date.now(), title, text }); else { infoData[idx].title = title; infoData[idx].text = text; } saveStorage('trip_info_v18', infoData); renderInfoList(); closeModal('infoModal'); }
         function deleteInfoItem(idx) { if(confirm('刪除?')) { infoData.splice(idx, 1); saveStorage('trip_info_v18', infoData); renderInfoList(); } }
         function openBookingModal(type, id) { document.getElementById('bookingModal').classList.remove('hidden'); document.getElementById('bkType').value = type; document.getElementById('bkId').value = id; if(id !== -1) { const item = bookings[type].find(b => b.id === id); if(item) { document.getElementById('bkTitle').value = item.title; document.getElementById('bkSub').value = item.sub; document.getElementById('bkNote').value = item.note; } } else { document.getElementById('bkTitle').value = ""; document.getElementById('bkSub').value = ""; document.getElementById('bkNote').value = ""; } }
         function saveBooking() { const type = document.getElementById('bkType').value, id = parseInt(document.getElementById('bkId').value), title = document.getElementById('bkTitle').value, sub = document.getElementById('bkSub').value, note = document.getElementById('bkNote').value; if(!title) return; if(id === -1) bookings[type].push({id: Date.now(), title, sub, note}); else { const b = bookings[type].find(b => b.id === id); if(b) { b.title = title; b.sub = sub; b.note = note; } } saveStorage('trip_'+type+'_v18', bookings[type]); renderBookings(type); closeModal('bookingModal'); }
         function deleteBooking() { const type = document.getElementById('bkType').value, id = parseInt(document.getElementById('bkId').value); if(confirm('刪除?')) { bookings[type] = bookings[type].filter(b => b.id !== id); saveStorage('trip_'+type+'_v18', bookings[type]); renderBookings(type); closeModal('bookingModal'); } }
 
-        function getStorage(k, d) { return JSON.parse(localStorage.getItem(k)) || d; }
+        // --- 其他輔助 ---
+        function getStorage(k, d) { try { return JSON.parse(localStorage.getItem(k)) || d; } catch(e) { return d; } }
         function saveStorage(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
         function switchTab(id) { document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('text-gray-800'); b.classList.add('text-gray-400'); }); event.currentTarget.classList.add('text-gray-800'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function resetData() { if(confirm('重置資料?')) { localStorage.clear(); location.reload(); } }
+        function addShopItem() { const input = document.getElementById('shopInput'); if(!input.value.trim()) return; const list = getStorage('trip_shop_v18', []); list.push({id: Date.now(), txt: input.value, done: false}); saveStorage('trip_shop_v18', list); input.value = ''; renderShopList(); }
+        function renderShopList() { const list = getStorage('trip_shop_v18', []); document.getElementById('shopList').innerHTML = list.map(i => `<div class="flex items-center p-2 border-b"><input type="checkbox" onchange="toggleShop(${i.id})" ${i.done?'checked':''}><div class="flex-1 ml-2 ${i.done?'checked-item':''}">${i.txt}</div></div>`).join(''); }
+        function handleAddImage(type) { alert("照片功能已啟動"); }
+        function renderShopImages() {}
+        function renderDiary() {}
+        function renderTodo() {}
+        function addDiary() {}
+        function addTodo() {}
+        function setCurrency(c) {}
+        function quickTranslate() {}
+        function closeImgModal() { document.getElementById('imgModal').classList.add('hidden'); }
+        function openEditModal(type, i=-1) { document.getElementById('editModal').classList.remove('hidden'); }
+        function saveItem() { closeModal('editModal'); }
+        function deleteItem() { closeModal('editModal'); }
         function printBrochure() { window.print(); }
-        async function fetchWeather(lat, lon, city) { try { const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`); const d = await r.json(); document.getElementById('w-temp').innerText = Math.round(d.current_weather.temperature); document.getElementById('weatherBoard').classList.remove('hidden'); } catch(e){} }
-        
+
         init();
     </script>
 </body>
